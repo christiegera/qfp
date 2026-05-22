@@ -1,3 +1,14 @@
+Quakertown Food Pantry — All Source Files
+6 files total. Click a tab, then "Copy Code" to grab each file.
+
+shared.css
+index.html
+services.html
+volunteer.html
+sponsors.html
+donate.html
+services.html
+Copy Code
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +22,7 @@
 <div class="nav-wrap">
   <nav>
     <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon">Q</div>
+      <svg class="nav-logo-svg" viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#3D6B35"/><g transform="translate(5,6)"><g transform="translate(6,10) rotate(-15)"><path d="M0,-2Q2,-14 1,-24Q0,-26-1,-24Q-2,-14 0,-2Z" fill="#E8751A"/><path d="M0,-24Q-4,-32-2,-36" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-24Q1,-33 0,-37" stroke="#E8F0E6" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-24Q4,-31 3,-35" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></g><g transform="translate(15,4)"><ellipse cx="-3" cy="0" rx="8" ry="10" fill="#E63B3B"/><ellipse cx="3" cy="0" rx="8" ry="10" fill="#D42E2E"/><ellipse cx="0" cy="1" rx="6" ry="9" fill="#E63B3B"/><path d="M0,-9Q1,-13 0,-15" stroke="#8B5E3C" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-13Q4,-16 7,-14Q5,-12 0,-13Z" fill="#4A8240"/></g><g transform="translate(24,10) rotate(15)"><ellipse cx="0" cy="0" rx="13" ry="8" fill="#D4A843"/><ellipse cx="0" cy="1" rx="12" ry="6" fill="#C49835"/><path d="M-12,1Q-12,-3 0,-4Q12,-3 12,1" fill="#D4A843"/><line x1="-4" y1="-3" x2="-2" y2="1" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/><line x1="1" y1="-4" x2="2" y2="0" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/><line x1="5" y1="-3" x2="6" y2="1" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/></g></g></svg>
       Quakertown Food Pantry
     </a>
     <ul class="nav-links">
@@ -20,7 +31,25 @@
       <li><a href="sponsors.html">Sponsors</a></li>
       <li><a href="donate.html" class="nav-donate">Donate</a></li>
     </ul>
+    <button class="nav-hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
   </nav>
+</div>
+
+<div class="mobile-menu" id="mobileMenu" onclick="this.classList.remove('open')">
+  <div class="mobile-menu-panel" onclick="event.stopPropagation()">
+    <button class="mobile-menu-close" onclick="document.getElementById('mobileMenu').classList.remove('open')" aria-label="Close menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <ul class="mobile-menu-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html" class="active">Services</a></li>
+      <li><a href="volunteer.html">Volunteer</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
+    </ul>
+    <a href="donate.html" class="mobile-donate-link">Donate</a>
+  </div>
 </div>
 
 <div class="page">
@@ -130,5 +159,10 @@
   </div>
 </footer>
 
+<div class="mobile-donate-bar">
+  <a href="donate.html">Donate Now</a>
+</div>
+
 </body>
 </html>
+Made with Dia
