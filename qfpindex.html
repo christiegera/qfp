@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quakertown Food Pantry</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* HOME-SPECIFIC */
+    .hero {
+      padding: 80px 0 64px;
+      text-align: center;
+      animation: fadeUp 0.7s ease-out;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--moss-pale);
+      color: var(--moss);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: var(--moss);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 750;
+      letter-spacing: -2.5px;
+      line-height: 1.05;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .hero h1 .accent { color: var(--moss); }
+    .hero-sub {
+      font-size: 19px;
+      color: var(--warm-gray);
+      max-width: 540px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+    .hero-buttons {
+      display: flex; gap: 12px;
+      justify-content: center; flex-wrap: wrap;
+    }
+
+    /* IMPACT */
+    .impact {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 80px;
+      box-shadow: var(--shadow-sm);
+      animation: scaleIn 0.6s ease-out 0.2s both;
+    }
+    .impact-stat {
+      background: white;
+      text-align: center;
+      padding: 32px 16px;
+    }
+    .impact-number {
+      font-size: 36px; font-weight: 800;
+      letter-spacing: -1.5px; color: var(--ink);
+      line-height: 1; margin-bottom: 4px;
+    }
+    .impact-label {
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--light-gray);
+    }
+
+    /* BENTO */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-bottom: 16px;
+    }
+    .bento-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      transition: all 0.25s;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid transparent;
+    }
+    .bento-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border);
+    }
+    .bento-card h3 {
+      font-size: 20px; font-weight: 700;
+      letter-spacing: -0.4px; margin-bottom: 8px;
+    }
+    .bento-card p {
+      font-size: 15px; color: var(--warm-gray);
+      line-height: 1.55; flex-grow: 1;
+    }
+    .bento-arrow {
+      margin-top: 20px;
+      font-size: 13px; font-weight: 700;
+      color: var(--moss); letter-spacing: 0.3px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .bento-arrow svg { transition: transform 0.2s; }
+    .bento-card:hover .bento-arrow svg { transform: translateX(4px); }
+
+    /* STORY */
+    .story-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-bottom: 16px;
+    }
+    .story-text {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      display: flex; flex-direction: column;
+      justify-content: center;
+    }
+    .story-text h2 {
+      font-size: 32px; font-weight: 750;
+      letter-spacing: -1px; line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .story-text p {
+      font-size: 16px; color: var(--warm-gray);
+      line-height: 1.7; margin-bottom: 16px;
+    }
+    .story-photo {
+      background: linear-gradient(145deg, #b8cda8 0%, #8aad72 40%, #6b9455 100%);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 400px; position: relative; overflow: hidden;
+    }
+    .story-photo::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 30% 70%, rgba(255,255,255,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(0,0,0,0.08) 0%, transparent 50%);
+    }
+    .photo-placeholder {
+      position: relative; text-align: center;
+      color: rgba(255,255,255,0.8);
+      font-size: 14px; font-weight: 500;
+    }
+    .photo-placeholder .camera { font-size: 48px; margin-bottom: 12px; display: block; }
+    .photo-placeholder em { font-style: normal; font-size: 13px; opacity: 0.7; }
+
+    /* INFO ROW */
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-bottom: 16px;
+    }
+    .info-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 40px 36px;
+    }
+    .contact-row {
+      display: flex; align-items: center;
+      gap: 12px; padding: 10px 0; font-size: 15px;
+    }
+    .contact-icon {
+      width: 36px; height: 36px;
+      background: var(--cream); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+    }
+    .contact-row a {
+      color: var(--ink); text-decoration: none; font-weight: 500;
+    }
+    .contact-row a:hover { color: var(--moss); }
+    .location-address {
+      font-size: 16px; color: var(--ink); line-height: 1.7; margin-bottom: 4px;
+    }
+    .location-note {
+      font-size: 14px; color: var(--light-gray);
+      margin-bottom: 24px; font-style: italic;
+    }
+    .map-box {
+      margin-top: 24px; background: var(--cream);
+      border-radius: var(--radius); height: 130px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--light-gray); font-weight: 500;
+    }
+
+    /* NEEDS */
+    .needs-banner {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      text-align: center; margin-bottom: 16px;
+    }
+    .needs-banner h2 {
+      font-size: 28px; font-weight: 750;
+      letter-spacing: -0.8px; margin-bottom: 6px;
+    }
+    .needs-banner > p {
+      font-size: 15px; color: var(--warm-gray); margin-bottom: 28px;
+    }
+    .needs-tags {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 8px;
+      max-width: 640px; margin: 0 auto 32px;
+    }
+    .need-tag {
+      background: var(--cream); padding: 10px 20px;
+      border-radius: 100px; font-size: 14px;
+      font-weight: 500; color: var(--ink); transition: all 0.15s;
+    }
+    .need-tag:hover { background: var(--moss-pale); color: var(--moss); }
+
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 38px; letter-spacing: -1.5px; }
+      .impact { grid-template-columns: repeat(2, 1fr); }
+      .bento { grid-template-columns: 1fr; }
+      .story-row, .info-row { grid-template-columns: 1fr; }
+      .story-photo { min-height: 280px; }
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 48px 0 40px; }
+      .hero h1 { font-size: 30px; }
+      .impact { grid-template-columns: 1fr 1fr; border-radius: var(--radius); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">Q</div>
+      Quakertown Food Pantry
+    </a>
+    <ul class="nav-links">
+      <li><a href="services.html">Services</a></li>
+      <li><a href="volunteer.html">Volunteer</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
+      <li><a href="donate.html" class="nav-donate">Donate</a></li>
+    </ul>
+  </nav>
+</div>
+
+<div class="page">
+
+  <section class="hero">
+    <div class="hero-badge"><span class="dot"></span>100% Volunteer-Run Since the 1980s</div>
+    <h1>Emergency food for <span class="accent">Upper Bucks County</span> families</h1>
+    <p class="hero-sub">Open five days a week, no appointment needed. Serving 20 to 50 families every day across the Quakertown School District.</p>
+    <div class="hero-buttons">
+      <a href="donate.html" class="btn btn-fill">Donate Now</a>
+      <a href="services.html" class="btn btn-outline">Need Food? Start Here &rarr;</a>
+    </div>
+  </section>
+
+  <div class="impact">
+    <div class="impact-stat">
+      <div class="impact-number">20–50</div>
+      <div class="impact-label">Families Daily</div>
+    </div>
+    <div class="impact-stat">
+      <div class="impact-number">5 Days</div>
+      <div class="impact-label">Open Per Week</div>
+    </div>
+    <div class="impact-stat">
+      <div class="impact-number">40+</div>
+      <div class="impact-label">Years Serving</div>
+    </div>
+    <div class="impact-stat">
+      <div class="impact-number">9 Meals</div>
+      <div class="impact-label">Per Visit Target</div>
+    </div>
+  </div>
+
+  <div class="bento">
+    <a href="services.html" class="bento-card">
+      <div class="icon-box green">&#x1F6D2;</div>
+      <h3>Need Food?</h3>
+      <p>Live in the Quakertown School District? Walk in during open hours with a photo ID. No appointment, no wait list.</p>
+      <div class="bento-arrow">Learn how it works <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </a>
+    <a href="volunteer.html" class="bento-card">
+      <div class="icon-box orange">&#x1F91D;</div>
+      <h3>Volunteer With Us</h3>
+      <p>We have zero paid staff. Every shift, every delivery, every shelf stocked — that's volunteers. Find a role that fits your schedule.</p>
+      <div class="bento-arrow">Get involved <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </a>
+    <a href="donate.html" class="bento-card">
+      <div class="icon-box gray">&#x1F4B3;</div>
+      <h3>Make a Donation</h3>
+      <p>Every dollar goes further — we buy at wholesale through Philabundance. Give via PayPal, Venmo, check, or our Amazon Wish List.</p>
+      <div class="bento-arrow">Ways to give <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </a>
+  </div>
+
+  <div class="story-row">
+    <div class="story-text">
+      <div class="section-label">Our Story</div>
+      <h2>From a supply closet to a&nbsp;community anchor</h2>
+      <p>In the 1980s, the Bucks County Opportunity Council kept a small food supply for clients in need. Twelve local houses of worship — the Quakertown Ministerium — stepped in, and by 2004 the effort had a name: the Quakertown Food Pantry.</p>
+      <p>The pantry became an independent 501(c)(3) in 2008, moved to the Quakertown Borough complex in 2010, and hasn't slowed down. We pick up from two Giant stores, Walmart, and Target, and we're proud members of Philabundance and BCOC.</p>
+      <div class="callout">Every person here — from the board president to the Tuesday evening shelf-stocker — is a volunteer.</div>
+    </div>
+    <div class="story-photo">
+      <div class="photo-placeholder">
+        <span class="camera">&#x1F4F7;</span>
+        Your photo here<br>
+        <em>Volunteers, the pantry, or a distribution day</em>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="info-card">
+      <div class="section-label">Hours</div>
+      <div class="hours-grid">
+        <div class="hour-row"><span class="hour-day">Monday</span><span class="hour-time">10:00 AM – 1:00 PM</span></div>
+        <div class="hour-row"><span class="hour-day">Tuesday</span><span class="hour-time">6:00 PM – 8:00 PM</span></div>
+        <div class="hour-row"><span class="hour-day">Wednesday</span><span class="hour-time">10:00 AM – 1:00 PM</span></div>
+        <div class="hour-row"><span class="hour-day">Thursday</span><span class="hour-time">6:00 PM – 8:00 PM</span></div>
+        <div class="hour-row"><span class="hour-day">Friday</span><span class="hour-time">10:00 AM – 1:00 PM</span></div>
+        <div class="hour-row"><span class="hour-day">Sat – Sun</span><span class="hour-closed">Closed</span></div>
+      </div>
+      <div class="callout" style="margin-top: 20px">
+        <strong>Closures:</strong> We follow the Quakertown School District for weather closings. Closed on major holidays (New Year's, Good Friday, Memorial Day, July 4th, Labor Day, Thanksgiving, Christmas, New Year's Eve). Check our Facebook for closure notices.
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="section-label">Find Us</div>
+      <p class="location-address">101 N. Third Street<br>Quakertown, PA 18951</p>
+      <p class="location-note">At 3rd &amp; Erie, near the salt dome behind the Borough building</p>
+      <div class="contact-row">
+        <div class="contact-icon">&#x1F4DE;</div>
+        <a href="tel:2155360240">215-536-0240</a>
+      </div>
+      <div class="contact-row">
+        <div class="contact-icon">&#x2709;</div>
+        <a href="mailto:quakertownfoodpantry@gmail.com">quakertownfoodpantry@gmail.com</a>
+      </div>
+      <p style="color: var(--light-gray); font-size: 13px; margin-top: 12px;"><strong>Mail:</strong> P.O. Box 278, Quakertown, PA 18951</p>
+      <div class="map-box">Google Map embed</div>
+    </div>
+  </div>
+
+  <div class="needs-banner">
+    <div class="section-label" style="justify-content:center">Most Needed Items</div>
+    <h2>What we need right now</h2>
+    <p>Drop off during open hours at the back door — ring the bell. No glass jars please.</p>
+    <div class="needs-tags">
+      <span class="need-tag">Canned Chicken</span>
+      <span class="need-tag">Canned Ham (1–2 lbs)</span>
+      <span class="need-tag">Pasta</span>
+      <span class="need-tag">Canned Fruit</span>
+      <span class="need-tag">Beets or Carrots</span>
+      <span class="need-tag">Hamburger / Tuna Helper</span>
+      <span class="need-tag">Peanut Butter</span>
+      <span class="need-tag">Jelly</span>
+    </div>
+    <a href="donate.html" class="btn btn-outline">Shop Our Amazon Wish List &rarr;</a>
+  </div>
+
+  <div class="cta-footer">
+    <h2>Your neighbors need you</h2>
+    <p>Whether it's a bag of pasta, a Tuesday evening shift, or a monthly donation — it all adds up.</p>
+    <div class="cta-buttons">
+      <a href="donate.html" class="btn-white">Donate Now</a>
+      <a href="volunteer.html" class="btn-ghost">Become a Volunteer</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>
+    Quakertown Food Pantry &middot; 501(c)(3) Nonprofit &middot; Est. 1980s
+  </div>
+  <div class="footer-links">
+    <a href="#">Facebook</a>
+    <a href="mailto:quakertownfoodpantry@gmail.com">Contact</a>
+    <a href="donate.html">Donate</a>
+  </div>
+</footer>
+
+</body>
+</html>

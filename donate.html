@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate · Quakertown Food Pantry</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .donate-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .donate-option {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      text-align: center;
+      transition: all 0.2s;
+      border: 1.5px solid transparent;
+    }
+    .donate-option:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--moss-pale);
+    }
+    .donate-option .icon-box {
+      margin: 0 auto 16px;
+    }
+    .donate-option h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .donate-option p {
+      font-size: 14px;
+      color: var(--warm-gray);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .donate-option .btn {
+      width: 100%;
+      justify-content: center;
+      padding: 12px 20px;
+      font-size: 14px;
+    }
+    .use-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .use-item {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .use-item h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+    .use-item p {
+      font-size: 13px;
+      color: var(--warm-gray);
+      line-height: 1.5;
+      margin: 0;
+    }
+    @media (max-width: 800px) {
+      .donate-grid { grid-template-columns: 1fr; }
+      .use-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <svg class="nav-logo-svg" viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#3D6B35"/><g transform="translate(5,6)"><g transform="translate(6,10) rotate(-15)"><path d="M0,-2Q2,-14 1,-24Q0,-26-1,-24Q-2,-14 0,-2Z" fill="#E8751A"/><path d="M0,-24Q-4,-32-2,-36" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-24Q1,-33 0,-37" stroke="#E8F0E6" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-24Q4,-31 3,-35" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></g><g transform="translate(15,4)"><ellipse cx="-3" cy="0" rx="8" ry="10" fill="#E63B3B"/><ellipse cx="3" cy="0" rx="8" ry="10" fill="#D42E2E"/><ellipse cx="0" cy="1" rx="6" ry="9" fill="#E63B3B"/><path d="M0,-9Q1,-13 0,-15" stroke="#8B5E3C" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-13Q4,-16 7,-14Q5,-12 0,-13Z" fill="#4A8240"/></g><g transform="translate(24,10) rotate(15)"><ellipse cx="0" cy="0" rx="13" ry="8" fill="#D4A843"/><ellipse cx="0" cy="1" rx="12" ry="6" fill="#C49835"/><path d="M-12,1Q-12,-3 0,-4Q12,-3 12,1" fill="#D4A843"/><line x1="-4" y1="-3" x2="-2" y2="1" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/><line x1="1" y1="-4" x2="2" y2="0" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/><line x1="5" y1="-3" x2="6" y2="1" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/></g></g></svg>
+      Quakertown Food Pantry
+    </a>
+    <ul class="nav-links">
+      <li><a href="services.html">Services</a></li>
+      <li><a href="volunteer.html">Volunteer</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
+      <li><a href="donate.html" class="nav-donate active">Donate</a></li>
+    </ul>
+    <button class="nav-hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </nav>
+</div>
+
+<div class="mobile-menu" id="mobileMenu" onclick="this.classList.remove('open')">
+  <div class="mobile-menu-panel" onclick="event.stopPropagation()">
+    <button class="mobile-menu-close" onclick="document.getElementById('mobileMenu').classList.remove('open')" aria-label="Close menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <ul class="mobile-menu-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="volunteer.html">Volunteer</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
+    </ul>
+    <a href="donate.html" class="mobile-donate-link active">Donate</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="page-hero">
+    <div class="hero-badge">Every Dollar Feeds Families</div>
+    <h1>Ways to <span class="accent">give</span></h1>
+    <p class="hero-sub">Financial donations go further than you'd think — our wholesale partnerships let us stretch every dollar. Here's how to help.</p>
+  </div>
+
+  <!-- THREE DONATION OPTIONS -->
+  <div class="donate-grid">
+    <div class="donate-option">
+      <div class="icon-box green" style="margin: 0 auto 16px;">&#x1F4B3;</div>
+      <h3>PayPal</h3>
+      <p>Give online with a credit card or PayPal account. No PayPal account required.</p>
+      <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HN5URGECS4QEA&source=url" target="_blank" class="btn btn-fill" style="width:100%; justify-content:center;">Donate via PayPal</a>
+    </div>
+
+    <div class="donate-option">
+      <div class="icon-box orange" style="margin: 0 auto 16px;">&#x1F4F1;</div>
+      <h3>Venmo</h3>
+      <p>Quick and easy from your phone. Search for @Quakertownfoodpantry or use our link.</p>
+      <a href="https://www.venmo.com/u/Quakertownfoodpantry" target="_blank" class="btn btn-fill" style="width:100%; justify-content:center;">Donate via Venmo</a>
+    </div>
+
+    <div class="donate-option">
+      <div class="icon-box gray" style="margin: 0 auto 16px;">&#x2709;&#xFE0F;</div>
+      <h3>Check</h3>
+      <p>Make checks payable to the Quakertown Food Pantry. Drop off or mail to our P.O. Box.</p>
+      <div style="background: var(--cream); border-radius: 8px; padding: 12px; font-size: 14px; color: var(--ink); font-weight: 500; margin-top: auto;">
+        P.O. Box 278<br>Quakertown, PA 18951
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT DONATIONS FUND -->
+  <div class="content-card">
+    <div class="section-label">Impact</div>
+    <h2>Where your money goes</h2>
+    <p>We have no paid staff — 100% of financial donations go to food and operations.</p>
+    <div class="use-list">
+      <div class="use-item">
+        <h4>Fresh food</h4>
+        <p>Milk, eggs, and meat purchased fresh to include with nonperishable orders</p>
+      </div>
+      <div class="use-item">
+        <h4>Essential supplies</h4>
+        <p>Stocking up on items that run low — bought at wholesale through Philabundance</p>
+      </div>
+      <div class="use-item">
+        <h4>Operations</h4>
+        <p>Office supplies, phone service, and tools so volunteers and clients stay connected</p>
+      </div>
+      <div class="use-item">
+        <h4>Facility</h4>
+        <p>Equipment maintenance and building improvements at our Borough complex space</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AMAZON WISH LIST -->
+  <div class="content-card" style="text-align: center;">
+    <div class="icon-box green" style="margin: 0 auto 16px;">&#x1F4E6;</div>
+    <h2>Amazon Wish List</h2>
+    <p style="max-width: 520px; margin: 0 auto 20px;">Browse our wish list, purchase items, and they'll be shipped directly to the pantry. It's the easiest way to donate exactly what we need.</p>
+    <a href="https://www.amazon.com/hz/wishlist/ls/2ICJZCCRCRA50?ref_=wl_share" target="_blank" class="btn btn-moss">Shop the Wish List &rarr;</a>
+  </div>
+
+  <!-- FOOD DONATIONS -->
+  <div class="content-card">
+    <div class="section-label">Food Donations</div>
+    <h2>Most needed items</h2>
+    <p>All non-perishable food donations are welcome. Drop off during open hours (M/W/F 10 AM – 1 PM, T/Th 6 – 8 PM) at the back door — ring the bell and we'll meet you.</p>
+
+    <div class="tag-grid" style="margin: 20px 0;">
+      <span class="tag">Canned Chicken</span>
+      <span class="tag">Canned Ham (1–2 lbs)</span>
+      <span class="tag">Pasta (any type)</span>
+      <span class="tag">Canned Fruit (any type)</span>
+      <span class="tag">Beets or Carrots</span>
+      <span class="tag">Hamburger / Tuna Helper</span>
+      <span class="tag">Peanut Butter (medium)</span>
+      <span class="tag">Jelly (medium)</span>
+    </div>
+
+    <div class="callout-warm callout">
+      <strong>Please note:</strong> No glass jars (safety hazard). No out-of-date food items. No homemade or home-canned foods.
+    </div>
+  </div>
+
+  <!-- FOOD DRIVES -->
+  <div class="two-col">
+    <div class="content-card">
+      <div class="icon-box orange">&#x1F4E2;</div>
+      <h3>Organize a food drive</h3>
+      <p>Schools, churches, businesses, and community groups — we'd love to partner with you on a food drive. We can help with logistics, signage, and pickup coordination.</p>
+      <p>Contact our food drive coordinator:</p>
+      <div class="contact-row">
+        <div class="contact-icon">&#x2709;</div>
+        <a href="mailto:quakertownfoodpantry@gmail.com">quakertownfoodpantry@gmail.com</a>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="icon-box gray">&#x1F381;</div>
+      <h3>Gift cards</h3>
+      <p>Gift cards to grocery stores are always welcome and let us buy exactly what's needed week to week. We accept cards from Giant, Walmart, Target, and others.</p>
+      <p>Drop off gift cards during open hours or mail them to:</p>
+      <p style="font-weight: 600; color: var(--ink);">P.O. Box 278, Quakertown, PA 18951</p>
+    </div>
+  </div>
+
+  <div class="cta-footer">
+    <h2>Thank you</h2>
+    <p>Every donation — whether $5, a bag of pasta, or a Tuesday evening shift — directly feeds a family in Quakertown.</p>
+    <div class="cta-buttons">
+      <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HN5URGECS4QEA&source=url" target="_blank" class="btn-white">Donate Now</a>
+      <a href="volunteer.html" class="btn-ghost">Volunteer Instead</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>
+    Quakertown Food Pantry &middot; 501(c)(3) Nonprofit &middot; Est. 1980s
+  </div>
+  <div class="footer-links">
+    <a href="#">Facebook</a>
+    <a href="mailto:quakertownfoodpantry@gmail.com">Contact</a>
+    <a href="donate.html">Donate</a>
+  </div>
+</footer>
+
+<div class="mobile-donate-bar">
+  <a href="donate.html">Donate Now</a>
+</div>
+
+</body>
+</html>

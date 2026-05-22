@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer · Quakertown Food Pantry</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .role-card {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: all 0.15s;
+    }
+    .role-card:hover {
+      background: var(--moss-pale);
+    }
+    .role-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+    .role-card p {
+      font-size: 13px;
+      color: var(--warm-gray);
+      line-height: 1.5;
+      margin: 0;
+    }
+    @media (max-width: 700px) {
+      .role-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <svg class="nav-logo-svg" viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#3D6B35"/><g transform="translate(5,6)"><g transform="translate(6,10) rotate(-15)"><path d="M0,-2Q2,-14 1,-24Q0,-26-1,-24Q-2,-14 0,-2Z" fill="#E8751A"/><path d="M0,-24Q-4,-32-2,-36" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-24Q1,-33 0,-37" stroke="#E8F0E6" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-24Q4,-31 3,-35" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></g><g transform="translate(15,4)"><ellipse cx="-3" cy="0" rx="8" ry="10" fill="#E63B3B"/><ellipse cx="3" cy="0" rx="8" ry="10" fill="#D42E2E"/><ellipse cx="0" cy="1" rx="6" ry="9" fill="#E63B3B"/><path d="M0,-9Q1,-13 0,-15" stroke="#8B5E3C" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M0,-13Q4,-16 7,-14Q5,-12 0,-13Z" fill="#4A8240"/></g><g transform="translate(24,10) rotate(15)"><ellipse cx="0" cy="0" rx="13" ry="8" fill="#D4A843"/><ellipse cx="0" cy="1" rx="12" ry="6" fill="#C49835"/><path d="M-12,1Q-12,-3 0,-4Q12,-3 12,1" fill="#D4A843"/><line x1="-4" y1="-3" x2="-2" y2="1" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/><line x1="1" y1="-4" x2="2" y2="0" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/><line x1="5" y1="-3" x2="6" y2="1" stroke="#B8892A" stroke-width="1" stroke-linecap="round"/></g></g></svg>
+      Quakertown Food Pantry
+    </a>
+    <ul class="nav-links">
+      <li><a href="services.html">Services</a></li>
+      <li><a href="volunteer.html" class="active">Volunteer</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
+      <li><a href="donate.html" class="nav-donate">Donate</a></li>
+    </ul>
+    <button class="nav-hamburger" onclick="document.getElementById('mobileMenu').classList.add('open')" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </nav>
+</div>
+
+<div class="mobile-menu" id="mobileMenu" onclick="this.classList.remove('open')">
+  <div class="mobile-menu-panel" onclick="event.stopPropagation()">
+    <button class="mobile-menu-close" onclick="document.getElementById('mobileMenu').classList.remove('open')" aria-label="Close menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <ul class="mobile-menu-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="volunteer.html" class="active">Volunteer</a></li>
+      <li><a href="sponsors.html">Sponsors</a></li>
+    </ul>
+    <a href="donate.html" class="mobile-donate-link">Donate</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="page-hero">
+    <div class="hero-badge">Zero Paid Staff</div>
+    <h1>Every role here is a <span class="accent">volunteer</span></h1>
+    <p class="hero-sub">From the board president to the Friday morning bread pickup — it's all people who care about their neighbors. We'd love your help.</p>
+  </div>
+
+  <!-- GETTING STARTED -->
+  <div class="content-card">
+    <div class="section-label">Getting Started</div>
+    <h2>How volunteering works</h2>
+    <p>Signing up is easy. Here's the process from start to first shift:</p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Fill out an application</h3>
+        <p>Complete our volunteer application — available online as a Google Form or a downloadable PDF.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Attend orientation</h3>
+        <p>All new volunteers attend a short orientation session. We'll walk you through the pantry, the procedures, and your role.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Pick your schedule</h3>
+        <p>Choose shifts that fit your life — morning, evening, weekly, or occasional. The volunteer coordinator will work with you.</p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px;">
+      <a href="https://forms.gle/faEEFpCEHDKcjXiDA" target="_blank" class="btn btn-moss">Apply Online (Google Form)</a>
+      <a href="https://drive.google.com/file/d/1hEHH_AnBDMvNC134inTK7A0Q6kM11u06/view?usp=sharing" target="_blank" class="btn btn-outline">Download PDF Application</a>
+    </div>
+  </div>
+
+  <!-- REQUIREMENTS -->
+  <div class="two-col">
+    <div class="content-card">
+      <div class="icon-box green">&#x2714;&#xFE0F;</div>
+      <h3>Requirements</h3>
+      <ul class="styled-list">
+        <li>All volunteers must attend orientation</li>
+        <li>Age 16+ can volunteer without a parent</li>
+        <li>Age 15 and under must have a parent present</li>
+        <li>Must be 21+ to work at the front desk or office</li>
+        <li>Youth groups need at least 2 adult supervisors</li>
+      </ul>
+    </div>
+    <div class="content-card">
+      <div class="icon-box orange">&#x1F6AB;</div>
+      <h3>Good to know</h3>
+      <ul class="styled-list">
+        <li>We do not accept court-ordered community service volunteers</li>
+        <li>Youth Aid Panel referrals are welcome (email us first)</li>
+        <li>Current clients cannot volunteer — see our policy for details</li>
+        <li>If a volunteer needs food, contact the board to discuss options</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ROLES -->
+  <div class="content-card">
+    <div class="section-label">Opportunities</div>
+    <h2>Ways to get involved</h2>
+    <p>There's a role for every schedule and skill set. Here are some of the ways volunteers keep the pantry running:</p>
+
+    <div class="role-grid">
+      <div class="role-card">
+        <h4>Shift Volunteer</h4>
+        <p>Serve clients, stock shelves, receive donations during open hours</p>
+      </div>
+      <div class="role-card">
+        <h4>Front Desk</h4>
+        <p>Greet and sign in clients, complete paperwork (must be 21+)</p>
+      </div>
+      <div class="role-card">
+        <h4>Grocery Pickup Driver</h4>
+        <p>Scheduled pickups from Giant, Walmart, Target — weekly commitment</p>
+      </div>
+      <div class="role-card">
+        <h4>Freezer Crew</h4>
+        <p>Restock serving freezers, sort and label meat deliveries</p>
+      </div>
+      <div class="role-card">
+        <h4>Bag Packing</h4>
+        <p>Pack client bags by family size ahead of open shifts — flexible hours</p>
+      </div>
+      <div class="role-card">
+        <h4>Food Drive Help</h4>
+        <p>Pick up donations from schools and post offices, sort and shelve</p>
+      </div>
+      <div class="role-card">
+        <h4>Morning Bread Pickup</h4>
+        <p>Regular morning runs to Target, Walmart, Giant for donated bread</p>
+      </div>
+      <div class="role-card">
+        <h4>Office Support</h4>
+        <p>Data entry, phone messages, reports, forms — must be 21+</p>
+      </div>
+      <div class="role-card">
+        <h4>Restock &amp; Organize</h4>
+        <p>Organize storage and shopping shelves — Tue/Wed/Thu, 9:30–11:30 AM</p>
+      </div>
+      <div class="role-card">
+        <h4>Shift Supervisor</h4>
+        <p>Open and close pantry, assign duties, guide volunteers, make decisions</p>
+      </div>
+      <div class="role-card">
+        <h4>Facebook &amp; Communications</h4>
+        <p>Post updates, coordinate with newspapers and community groups</p>
+      </div>
+      <div class="role-card">
+        <h4>Snow &amp; Ice Removal</h4>
+        <p>Keep the front and back clear for client and volunteer safety</p>
+      </div>
+    </div>
+
+    <div class="callout">Have a specific skill or limited time? We also need help with newsletters, special events, and our last-minute call list. Apply and let us know what works for you.</div>
+  </div>
+
+  <!-- GROUP VOLUNTEERING -->
+  <div class="content-card">
+    <div class="icon-box gray">&#x1F465;</div>
+    <h3>Group volunteering</h3>
+    <p>Churches, scout troops, school clubs, and corporate teams are welcome. Groups currently supporting the pantry include Rotary Club, Moms &amp; Muscles, Grace Bible Fellowship, Triple C Nursery, and East Swamp Life Group.</p>
+    <p>Groups can help with financial donations, gift cards, food drives, or regular shift coverage. Email us at <a href="mailto:quakertownfoodpantry@gmail.com" style="color: var(--moss); font-weight: 600;">quakertownfoodpantry@gmail.com</a> to set up your group.</p>
+  </div>
+
+  <div class="cta-footer">
+    <h2>Ready to help?</h2>
+    <p>Fill out a quick application and we'll get you scheduled for orientation.</p>
+    <div class="cta-buttons">
+      <a href="https://forms.gle/faEEFpCEHDKcjXiDA" target="_blank" class="btn-white">Apply Now</a>
+      <a href="mailto:quakertownfoodpantry@gmail.com" class="btn-ghost">Email Us</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>
+    Quakertown Food Pantry &middot; 501(c)(3) Nonprofit &middot; Est. 1980s
+  </div>
+  <div class="footer-links">
+    <a href="#">Facebook</a>
+    <a href="mailto:quakertownfoodpantry@gmail.com">Contact</a>
+    <a href="donate.html">Donate</a>
+  </div>
+</footer>
+
+<div class="mobile-donate-bar">
+  <a href="donate.html">Donate Now</a>
+</div>
+
+</body>
+</html>
