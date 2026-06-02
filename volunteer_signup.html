@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    .qfp-calendar * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .qfp-calendar {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 20px 0;
+    }
+
+    .qfp-hero {
+      background: linear-gradient(135deg, #fd7f54 0%, #f97316 100%);
+      color: white; padding: 30px 20px; text-align: center;
+      box-shadow: 0 4px 20px rgba(253,127,84,0.3);
+      margin-bottom: 20px; border-radius: 12px;
+    }
+    .qfp-hero h1 { font-size: 2.2em; font-weight: 700; margin-bottom: 8px; }
+    .qfp-hero p  { font-size: 1.1em; opacity: 0.95; }
+
+    .qfp-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    .qfp-month-nav {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .qfp-month-btn {
+      background: white; border: 2px solid #e5e7eb; border-radius: 8px;
+      padding: 8px 18px; font-size: 0.85em; font-weight: 600;
+      color: #374151; cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .qfp-month-btn:hover  { border-color: #fd7f54; color: #fd7f54; }
+    .qfp-month-btn.active { background: #fd7f54; border-color: #fd7f54; color: white; }
+
+    .qfp-week-section { margin-bottom: 36px; }
+    .qfp-week-label {
+      font-size: 1em; font-weight: 700; color: #374151;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;
+    }
+
+    .qfp-shifts { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
+    @media (max-width: 1100px) { .qfp-shifts { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 700px)  { .qfp-shifts { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 480px)  { .qfp-shifts { grid-template-columns: 1fr; } }
+
+    .qfp-shift-card {
+      background: white; border-radius: 10px; padding: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 2px solid transparent;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .qfp-shift-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.11); }
+    .qfp-shift-card.full        { background: #f9fafb; opacity: 0.82; }
+    .qfp-shift-card.group-shift { border-color: #3b82f6; background: #eff6ff; }
+
+    .qfp-shift-date { font-weight: 700; color: #1f2937; font-size: 0.95em; }
+    .qfp-shift-time { color: #fd7f54; font-size: 0.8em; font-weight: 600; margin-top: 2px; margin-bottom: 10px; }
+
+    .qfp-volunteer-slot {
+      font-size: 0.75em; padding: 3px 0; color: #6b7280; border-bottom: 1px solid #f3f4f6;
+    }
+    .qfp-volunteer-slot.filled { color: #059669; font-weight: 500; }
+    .qfp-volunteer-slot.group  { color: #3b82f6; font-weight: 500; }
+
+    .qfp-action-btn {
+      display: block; width: 100%; padding: 8px 12px; border-radius: 6px;
+      text-align: center; font-weight: 600; font-size: 0.75em; font-family: inherit;
+      border: none; cursor: pointer; margin-top: 10px; transition: all 0.2s;
+    }
+    .qfp-btn-signup {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white; box-shadow: 0 3px 8px rgba(16,185,129,0.3);
+    }
+    .qfp-btn-signup:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.4); }
+    .qfp-btn-full  { background: #f3f4f6; color: #6b7280; cursor: default; }
+    .qfp-btn-group { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; cursor: default; }
+
+    .qfp-supervisor-info {
+      margin-top: 10px; padding: 8px; background: #f8fafc;
+      border-radius: 4px; border-left: 3px solid #fd7f54;
+    }
+    .qfp-supervisor-info h4 {
+      color: #374151; font-size: 0.65em; font-weight: 700;
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    .qfp-supervisor-details { color: #4b5563; font-size: 0.7em; line-height: 1.5; }
+
+    .qfp-loading { text-align: center; padding: 60px 20px; color: #6b7280; font-size: 1.1em; }
+    .qfp-error   { text-align: center; padding: 60px 20px; color: #dc2626; font-size: 1.1em; }
+
+    /* Modal */
+    .qfp-modal {
+      display: none; position: fixed; z-index: 9999;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+    }
+    .qfp-modal-content {
+      background: white; margin: 3% auto; border-radius: 14px;
+      width: 95%; max-width: 660px; max-height: 92vh;
+      overflow: hidden; display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .qfp-modal-header {
+      background: linear-gradient(135deg, #fd7f54 0%, #f97316 100%);
+      color: white; padding: 18px 20px; border-radius: 14px 14px 0 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-shrink: 0;
+    }
+    .qfp-modal-title    { font-size: 1.15em; font-weight: 700; }
+    .qfp-modal-subtitle { font-size: 0.85em; opacity: 0.9; margin-top: 3px; }
+    .qfp-modal-date {
+      display: inline-block; margin-top: 8px;
+      background: rgba(255,255,255,0.25); border-radius: 20px;
+      padding: 3px 12px; font-size: 0.82em; font-weight: 600;
+    }
+    .qfp-close {
+      color: white; font-size: 26px; font-weight: bold;
+      cursor: pointer; line-height: 1; padding: 2px 6px;
+      transition: opacity 0.2s; border-radius: 50%; flex-shrink: 0;
+    }
+    .qfp-close:hover { opacity: 0.7; background: rgba(255,255,255,0.15); }
+
+    .qfp-form-crop-wrapper {
+      flex: 1; min-height: 520px; overflow: hidden; position: relative;
+    }
+    .qfp-form-crop-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      border: none; display: block;
+    }
+
+    .qfp-modal-footer {
+      background: #f8fafc; border-top: 1px solid #e5e7eb;
+      padding: 10px 20px; text-align: center; font-size: 0.72em;
+      color: #9ca3af; border-radius: 0 0 14px 14px; flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .qfp-modal-content { margin: 2% auto; width: 98%; max-height: 96vh; border-radius: 10px; }
+      .qfp-modal-header  { border-radius: 10px 10px 0 0; padding: 14px 16px; }
+      .qfp-modal-footer  { border-radius: 0 0 10px 10px; }
+      .qfp-hero h1 { font-size: 1.8em; }
+    }
+  </style>
+</head>
+<body>
+<div class="qfp-calendar">
+  <div class="qfp-hero">
+    <h1>&#x1F955; Quakertown Food Pantry</h1>
+    <p>Volunteer Shift Schedule &#8212; Join us in making a difference!</p>
+  </div>
+  <div class="qfp-container">
+    <div class="qfp-month-nav" id="qfpMonthNav"></div>
+    <div id="qfp-calendar"><div class="qfp-loading">Loading volunteer shifts&#8230;</div></div>
+  </div>
+  <div id="qfpSignupModal" class="qfp-modal">
+    <div class="qfp-modal-content">
+      <div class="qfp-modal-header">
+        <div>
+          <div class="qfp-modal-title">Volunteer Sign-Up</div>
+          <div class="qfp-modal-subtitle">Quakertown Food Pantry</div>
+          <div class="qfp-modal-date" id="qfpSelectedDate"></div>
+        </div>
+        <span class="qfp-close" id="qfpCloseBtn">&#215;</span>
+      </div>
+      <div class="qfp-form-crop-wrapper">
+        <iframe id="qfpSignupFrame" src="about:blank"
+          frameborder="0" marginheight="0" marginwidth="0">Loading&#8230;</iframe>
+      </div>
+      <div class="qfp-modal-footer">Questions? Contact the Quakertown Food Pantry for help.</div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  'use strict';
+
+  var SPREADSHEET_ID  = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
+  var SUPERVISORS_GID = '502386465';
+  var SIGNUPS_GID     = '1435555973';
+  var BASE_FORM_URL   = 'https://docs.google.com/forms/d/e/1FAIpQLSe1bebeMjCP6pak7I2EJlCQ7fbFJ6DDCYrsj8xxI9JzW2L7Lg/viewform?embedded=true';
+  var DATE_ENTRY      = 'entry.579980168';
+
+  var supervisorsData = [];
+  var signupsData     = [];
+  var allShifts       = [];
+  var activeMonth     = -1;
+
+  var modal    = document.getElementById('qfpSignupModal');
+  var closeBtn = document.getElementById('qfpCloseBtn');
+  var iframe   = document.getElementById('qfpSignupFrame');
+
+  function loadData() {
+    var base = 'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID + '/export?format=csv&gid=';
+    Promise.all([
+      fetch(base + SUPERVISORS_GID).then(function(r){ return r.text(); }),
+      fetch(base + SIGNUPS_GID).then(function(r){ return r.text(); })
+    ]).then(function(res) {
+      supervisorsData = parseCSV(res[0]);
+      signupsData     = parseCSV(res[1]);
+      allShifts       = generateShifts();
+      buildMonthNav();
+      renderCalendar();
+    }).catch(function() {
+      document.getElementById('qfp-calendar').innerHTML =
+        '<div class="qfp-error">Error loading shifts. Please try again later.</div>';
+    });
+  }
+
+  function parseCSV(csv) {
+    return csv.split('\n').filter(function(l){ return l.trim(); })
+      .map(function(l){ return l.split(',').map(function(c){ return c.replace(/"/g,'').trim(); }); });
+  }
+
+  function buildMonthNav() {
+    var seen = {};
+    var monthList = [];
+    allShifts.forEach(function(s) {
+      var d   = new Date(s.date);
+      var key = d.getFullYear() + '-' + d.getMonth();
+      if (!seen[key]) {
+        seen[key] = true;
+        monthList.push({ month: d.getMonth(), year: d.getFullYear(),
+          label: d.toLocaleDateString('en-US', { month:'long', year:'numeric' }) });
+      }
+    });
+    var nav = document.getElementById('qfpMonthNav');
+    nav.innerHTML = '';
+    var allBtn = document.createElement('button');
+    allBtn.className = 'qfp-month-btn active';
+    allBtn.textContent = 'All';
+    allBtn.onclick = function(){ setMonth(-1); };
+    nav.appendChild(allBtn);
+    monthList.forEach(function(m) {
+      var btn = document.createElement('button');
+      btn.className = 'qfp-month-btn';
+      btn.textContent = m.label;
+      btn.dataset.month = m.month;
+      btn.onclick = function(){ setMonth(m.month); };
+      nav.appendChild(btn);
+    });
+  }
+
+  function setMonth(month) {
+    activeMonth = month;
+    document.querySelectorAll('.qfp-month-btn').forEach(function(b) {
+      b.classList.remove('active');
+      if (month === -1 && b.textContent === 'All') b.classList.add('active');
+      if (month !== -1 && parseInt(b.dataset.month) === month) b.classList.add('active');
+    });
+    renderCalendar();
+  }
+
+  function renderCalendar() {
+    var shifts = activeMonth === -1 ? allShifts :
+      allShifts.filter(function(s){ return new Date(s.date).getMonth() === activeMonth; });
+
+    var cal = document.getElementById('qfp-calendar');
+    if (!shifts.length) { cal.innerHTML = '<div class="qfp-loading">No shifts found.</div>'; return; }
+
+    var html = '', currentWeek = '';
+    shifts.forEach(function(shift) {
+      var date      = new Date(shift.date);
+      var weekStart = getWeekStart(date);
+      if (weekStart !== currentWeek) {
+        if (currentWeek !== '') html += '</div></div>';
+        currentWeek = weekStart;
+        html += '<div class="qfp-week-section">';
+        html += '<div class="qfp-week-label">Week of ' + weekStart + '</div>';
+        html += '<div class="qfp-shifts">';
+      }
+      var filled  = shift.volunteers.length;
+      var isFull  = filled >= 5;
+      var isGroup = shift.groupShift;
+      var cls     = isGroup ? 'group-shift' : (isFull ? 'full' : '');
+
+      html += '<div class="qfp-shift-card ' + cls + '">';
+      html += '<div class="qfp-shift-date">' + shift.day + ' ' + formatDate(date) + '</div>';
+      html += '<div class="qfp-shift-time">' + shift.time + '</div>';
+      html += '<div class="qfp-volunteers">';
+      for (var i = 0; i < 5; i++) {
+        if (isGroup)
+          html += '<div class="qfp-volunteer-slot group">&#128101; ' + isGroup + '</div>';
+        else if (i < filled)
+          html += '<div class="qfp-volunteer-slot filled">&#128100; ' + shift.volunteers[i] + '</div>';
+        else
+          html += '<div class="qfp-volunteer-slot empty">&#9675; Available</div>';
+      }
+      html += '</div>';
+      if (isGroup)
+        html += '<div class="qfp-action-btn qfp-btn-group">Group Shift</div>';
+      else if (isFull)
+        html += '<div class="qfp-action-btn qfp-btn-full">Shift Full</div>';
+      else {
+        var fd  = formatDateForForm(date);
+        var lbl = shift.day + ' ' + formatDate(date);
+        html += '<button class="qfp-action-btn qfp-btn-signup" onclick="window.openQFPModal(\'' + lbl + '\',\'' + fd + '\')">Sign Up</button>';
+      }
+      html += '<div class="qfp-supervisor-info"><h4>Supervisor</h4>';
+      html += '<div class="qfp-supervisor-details">';
+      html += '<strong>' + shift.supervisor.name + '</strong><br>';
+      html += '&#128222; ' + shift.supervisor.phone + '<br>';
+      html += '&#9993; '  + shift.supervisor.email;
+      html += '</div></div></div>';
+    });
+    html += '</div></div>';
+    cal.innerHTML = html;
+  }
+
+  window.openQFPModal = function(label, formDate) {
+    document.getElementById('qfpSelectedDate').textContent = label;
+    iframe.src = BASE_FORM_URL + '&' + DATE_ENTRY + '=' + encodeURIComponent(formDate);
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  };
+
+  function closeModal() {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+    iframe.src = 'about:blank';
+  }
+
+  closeBtn.onclick = closeModal;
+  window.onclick = function(e) { if (e.target === modal) closeModal(); };
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+  function generateShifts() {
+    var shifts = {};
+    var today  = new Date(); today.setHours(0,0,0,0);
+    var end    = new Date(today); end.setDate(today.getDate() + 84);
+    for (var d = new Date(today); d <= end; d.setDate(d.getDate() + 1)) {
+      var day = d.getDay();
+      if (day === 0 || day === 6) continue;
+      var copy    = new Date(d);
+      var dateStr = copy.toDateString();
+      var dayName = getDayName(copy);
+      var weekNum = getWeekNumber(copy);
+      shifts[dateStr] = {
+        date: dateStr, day: dayName, time: getShiftTime(dayName),
+        supervisor: findSupervisor(dayName, weekNum),
+        groupShift: getGroupName(dayName, weekNum),
+        volunteers: []
+      };
+    }
+    for (var i = 1; i < signupsData.length; i++) {
+      var row = signupsData[i];
+      if (!row[5]) continue;
+      var shiftDate = new Date(row[5]).toDateString();
+      if (row[7] === 'Cancelled') continue;
+      if (shifts[shiftDate])
+        shifts[shiftDate].volunteers.push(row[1] + ' ' + (row[2]||'').charAt(0) + '.');
+    }
+    return Object.values(shifts).sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+  }
+
+  function getDayName(d) {
+    return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+  }
+  function getShiftTime(day) {
+    return (day === 'Tuesday' || day === 'Thursday') ? '6PM \u2013 8PM' : '10AM \u2013 1PM';
+  }
+  function getWeekNumber(d) {
+    return (['1st','2nd','3rd','4th','5th'])[Math.ceil(d.getDate()/7)-1] || '5th';
+  }
+  function findSupervisor(dayName, weekNum) {
+    for (var i = 1; i < supervisorsData.length; i++) {
+      var row = supervisorsData[i];
+      if (row[0] === dayName || row[0] === weekNum + ' ' + dayName)
+        return { name: row[2]||'TBD', phone: row[3]||'TBD', email: row[4]||'TBD' };
+    }
+    return { name:'TBD', phone:'TBD', email:'TBD' };
+  }
+  function getGroupName(dayName, weekNum) {
+    for (var i = 1; i < supervisorsData.length; i++) {
+      var row = supervisorsData[i];
+      if ((row[0] === dayName || row[0] === weekNum + ' ' + dayName) && row[1] && row[1] !== 'NA')
+        return row[1];
+    }
+    return false;
+  }
+  function getWeekStart(d) {
+    var copy = new Date(d);
+    var diff = copy.getDate() - copy.getDay() + (copy.getDay() === 0 ? -6 : 1);
+    copy.setDate(diff);
+    return copy.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+  function formatDate(d) {
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  }
+  function formatDateForForm(d) {
+    var y  = d.getFullYear();
+    var m  = String(d.getMonth()+1).padStart(2,'0');
+    var dy = String(d.getDate()).padStart(2,'0');
+    return y + '-' + m + '-' + dy;
+  }
+
+  loadData();
+})();
+</script>
+</body>
+</html>
