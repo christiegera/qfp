@@ -1,0 +1,1364 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Handbook · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+  <style>
+    :root {
+      --ink: #1A1A1A;
+      --cream: #F3F1EB;
+      --moss: #2E7D32;
+      --moss-light: #43A047;
+      --moss-pale: #E3F2E5;
+      --terracotta: #C75B39;
+      --terracotta-light: #FCEEE8;
+      --amber: #D4900A;
+      --amber-pale: #FFF8E1;
+      --slate: #3D6E8E;
+      --slate-pale: #E3EFF6;
+      --warm-gray: #6B6560;
+      --light-gray: #B5B0A8;
+      --border: #E5E2DB;
+      --radius: 12px;
+      --radius-lg: 20px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* LAYOUT */
+    .handbook-wrap {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: white;
+      border-right: 1px solid var(--border);
+      padding: 28px 0;
+    }
+    .sidebar-logo {
+      padding: 0 24px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--moss);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .sidebar-logo-icon {
+      width: 28px; height: 28px;
+      background: var(--moss);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 13px; font-weight: 800;
+    }
+    .sidebar-label {
+      padding: 14px 24px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a {
+      display: block;
+      padding: 8px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--warm-gray);
+      text-decoration: none;
+      transition: all 0.1s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar a:hover {
+      color: var(--ink);
+      background: var(--cream);
+    }
+    .sidebar a.active {
+      color: var(--moss);
+      background: var(--moss-pale);
+      border-left-color: var(--moss);
+      font-weight: 600;
+    }
+    .sidebar-actions {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      margin-top: 16px;
+    }
+    .print-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 16px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--warm-gray);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .print-btn:hover { background: var(--moss-pale); color: var(--moss); border-color: var(--moss); }
+
+    /* MOBILE NAV */
+    .mobile-header {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mobile-header-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--moss);
+    }
+    .mobile-menu-btn {
+      background: none; border: none; cursor: pointer; padding: 6px; color: var(--ink);
+    }
+    .mobile-menu-btn svg { display: block; }
+
+    /* MAIN */
+    .main {
+      padding: 48px 56px 120px;
+      max-width: 820px;
+    }
+
+    /* SECTIONS */
+    .section {
+      margin-bottom: 56px;
+      scroll-margin-top: 24px;
+    }
+    .section-badge {
+      display: inline-block;
+      background: var(--moss-pale);
+      color: var(--moss);
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section h2 {
+      font-size: 32px;
+      font-weight: 750;
+      letter-spacing: -1.2px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .section h3 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin: 28px 0 10px;
+    }
+    .section h3:first-of-type { margin-top: 20px; }
+    .section h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 20px 0 6px;
+    }
+    .section p {
+      font-size: 15px;
+      color: var(--warm-gray);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .section ul, .section ol {
+      margin: 8px 0 16px 20px;
+    }
+    .section li {
+      font-size: 15px;
+      color: var(--warm-gray);
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+    .section li strong { color: var(--ink); }
+
+    /* CARDS */
+    .card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 28px 28px;
+      margin-bottom: 16px;
+    }
+    .card h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+
+    /* POLICY */
+    .policy {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--moss);
+    }
+    .policy-num {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--moss);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .policy-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .policy-title::after {
+      content: '+';
+      font-size: 18px;
+      color: var(--light-gray);
+      transition: transform 0.2s;
+    }
+    .policy.open .policy-title::after {
+      content: '−';
+    }
+    .policy-date {
+      font-size: 12px;
+      color: var(--light-gray);
+      margin-bottom: 8px;
+    }
+    .policy-body {
+      display: none;
+      padding-top: 8px;
+      border-top: 1px solid var(--cream);
+    }
+    .policy.open .policy-body { display: block; }
+    .policy-body p, .policy-body li {
+      font-size: 14px;
+      color: var(--warm-gray);
+      line-height: 1.6;
+    }
+
+    /* TABLE */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 20px;
+      font-size: 14px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--moss-pale);
+      color: var(--moss);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--moss);
+    }
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--cream);
+      color: var(--warm-gray);
+      vertical-align: top;
+    }
+    .data-table tr:hover td { background: rgba(232,240,230,0.3); }
+    .data-table a { color: var(--moss); text-decoration: none; font-weight: 500; }
+    .data-table a:hover { text-decoration: underline; }
+
+    /* CALLOUT */
+    .callout {
+      padding: 16px 20px;
+      background: var(--moss-pale);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--moss);
+      line-height: 1.5;
+      margin: 16px 0;
+    }
+    .callout.ops-callout {
+      background: var(--moss-pale);
+      color: var(--moss);
+    }
+    .callout.amber-callout {
+      background: var(--amber-pale);
+      color: var(--amber);
+    }
+    .callout.slate-callout {
+      background: var(--slate-pale);
+      color: var(--slate);
+    }
+
+    /* COLOR-CODED BADGES */
+    .section-badge.ops { background: var(--moss-pale); color: var(--moss); }
+    .section-badge.policy { background: var(--amber-pale); color: var(--amber); }
+    .section-badge.ref { background: var(--slate-pale); color: var(--slate); }
+    .section-badge.start { background: var(--terracotta-light); color: var(--terracotta); }
+
+    /* COLORED HR DIVIDERS */
+    hr.start { border-top-color: var(--terracotta-light); }
+    hr.ops { border-top-color: var(--moss-pale); }
+    hr.policy { border-top-color: var(--amber-pale); }
+    hr.ref { border-top-color: var(--slate-pale); }
+
+    /* WELCOME SECTION */
+    .welcome {
+      background: linear-gradient(135deg, white 0%, var(--moss-pale) 100%);
+      border-radius: var(--radius-lg);
+      padding: 36px 36px 32px;
+      margin-bottom: 40px;
+      border-left: 4px solid var(--moss);
+    }
+    .welcome h2 {
+      font-size: 28px;
+      font-weight: 750;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    .welcome p {
+      font-size: 15px;
+      color: var(--warm-gray);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .welcome-sig {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-top: 16px;
+    }
+
+    /* QUICK REFERENCE CARDS */
+    .quick-ref {
+      margin-bottom: 48px;
+    }
+    .quick-ref-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--light-gray);
+      margin-bottom: 12px;
+    }
+    .quick-ref-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .qr-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      border-top: 3px solid var(--moss);
+    }
+    .qr-card.amber { border-top-color: var(--amber); }
+    .qr-card.terracotta { border-top-color: var(--terracotta); }
+    .qr-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+    .qr-card ul {
+      list-style: none;
+      margin: 0;
+    }
+    .qr-card li {
+      font-size: 13px;
+      color: var(--warm-gray);
+      line-height: 1.5;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--cream);
+    }
+    .qr-card li:last-child { border-bottom: none; }
+    .qr-card li::before { content: none; }
+
+    /* POLICY COLOR */
+    .policy.amber-border { border-left-color: var(--amber); }
+    .policy.amber-border .policy-num { color: var(--amber); }
+
+    /* PASSWORD GATE */
+    .pw-gate {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      text-align: center;
+    }
+    .pw-gate h3 { margin-bottom: 8px; }
+    .pw-gate p { margin-bottom: 16px; }
+    .pw-input {
+      padding: 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      width: 200px;
+      margin-right: 8px;
+    }
+    .pw-input:focus { outline: none; border-color: var(--moss); }
+    .pw-submit {
+      padding: 10px 20px;
+      background: var(--moss);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .pw-submit:hover { background: var(--moss-light); }
+    .pw-error { color: var(--terracotta); font-size: 13px; margin-top: 8px; display: none; }
+    .protected-content { display: none; }
+
+    /* CLEANING GRID */
+    .cleaning-area {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+    .cleaning-area h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 4px;
+    }
+    .cleaning-freq {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--moss);
+      margin: 12px 0 4px;
+    }
+
+    /* DIVIDER */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .handbook-wrap { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .sidebar.mobile-open {
+        display: block;
+        position: fixed;
+        top: 0; left: 0;
+        width: 280px;
+        z-index: 100;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+      }
+      .mobile-header { display: flex; }
+      .main { padding: 24px 20px 100px; }
+      .section h2 { font-size: 26px; }
+      .quick-ref-grid { grid-template-columns: 1fr; }
+    }
+
+    /* PRINT */
+    @media print {
+      .sidebar, .mobile-header, .print-btn, .pw-gate { display: none !important; }
+      .handbook-wrap { display: block; }
+      .main { padding: 0; max-width: none; }
+      .protected-content { display: block !important; }
+      .section { page-break-inside: avoid; margin-bottom: 32px; }
+      .policy { break-inside: avoid; }
+      .policy-body { display: block !important; }
+      body { background: white; font-size: 12px; }
+      .section h2 { font-size: 22px; }
+      .section h3 { font-size: 16px; }
+      .card, .policy, .cleaning-area { box-shadow: none; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <img src="qfp_trans.png" alt="QFP" style="height: 32px; width: auto;">
+  <span class="mobile-header-title">Volunteer Handbook</span>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')" aria-label="Toggle menu">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</div>
+
+<div class="handbook-wrap">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <a href="index.html" class="sidebar-logo">
+    <img src="qfp_trans.png" alt="QFP" style="height: 36px; width: auto;">
+    Volunteer Handbook
+  </a>
+
+  <div class="sidebar-label" style="color: var(--terracotta); border-left-color: var(--terracotta);">Getting Started</div>
+  <a href="#welcome" onclick="closeMobile()">Welcome</a>
+  <a href="#quick-ref" onclick="closeMobile()">Quick Reference</a>
+  <a href="#mission" onclick="closeMobile()">Mission & Overview</a>
+  <a href="#history" onclick="closeMobile()">Our History</a>
+  <a href="#requirements" onclick="closeMobile()">Requirements</a>
+  <a href="#civil-rights" onclick="closeMobile()">Civil Rights</a>
+
+  <div class="sidebar-label" style="color: var(--moss); border-left-color: var(--moss);">Operations</div>
+  <a href="#duties" onclick="closeMobile()">Duties & Roles</a>
+  <a href="#cleaning" onclick="closeMobile()">Cleaning Duties</a>
+  <a href="#calling-out" onclick="closeMobile()">Calling Out</a>
+  <a href="#holidays" onclick="closeMobile()">Holidays & Weather</a>
+
+  <div class="sidebar-label" style="color: var(--amber); border-left-color: var(--amber);">Policies</div>
+  <a href="#policies" onclick="closeMobile()">Policy Statements</a>
+
+  <div class="sidebar-label" style="color: var(--slate); border-left-color: var(--slate);">Reference</div>
+  <a href="#contacts" onclick="closeMobile()">Contact Lists</a>
+  <a href="#shifts" onclick="closeMobile()">Shift Schedule</a>
+  <a href="#gah" onclick="closeMobile()">GAH & Freezer</a>
+
+  <div class="sidebar-actions">
+    <button class="print-btn" onclick="window.print()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print Handbook
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- WELCOME -->
+  <div class="welcome" id="welcome">
+    <h2>Welcome to the team</h2>
+    <p>Thank you for volunteering with the Quakertown Food Pantry. Every shift you work, every bag you pack, and every client you greet makes a real difference for families in our community.</p>
+    <p>This handbook covers everything you need to know — from your first day through daily operations, policies, and who to call when you have a question. Keep it handy, and don't hesitate to reach out if anything's unclear.</p>
+    <p>We're glad you're here.</p>
+    <div class="welcome-sig">— The QFP Board of Directors</div>
+  </div>
+
+  <!-- QUICK REFERENCE -->
+  <div class="quick-ref" id="quick-ref">
+    <div class="quick-ref-label">Quick Reference</div>
+    <div class="quick-ref-grid">
+      <div class="qr-card">
+        <h4>Produce Priority</h4>
+        <ul>
+          <li><strong>First:</strong> Grapes, berries, tomatoes, cut veggies, lettuce, spinach, bananas</li>
+          <li><strong>Last:</strong> Potatoes, carrots, onions, cabbage, apples, oranges, squash</li>
+          <li>If it won't last until next shift, give extra to each client</li>
+        </ul>
+      </div>
+      <div class="qr-card amber">
+        <h4>Food Rotation Order</h4>
+        <ul>
+          <li><strong>1.</strong> Federal food (TEFAP) first</li>
+          <li><strong>2.</strong> State food (SFPP) second</li>
+          <li><strong>3.</strong> Donated food, oldest date first</li>
+          <li>Philabundance = donated food</li>
+        </ul>
+      </div>
+      <div class="qr-card terracotta">
+        <h4>We Don't Accept</h4>
+        <ul>
+          <li>Homemade/home-canned food</li>
+          <li>Food past 1 year from expiration</li>
+          <li>Non-food items (clothing, toys, etc.)</li>
+          <li>Glass jars (safety hazard)</li>
+          <li>Loose bread for repacking</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="section" id="mission">
+    <div class="section-badge start">Mission & Overview</div>
+    <h2>Our mission</h2>
+    <p>To provide emergency food assistance to those in need in our community.</p>
+
+    <h3>Community</h3>
+    <p>Our community is primarily those living in the Quakertown Community School District area and other portions of Upper Bucks County. Food is distributed to those who request help — we provide supplemental food to help supplement a household's grocery budget.</p>
+
+    <h3>Hours of operation</h3>
+    <div class="card">
+      <table class="data-table">
+        <tr><td><strong>Monday</strong></td><td>10:00 AM – 1:00 PM</td></tr>
+        <tr><td><strong>Tuesday</strong></td><td>6:00 PM – 8:00 PM</td></tr>
+        <tr><td><strong>Wednesday</strong></td><td>10:00 AM – 1:00 PM</td></tr>
+        <tr><td><strong>Thursday</strong></td><td>6:00 PM – 8:00 PM</td></tr>
+        <tr><td><strong>Friday</strong></td><td>10:00 AM – 1:00 PM</td></tr>
+      </table>
+    </div>
+
+    <h3>Food sources</h3>
+    <ul>
+      <li><strong>TEFAP</strong> — The Emergency Food Assistance Program (federal)</li>
+      <li><strong>SFPP</strong> — State Food Purchase Program via Bucks County Opportunity Council</li>
+      <li>Food purchased from <strong>Philabundance</strong> and area grocery stores</li>
+      <li>Regular donations from local schools, businesses, churches, and individuals</li>
+      <li>Funds from private donors, churches, and area businesses</li>
+    </ul>
+
+    <div class="callout">100% Volunteer-Run — there are no paid positions.</div>
+
+    <h3>Key facts</h3>
+    <ul>
+      <li><strong>20–60 families</strong> served each day</li>
+      <li>Maximum household size: <strong>14</strong></li>
+      <li>Open <strong>5 days per week</strong></li>
+      <li>Each visit provides <strong>3 days of meals</strong></li>
+      <li>Clients may visit <strong>once per week</strong></li>
+      <li>Clients complete a government affidavit of need annually and show current ID proving Quakertown School District residency at each visit</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- HISTORY -->
+  <div class="section" id="history">
+    <div class="section-badge start">Our Story</div>
+    <h2>Pantry history</h2>
+    <p>For years, a single volunteer from the local Methodist church kept a small food supply and opened the doors once a month — or whenever a BCOC social worker needed food for a client.</p>
+    <p>When he moved to Florida in 2004, the Quakertown Ministerium — 12 houses of worship — stepped in to take over and expand the effort, giving it a name: the Quakertown Food Pantry. Hours expanded to five days a week.</p>
+    <p>In 2008, the pantry became an independent 501(c)(3), with every board member taking an active role in operations. In 2010, we moved to the maintenance wood shop offered by the Quakertown Borough at 101 N. Third Street — our home to this day.</p>
+    <p>In 2019, a local Girl Scout troop ran a toiletry drive for their Bronze Award, which sparked our Amazon Wish List. In 2020, we added online donations via PayPal and Venmo.</p>
+    <p>Today we pick up food from two Giant supermarkets, Walmart, and Target, and we're proud members of Philabundance and BCOC.</p>
+  </div>
+
+  <hr>
+
+  <!-- REQUIREMENTS -->
+  <div class="section" id="requirements">
+    <div class="section-badge start">Getting Started</div>
+    <h2>Volunteer requirements</h2>
+
+    <h3>Orientation</h3>
+    <p>All volunteers must attend an orientation session before their first shift. Students with only a few hours for school service projects will receive on-the-job training and be paired with a trained volunteer — they will not work alone.</p>
+
+    <h3>Age requirements</h3>
+    <ul>
+      <li>Volunteers <strong>15 and under</strong> must be accompanied by a parent or guardian</li>
+      <li>Volunteers <strong>16 and above</strong> can work without a parent/guardian</li>
+      <li>Must be <strong>21+</strong> to work at the front desk or in the office</li>
+      <li>Youth groups must have at least <strong>2 adult supervisors</strong> present</li>
+    </ul>
+
+    <h3>Important policies</h3>
+    <ul>
+      <li>We <strong>do not accept</strong> volunteers with court-ordered community service (juveniles referred to the Youth Aid Panel are accepted — email us first)</li>
+      <li>Current pantry clients <strong>cannot volunteer</strong> due to confidentiality concerns. If a volunteer needs food, contact the board to discuss options.</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- CIVIL RIGHTS -->
+  <div class="section" id="civil-rights">
+    <div class="section-badge start">Annual Training Required</div>
+    <h2>Civil rights quick guide</h2>
+    <p>U.S. Department of Agriculture, Food & Nutrition Service (FNS Instruction 113). All volunteers must review this guide each year.</p>
+
+    <div class="card">
+      <h4>1. Let people know how to apply and how to file a complaint</h4>
+      <ul>
+        <li>Place the "And Justice For All" poster where it can easily be seen</li>
+        <li>Use the Nondiscrimination Statement on all materials and websites that mention FNS Programs</li>
+        <li>Notify community groups that the program is available</li>
+        <li>Schedule hours of operation according to the needs of the community</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>2. Identify and accommodate language needs</h4>
+      <ul>
+        <li>Find out what languages are spoken in your service area</li>
+        <li>Make sure everyone knows what to do when a Limited English Proficient client needs help</li>
+        <li>Provide translated material if there are many people who speak another language</li>
+        <li>Do not ask clients to bring their own interpreters</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>3. Accommodate persons with disabilities</h4>
+      <ul>
+        <li>Allow persons with disabilities to use predesignated proxies to pick up food packages</li>
+        <li>Provide clients with hearing and vision impairments the accommodations they need</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>4. Data collection (CSFP)</h4>
+      <ul>
+        <li>Explain to clients that collecting race and ethnicity data is required by law and will not affect eligibility</li>
+        <li>You must ask clients to self-identify; clients may identify more than one race</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4>5. If a client reports being treated differently</h4>
+      <ul>
+        <li>Try to resolve issues as quickly as possible</li>
+        <li>Refer the client to the Civil Rights contact or address on the poster</li>
+        <li>Offer the client a civil rights complaint form</li>
+      </ul>
+    </div>
+
+    <p>For more information: FNS MARO OCR at (609) 259-5061/5123</p>
+  </div>
+
+  <hr>
+
+  <!-- DUTIES -->
+  <div class="section" id="duties">
+    <div class="section-badge ops">Operations</div>
+    <h2>Duties & responsibilities</h2>
+
+    <h3>Board</h3>
+    <ul>
+      <li>Update policies</li>
+      <li>Approve financial expenditures (check signing by President and VP)</li>
+      <li>Informational talks and pantry tours as requested</li>
+      <li>Handle client issues and emergencies</li>
+      <li>Call board meetings</li>
+      <li>Communicate with the communications team for website/Facebook updates</li>
+      <li>Send monthly emails to shift supervisors about board decisions and schedule changes</li>
+      <li>Answer questions from donors about how donations are used</li>
+    </ul>
+
+    <h3>Treasurer</h3>
+    <ul>
+      <li>Financial donations and paying bills</li>
+      <li>Bookkeeping and monthly reporting</li>
+    </ul>
+
+    <h3>Secretary</h3>
+    <ul>
+      <li>Board minutes and thank-you letters to donors</li>
+      <li>Set up schedule for pantry holidays and post signs</li>
+      <li>Maintain list of board members, positions, and phone numbers</li>
+    </ul>
+
+    <h3>Management Team</h3>
+    <ul>
+      <li>Day-to-day operations, food delivery/pickups, stocking</li>
+      <li>Create menus and order/buy food</li>
+      <li>Manage freezer operations</li>
+      <li>BCOC and Philabundance liaison, grant coordination</li>
+      <li>Maintain packing schedules for client bags and bonus bags</li>
+      <li>Maintain GAH driver and helper schedules</li>
+      <li>Pantry cleaning coordination</li>
+    </ul>
+
+    <h3>Volunteer Coordinator</h3>
+    <ul>
+      <li>Welcome new volunteers (orientation)</li>
+      <li>Answer emails about volunteering</li>
+      <li>Set up training with team leads</li>
+      <li>Maintain shift schedules, volunteer roster, and supervisor contact list</li>
+      <li>Handle volunteer issues</li>
+    </ul>
+
+    <h3>Food Drive Coordinator</h3>
+    <ul>
+      <li>Liaison for food drives</li>
+      <li>Coordinate scheduling and volunteers</li>
+      <li>Date checking and shelving large donations</li>
+    </ul>
+
+    <h3>Office Team</h3>
+    <ul>
+      <li>Retrieve phone messages</li>
+      <li>Enter daily statistics on client visits and volunteer hours</li>
+      <li>Enter and file pantry registration forms</li>
+      <li>Complete Philabundance weekly reports</li>
+      <li>Maintain computer, printer, and office supplies</li>
+      <li>Create/print forms and signs as needed</li>
+      <li>Maintain outside bulletin boards</li>
+    </ul>
+
+    <h3>Communications Team</h3>
+    <ul>
+      <li>Community communications and advertising</li>
+      <li>Event coordination</li>
+      <li>Facebook and pantry webpage</li>
+    </ul>
+
+    <h3>Shift Supervisors</h3>
+    <ul>
+      <li>Open and close the pantry during a shift</li>
+      <li>Assign duties to volunteers and provide guidance</li>
+      <li>Decision-making when required</li>
+      <li>Answer client questions if necessary</li>
+      <li>Ensure all duties and the Supervisor Checklist are completed</li>
+    </ul>
+
+    <h3>Shift Volunteers</h3>
+    <ul>
+      <li>Serve clients, stock shelves, receive donations</li>
+      <li>Front desk receptionist duties (21+ only)</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- CLEANING -->
+  <div class="section" id="cleaning">
+    <div class="section-badge ops">Operations</div>
+    <h2>Cleaning duties</h2>
+
+    <div class="cleaning-area">
+      <h4>Upstairs Office</h4>
+      <div class="cleaning-freq">Weekly</div>
+      <ul>
+        <li>Sweep stairs and wipe hand railing</li>
+        <li>Vacuum rugs</li>
+        <li>Wipe down all tables</li>
+        <li>Dust tops of file cabinets, window sill & frame</li>
+        <li>Empty trash</li>
+      </ul>
+      <div class="cleaning-freq">Monthly</div>
+      <ul>
+        <li>Dust top shelf of stairs</li>
+        <li>Dust ceiling and wall vents</li>
+      </ul>
+      <p style="font-size:13px; color:var(--light-gray); margin-top:8px;">Office volunteers clean desks & computers and empty the shredder. Food volunteers wipe shelves as food is removed.</p>
+    </div>
+
+    <div class="cleaning-area">
+      <h4>Downstairs Area</h4>
+      <div class="cleaning-freq">Weekly</div>
+      <ul>
+        <li>Sweep & wash floors</li>
+        <li>Empty trash if needed</li>
+        <li>Clean handles on refrigerators and freezers</li>
+        <li>Wipe front of refrigerators if needed</li>
+        <li>Clean tables</li>
+        <li>Check and retrieve any cans from under all shelves</li>
+      </ul>
+    </div>
+
+    <div class="cleaning-area">
+      <h4>Bathroom</h4>
+      <div class="cleaning-freq">Weekly</div>
+      <ul>
+        <li>Wash floor</li>
+        <li>Clean & sanitize toilet and sink</li>
+        <li>Empty trash</li>
+      </ul>
+      <div class="cleaning-freq">Monthly</div>
+      <ul>
+        <li>Dust mirror ledge and ledges around bathroom</li>
+        <li>Dust shelves as needed</li>
+        <li>Deep clean/sanitize (special crew)</li>
+      </ul>
+    </div>
+
+    <div class="cleaning-area">
+      <h4>Kitchen</h4>
+      <div class="cleaning-freq">Weekly</div>
+      <ul>
+        <li>Clean & sanitize sink and surrounding area</li>
+        <li>Wipe down counters</li>
+        <li>Wash floor</li>
+        <li>Empty trash if needed</li>
+      </ul>
+      <div class="cleaning-freq">Monthly</div>
+      <ul>
+        <li>Deep clean/sanitize (special crew)</li>
+        <li>Dust ledges, top of refrigerator, and vents</li>
+      </ul>
+      <p style="font-size:13px; color:var(--light-gray); margin-top:8px;">Daily shifts clean the kitchen sink and area after each shift with sanitizer.</p>
+    </div>
+
+    <div class="cleaning-area">
+      <h4>Lobby Area</h4>
+      <div class="cleaning-freq">Weekly</div>
+      <ul>
+        <li>Vacuum rugs</li>
+        <li>Sweep and wash floors</li>
+        <li>Dust window sills & frames</li>
+        <li>Wipe benches</li>
+        <li>Clean door & door knobs</li>
+      </ul>
+      <p style="font-size:13px; color:var(--light-gray); margin-top:8px;">Daily shifts sweep floors and empty trash.</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- CALLING OUT -->
+  <div class="section" id="calling-out">
+    <div class="section-badge ops">Operations</div>
+    <h2>Calling out</h2>
+    <p>If you can't make your scheduled shift, contact your <strong>Shift Supervisor</strong> as soon as possible. Their contact information is in the Shift Schedule section of this handbook.</p>
+    <p>If you can't reach your supervisor, contact a member of the Management Team or a Board Member.</p>
+    <div class="callout">The earlier you let us know, the easier it is to find coverage. Even a quick text or email helps.</div>
+  </div>
+
+  <hr>
+
+  <!-- HOLIDAYS -->
+  <div class="section" id="holidays">
+    <div class="section-badge ops">Schedule</div>
+    <h2>Holidays & weather</h2>
+
+    <h3>2026 holiday closures</h3>
+    <div class="card">
+      <table class="data-table">
+        <tr><td><strong>New Year's Day</strong></td><td>January 1</td></tr>
+        <tr><td><strong>Good Friday</strong></td><td>April 3</td></tr>
+        <tr><td><strong>Memorial Day</strong></td><td>May 25</td></tr>
+        <tr><td><strong>Independence Day (observed)</strong></td><td>July 3</td></tr>
+        <tr><td><strong>Labor Day</strong></td><td>September 7</td></tr>
+        <tr><td><strong>Thanksgiving</strong></td><td>November 26–27</td></tr>
+        <tr><td><strong>Christmas</strong></td><td>December 24–25</td></tr>
+        <tr><td><strong>New Year's Eve</strong></td><td>December 31</td></tr>
+      </table>
+    </div>
+
+    <h3>Inclement weather</h3>
+    <p>The pantry follows the Quakertown Community School District — if schools close, the pantry closes.</p>
+    <ul>
+      <li>Volunteers use their own discretion on travel safety</li>
+      <li>Contact your Shift Supervisor ASAP</li>
+      <li>Shift Supervisor makes the final call on opening</li>
+      <li>Reach out to Management or a Board Member if uncertain</li>
+    </ul>
+    <div class="callout">Closure notices are posted on our Facebook page.</div>
+  </div>
+
+  <hr>
+
+  <!-- POLICIES -->
+  <div class="section" id="policies">
+    <div class="section-badge policy">Board-Approved</div>
+    <h2>Policy statements</h2>
+    <p>Click any policy to expand it.</p>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 01</div>
+      <div class="policy-title">Wish List Policy</div>
+      <div class="policy-date">Approved July 13, 2017 · Revised 11/14/2024</div>
+      <div class="policy-body">
+        <p>Menu items (cans, packaged goods, small quantity items) will only be added to the Wish List by the Management Team. Dairy or refrigerated items, except cheese, will be added by Shift Supervisors.</p>
+        <ul>
+          <li>Menu items stay on the Wish List until we run out or the Management Team removes them (requires consulting 2 other members)</li>
+          <li>Dairy/refrigerated items should be moved out quickly; Shift Supervisor checks at the beginning of each shift</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 02</div>
+      <div class="policy-title">Out of Date Items</div>
+      <div class="policy-date">Approved July 13, 2017 · Revised 11/14/2024</div>
+      <div class="policy-body">
+        <p>Any food past the 1-year expiration date shall not be put on the menu (per Feeding America/Philabundance guidelines).</p>
+        <ul>
+          <li>Items with questionable dates go in a designated area for Management Team review</li>
+          <li>Large quantities with questionable dates: place on the table outside the kitchen with a note</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 03</div>
+      <div class="policy-title">Front Give Away Shelf</div>
+      <div class="policy-date">Approved July 13, 2017</div>
+      <div class="policy-body">
+        <p>Canned/boxed items past 1 year from expiration, dented cans, and overflow (produce, bread, candy) go on the Front Give Away Shelf for clients to take at their discretion.</p>
+        <ul>
+          <li>During summer/hot weather, shifts throw away remaining items at end of shift</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 04</div>
+      <div class="policy-title">Repacking of Food Items</div>
+      <div class="policy-date">Board Approved</div>
+      <div class="policy-body">
+        <p>The pantry will no longer repack any food items except:</p>
+        <ul>
+          <li>Individually wrapped tea bags, sugar & sweetener, Keurig K cups</li>
+          <li>Loose produce</li>
+          <li>Dog & cat food</li>
+          <li>No loose bread items may be repacked</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 05</div>
+      <div class="policy-title">Homemade Food</div>
+      <div class="policy-date">Approved August 9, 2017</div>
+      <div class="policy-body">
+        <p>Any homemade canned, frozen, or prepared food products cannot be accepted under any circumstances. Only commercially produced items with a current Serv-Safe Certification on file.</p>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 06</div>
+      <div class="policy-title">Organizational Prepared Food</div>
+      <div class="policy-date">Approved August 9, 2017</div>
+      <div class="policy-body">
+        <p>Food prepared by organizations accepted only if:</p>
+        <ul>
+          <li>A copy of the organization's current Serv-Safe Certification is on file</li>
+          <li>The food item has a label listing all ingredients</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 07</div>
+      <div class="policy-title">Fresh Produce</div>
+      <div class="policy-date">Approved August 9, 2017</div>
+      <div class="policy-body">
+        <p>Give out produce at each shift following "most perishable first." If produce won't last until the next shift, give out extra to each client.</p>
+        <ul>
+          <li><strong>Most perishable:</strong> Grapes, berries, tomatoes, cut vegetables & fruits, lettuce, spinach, kale, peppers, cucumbers, peaches, bananas</li>
+          <li><strong>Least perishable:</strong> Potatoes, carrots, onions, cabbage, broccoli, cauliflower, apples, oranges, squash</li>
+          <li>Trash bags are not safe for food per Feeding America/Philabundance guidelines</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 08</div>
+      <div class="policy-title">Frozen Food</div>
+      <div class="policy-date">Approved October 11, 2017</div>
+      <div class="policy-body">
+        <p>Frozen food past the 1-year expiration date shall not be put on the menu. Management Team documents the date all frozen food is received and monitors freezers to ensure timely use.</p>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 09</div>
+      <div class="policy-title">Non-Food Items</div>
+      <div class="policy-date">Approved October 11, 2017</div>
+      <div class="policy-body">
+        <p>The pantry can no longer accept or store non-food items, except paper products and personal items used for pantry operations. No clothing, toys, electronics, dishes, etc.</p>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 11</div>
+      <div class="policy-title">Shelving & Rotation of Food</div>
+      <div class="policy-date">Approved April 11, 2018</div>
+      <div class="policy-body">
+        <p>Rotation order: Federal food first, then State food, then donated food starting with the oldest date. Philabundance is considered donated food. Items are shelved in designated shopping areas with extra storage above or below.</p>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 12</div>
+      <div class="policy-title">Pre-Packed Bag / Out of Area Clients</div>
+      <div class="policy-date">Approved February 7, 2018 · Revised November 13, 2024</div>
+      <div class="policy-body">
+        <p>Out-of-area families will be advised of the nearest pantry and given 1 pre-packed bag (canned & dry goods) per family plus bread & desserts.</p>
+        <ul>
+          <li>Clients without proper ID get a pre-packed bag after the 3rd time</li>
+          <li>Out-of-town families are not given Federal/State food or meats</li>
+          <li>Must fill out all paperwork and be marked as referred to the proper pantry</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 13</div>
+      <div class="policy-title">Donated Eggs</div>
+      <div class="policy-date">Approved May 13, 2020</div>
+      <div class="policy-body">
+        <p>Donated eggs must be in dozen or dozen-and-a-half cartons. Cannot repack eggs. Always check with the management team or in the egg refrigerator before accepting.</p>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 14</div>
+      <div class="policy-title">Flu and Contagious Disease</div>
+      <div class="policy-date">Approved March 11, 2020 · Revised November 30, 2020</div>
+      <div class="policy-body">
+        <p>Protocols cover volunteer and client safety, cleaning and disinfecting, and procedures upon exposure to a confirmed case. See the full policy document for complete details.</p>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 20</div>
+      <div class="policy-title">Food Distribution Statement</div>
+      <div class="policy-date">Approved November 13, 2024</div>
+      <div class="policy-body">
+        <p>Any volunteer providing food must adhere to these guidelines:</p>
+        <ul>
+          <li>Client paperwork must be completed</li>
+          <li>Provide only what is on the menu that week, according to family size</li>
+          <li>Document the distribution on the sign-in sheet and client book</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- CONTACTS (PASSWORD PROTECTED) -->
+  <div class="section" id="contacts">
+    <div class="section-badge ref">Reference</div>
+    <h2>Contact lists</h2>
+
+    <div class="pw-gate" id="contactGate">
+      <h3>Protected information</h3>
+      <p>Enter the volunteer password to view contact details.</p>
+      <input type="password" class="pw-input" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+      <button class="pw-submit" onclick="checkPw()">Unlock</button>
+      <div class="pw-error" id="pwError">Incorrect password. Try again.</div>
+    </div>
+
+    <div class="protected-content" id="protectedContent">
+      <h3>Board Members</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Role</th><th>Name</th><th>Email</th><th>Phone</th></tr></thead>
+          <tbody>
+            <tr><td><strong>President</strong></td><td>Christie Gera</td><td><a href="mailto:christiegera@gmail.com">christiegera@gmail.com</a></td><td>267.377.5907</td></tr>
+            <tr><td><strong>Vice President</strong></td><td>Kelly Fraga</td><td><a href="mailto:kellylfraga@gmail.com">kellylfraga@gmail.com</a></td><td>267.679.2279</td></tr>
+            <tr><td><strong>Secretary</strong></td><td>Kathryn Benner</td><td><a href="mailto:qfp.kathrynb@gmail.com">qfp.kathrynb@gmail.com</a></td><td>215.892.6990</td></tr>
+            <tr><td><strong>Treasurer</strong></td><td>Kent Groff</td><td><a href="mailto:groff.kent@gmail.com">groff.kent@gmail.com</a></td><td>267.378.1538</td></tr>
+            <tr><td>Member at Large</td><td>Donna Berger</td><td><a href="mailto:deelee44@ptd.net">deelee44@ptd.net</a></td><td>610.248.3579</td></tr>
+            <tr><td>Member at Large</td><td>Ken Carr</td><td><a href="mailto:kencarr532@gmail.com">kencarr532@gmail.com</a></td><td>267.371.7035</td></tr>
+            <tr><td>Member at Large</td><td>Ed Angelo</td><td><a href="mailto:angelolaw@comcast.net">angelolaw@comcast.net</a></td><td>215.280.0563</td></tr>
+            <tr><td>Member at Large</td><td>Melissa Nevill</td><td><a href="mailto:mel2816@aol.com">mel2816@aol.com</a></td><td>610.442.3961</td></tr>
+            <tr><td>Member at Large</td><td>Michelle O'Donnell</td><td><a href="mailto:cheleybelly@yahoo.com">cheleybelly@yahoo.com</a></td><td>267-261-5044</td></tr>
+            <tr><td>Member at Large</td><td>Amy Stank</td><td><a href="mailto:amystank@gmail.com">amystank@gmail.com</a></td><td>267-446-4079</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Management Team</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th></tr></thead>
+          <tbody>
+            <tr><td>Donna Berger</td><td><a href="mailto:deelee44@ptd.net">deelee44@ptd.net</a></td><td>610.248.3579</td></tr>
+            <tr><td>Melissa Nevill</td><td><a href="mailto:mel2816@aol.com">mel2816@aol.com</a></td><td>610.442.3961</td></tr>
+            <tr><td>Carol Kidd</td><td><a href="mailto:retiredkidd@comcast.net">retiredkidd@comcast.net</a></td><td>215.272.4461</td></tr>
+            <tr><td>Leslie Kachmar</td><td><a href="mailto:leslie.kachmar@gmail.com">leslie.kachmar@gmail.com</a></td><td>215-237-5321</td></tr>
+            <tr><td>Dawn Fulton</td><td><a href="mailto:dawnlfulton1957@gmail.com">dawnlfulton1957@gmail.com</a></td><td>267-261-7753</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Coordinators</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Role</th><th>Name</th><th>Email</th><th>Phone</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Food Drive</strong></td><td>Melissa Nevill</td><td><a href="mailto:mel2816@aol.com">mel2816@aol.com</a></td><td>610.442.3961</td></tr>
+            <tr><td><strong>Volunteer</strong></td><td>Donna Serok</td><td><a href="mailto:serjnk@yahoo.com">serjnk@yahoo.com</a></td><td>215.313.4644</td></tr>
+            <tr><td><strong>Volunteer</strong></td><td>Amy Wright</td><td><a href="mailto:amywright0529@gmail.com">amywright0529@gmail.com</a></td><td>267.374.8454</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Volunteers Trained on Desk</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Phone</th></tr></thead>
+          <tbody>
+            <tr><td>Donna Berger</td><td>610.248.3579</td></tr>
+            <tr><td>Leticia Bincarosky</td><td>215.260.3082</td></tr>
+            <tr><td>Helen Compton</td><td>267.733.8238</td></tr>
+            <tr><td>Joanne Cramer</td><td>610.442.6465</td></tr>
+            <tr><td>Sue Dayton</td><td>267-377-7375</td></tr>
+            <tr><td>Sue Deily</td><td>215.872.9865</td></tr>
+            <tr><td>Christie Gera</td><td>267.377.5907</td></tr>
+            <tr><td>Lauren Hutzyluk</td><td>484-547-5248</td></tr>
+            <tr><td>Denise Mika</td><td>215-480-4101</td></tr>
+            <tr><td>Christine Muller</td><td>215-850-5662</td></tr>
+            <tr><td>Lynn Musselman</td><td>215-920-2601</td></tr>
+            <tr><td>Rachel Paradiso</td><td>201.316.3841</td></tr>
+            <tr><td>Brenda Roth</td><td>215-896-7106</td></tr>
+            <tr><td>Donna Serok</td><td>215-313-4644</td></tr>
+            <tr><td>Joyce Stauffer</td><td>215-292-9021</td></tr>
+            <tr><td>Virginia Steeb</td><td>267-875-8525</td></tr>
+            <tr><td>Kate Street</td><td>215-450-9419</td></tr>
+            <tr><td>Carrie VonMechow</td><td>215-802-9339</td></tr>
+            <tr><td>Candy Walck</td><td>267-377-7390</td></tr>
+            <tr><td>Barb Wambold</td><td>215-313-6211</td></tr>
+            <tr><td>Missy Weiand</td><td>215-285-1352</td></tr>
+            <tr><td>Krista Kunkle</td><td>267-347-0430</td></tr>
+            <tr><td>Sylvia Yoder</td><td>267-374-9904</td></tr>
+            <tr><td>Ellen Zaffaranno</td><td>215-833-2497</td></tr>
+            <tr><td>George Edwards</td><td>610-547-9501</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- SHIFT SCHEDULE -->
+  <div class="section" id="shifts">
+    <div class="section-badge ref">Reference</div>
+    <h2>Shift supervisor schedule</h2>
+
+    <div class="pw-gate" id="shiftGate">
+      <h3>Protected information</h3>
+      <p>Enter the volunteer password to view the schedule.</p>
+      <input type="password" class="pw-input" id="pwInput2" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw2()">
+      <button class="pw-submit" onclick="checkPw2()">Unlock</button>
+      <div class="pw-error" id="pwError2">Incorrect password. Try again.</div>
+    </div>
+
+    <div class="protected-content" id="protectedShifts">
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Day</th><th>Group</th><th>Supervisor</th><th>Backup</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Monday</strong></td><td>—</td><td>Joanne Kater<br>215-588-8274</td><td>Linda Baelz<br>215-219-5964</td></tr>
+            <tr><td><strong>1st Tuesday</strong></td><td>—</td><td>Kathryn Benner<br>215-892-6990</td><td>Carrie VonMechow<br>215-802-9339</td></tr>
+            <tr><td><strong>2nd Tuesday</strong></td><td>Moms & Muscles</td><td>Catie Landis<br>267-377-6275</td><td>—</td></tr>
+            <tr><td><strong>3rd Tuesday</strong></td><td>Rotary Club</td><td>Julie Haekler<br>267-374-2933</td><td>Ken Carr<br>267-371-7035</td></tr>
+            <tr><td><strong>4th Tuesday</strong></td><td>—</td><td>Kathryn Benner<br>215-892-6990</td><td>Carrie VonMechow<br>215-802-9339</td></tr>
+            <tr><td><strong>5th Tuesday</strong></td><td>—</td><td>Kelly Fraga<br>267-679-2279</td><td>Ken Carr<br>267-371-7035</td></tr>
+            <tr><td><strong>Wednesday</strong></td><td>—</td><td>Virginia Steeb<br>267-875-8525</td><td>—</td></tr>
+            <tr><td><strong>1st Thursday</strong></td><td>Men's Bible Study</td><td>Joanne Cramer<br>610-442-6465</td><td>George Zuck<br>267-377-7485</td></tr>
+            <tr><td><strong>2nd Thursday</strong></td><td>—</td><td>Sue Dayton<br>267-377-7375</td><td>—</td></tr>
+            <tr><td><strong>3rd Thursday</strong></td><td>Triple C Nursery</td><td>Joanne Cramer<br>610-442-6465</td><td>Ken Carr<br>267-371-7035</td></tr>
+            <tr><td><strong>4th Thursday</strong></td><td>Grace Bible Fellowship</td><td>Daryl Lewis</td><td>John Hickson<br>610-737-9662</td></tr>
+            <tr><td><strong>5th Thursday</strong></td><td>East Swamp Life Group</td><td>Joanne Cramer<br>610-442-6465</td><td>Ken Carr<br>267-371-7035</td></tr>
+            <tr><td><strong>Friday</strong></td><td>—</td><td>Kate Street<br>215-450-9414</td><td>—</td></tr>
+            <tr><td><strong>Evening Subs</strong></td><td>—</td><td>Ken Carr<br>267-371-7035</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- GAH -->
+  <div class="section" id="gah">
+    <div class="section-badge ref">Reference</div>
+    <h2>GAH drivers, helpers & freezer crew</h2>
+
+    <div class="pw-gate" id="gahGate">
+      <h3>Protected information</h3>
+      <p>Enter the volunteer password to view details.</p>
+      <input type="password" class="pw-input" id="pwInput3" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw3()">
+      <button class="pw-submit" onclick="checkPw3()">Unlock</button>
+      <div class="pw-error" id="pwError3">Incorrect password. Try again.</div>
+    </div>
+
+    <div class="protected-content" id="protectedGah">
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Day</th><th>GAH Drivers</th><th>GAH Helpers</th><th>Freezer</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Monday</strong></td><td>Giant Mill St – Jim Smith & Ed Angelo<br>Giant @ Lowes – Jim Smith & Ed Angelo<br>Target – Todd Benner<br>Walmart – Todd Benner</td><td>Greg Shannon<br>267-897-5030</td><td>—</td></tr>
+            <tr><td><strong>Tuesday</strong></td><td>Walmart – Butch Froelich<br>Grocery Outlet – Butch Froelich<br>Both Giants – Ed Angelo</td><td>Dawn Fulton<br>Dave Ellis<br>Kim Landon</td><td>—</td></tr>
+            <tr><td><strong>Wednesday</strong></td><td>Both Giants – Ed Angelo (temp)</td><td>—</td><td>—</td></tr>
+            <tr><td><strong>Thursday</strong></td><td>Walmart – Butch Froelich & Clarke Fulton<br>Target – Ed Angelo & Clarke Fulton<br>Both Giants – Claude & Donna Dencler</td><td>Greg Shannon<br>Dawn Fulton<br>Dave Ellis<br>Dave Dammer<br>Leslie Karcher<br>Margie Udzinski</td><td>Kent Groff<br>267-378-1538</td></tr>
+            <tr><td><strong>Friday</strong></td><td>Target – Russell Martin</td><td>Paul Yelicanin<br>Ed Angelo</td><td>—</td></tr>
+            <tr><td><strong>Saturday</strong></td><td>—</td><td>—</td><td>Kenny Kucera<br>267-772-9447</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /handbook-wrap -->
+
+<script>
+// Password check — change this hash to set a new password
+// Default password: "qfp2026" — to change, update the hash below
+// Generate a new hash at: just use a simple comparison for now
+var PW = 'qfp2026';
+
+function checkPw() {
+  if (document.getElementById('pwInput').value === PW) {
+    document.getElementById('contactGate').style.display = 'none';
+    document.getElementById('protectedContent').style.display = 'block';
+    // Auto-unlock the other sections too
+    document.getElementById('shiftGate').style.display = 'none';
+    document.getElementById('protectedShifts').style.display = 'block';
+    document.getElementById('gahGate').style.display = 'none';
+    document.getElementById('protectedGah').style.display = 'block';
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+  }
+}
+function checkPw2() {
+  if (document.getElementById('pwInput2').value === PW) {
+    document.getElementById('shiftGate').style.display = 'none';
+    document.getElementById('protectedShifts').style.display = 'block';
+    document.getElementById('contactGate').style.display = 'none';
+    document.getElementById('protectedContent').style.display = 'block';
+    document.getElementById('gahGate').style.display = 'none';
+    document.getElementById('protectedGah').style.display = 'block';
+  } else {
+    document.getElementById('pwError2').style.display = 'block';
+  }
+}
+function checkPw3() {
+  if (document.getElementById('pwInput3').value === PW) {
+    document.getElementById('gahGate').style.display = 'none';
+    document.getElementById('protectedGah').style.display = 'block';
+    document.getElementById('contactGate').style.display = 'none';
+    document.getElementById('protectedContent').style.display = 'block';
+    document.getElementById('shiftGate').style.display = 'none';
+    document.getElementById('protectedShifts').style.display = 'block';
+  } else {
+    document.getElementById('pwError3').style.display = 'block';
+  }
+}
+
+// Sidebar active state
+function closeMobile() {
+  document.querySelector('.sidebar').classList.remove('mobile-open');
+}
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      var id = entry.target.id;
+      document.querySelectorAll('.sidebar a').forEach(function(a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+document.querySelectorAll('.section').forEach(function(s) { observer.observe(s); });
+</script>
+
+</body>
+</html>
