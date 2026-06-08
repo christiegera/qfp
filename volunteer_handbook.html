@@ -1,7 +1,35 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-2Z6B6D1YEX');
+
+  // Track outbound link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.href || '';
+
+    if (href.includes('paypal.com')) {
+      gtag('event', 'donate_click', { method: 'paypal' });
+    } else if (href.includes('venmo.com')) {
+      gtag('event', 'donate_click', { method: 'venmo' });
+    } else if (href.includes('amazon.com')) {
+      gtag('event', 'wishlist_click');
+    } else if (href.includes('forms.gle')) {
+      gtag('event', 'volunteer_apply_click');
+    } else if (href.startsWith('mailto:')) {
+      gtag('event', 'email_click');
+    }
+  });
+</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Volunteer Handbook · Quakertown Food Pantry</title>
