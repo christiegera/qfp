@@ -1,7 +1,35 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-2Z6B6D1YEX');
+
+  // Track outbound link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.href || '';
+
+    if (href.includes('paypal.com')) {
+      gtag('event', 'donate_click', { method: 'paypal' });
+    } else if (href.includes('venmo.com')) {
+      gtag('event', 'donate_click', { method: 'venmo' });
+    } else if (href.includes('amazon.com')) {
+      gtag('event', 'wishlist_click');
+    } else if (href.includes('forms.gle')) {
+      gtag('event', 'volunteer_apply_click');
+    } else if (href.startsWith('mailto:')) {
+      gtag('event', 'email_click');
+    }
+  });
+</script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -245,6 +273,16 @@
       <div class="card-text">
         <h3>Full Volunteer Handbook</h3>
         <p>Mission, history, cleaning duties, contacts & more</p>
+      </div>
+    </a>
+
+    <a href="orientation.html" class="portal-card green full-width">
+      <div class="card-icon green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Orientation Handbook</h3>
+        <p>New volunteer orientation &middot; print-friendly</p>
       </div>
     </a>
 
