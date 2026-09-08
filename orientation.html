@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orientation Handbook · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+  <style>
+    :root {
+      --ink: #1A1A1A;
+      --cream: #F5F3ED;
+      --moss: #1B8A2A;
+      --moss-light: #2DA03E;
+      --moss-pale: #DCFADE;
+      --terracotta: #D4522A;
+      --terracotta-light: #FDE8E0;
+      --amber: #E09800;
+      --amber-pale: #FFF4CC;
+      --slate: #2B7CB5;
+      --slate-pale: #DBEDF9;
+      --warm-gray: #6B6560;
+      --light-gray: #B5B0A8;
+      --border: #E5E2DB;
+      --radius: 12px;
+      --radius-lg: 20px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .doc {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 40px 32px 100px;
+    }
+
+    /* PRINT BAR */
+    .print-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 0;
+      margin-bottom: 8px;
+    }
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--moss);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      box-shadow: 0 2px 10px rgba(27,138,42,0.25);
+    }
+    .print-btn:hover { background: var(--moss-light); }
+
+    /* COVER */
+    .cover {
+      background: linear-gradient(135deg, #E8751A 0%, #C75B39 100%);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px 44px;
+      text-align: center;
+      color: white;
+      margin-bottom: 32px;
+    }
+    .cover-logo {
+      display: block;
+      margin: 0 auto 20px;
+      height: 110px;
+      width: auto;
+    }
+    .cover .eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 8px;
+    }
+    .cover h1 {
+      font-size: 34px;
+      font-weight: 750;
+      letter-spacing: -1.2px;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    .cover .addr {
+      font-size: 14px;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.6;
+    }
+    .cover .updated {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 14px;
+    }
+
+    /* CONFIDENTIALITY BANNER */
+    .confidential {
+      background: white;
+      border-radius: var(--radius);
+      border-left: 5px solid var(--terracotta);
+      padding: 24px 28px;
+      margin-bottom: 40px;
+    }
+    .confidential h3 {
+      font-size: 18px;
+      font-weight: 750;
+      color: var(--terracotta);
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+    .confidential p {
+      font-size: 14px;
+      color: var(--warm-gray);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+    .confidential p:last-child { margin-bottom: 0; }
+    .confidential strong { color: var(--ink); }
+
+    /* SECTIONS */
+    .section { margin-bottom: 44px; }
+    .section-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-badge.start { background: var(--terracotta-light); color: var(--terracotta); }
+    .section-badge.ops { background: var(--moss-pale); color: var(--moss); }
+    .section-badge.policy { background: var(--amber-pale); color: var(--amber); }
+    .section-badge.ref { background: var(--slate-pale); color: var(--slate); }
+
+    .section h2 {
+      font-size: 30px;
+      font-weight: 750;
+      letter-spacing: -1.1px;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .section h3 {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin: 26px 0 10px;
+    }
+    .section h3:first-of-type { margin-top: 18px; }
+    .section h4 { font-size: 16px; font-weight: 700; margin: 18px 0 6px; }
+    .section p {
+      font-size: 15px;
+      color: var(--warm-gray);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .section ul, .section ol { margin: 8px 0 16px 20px; }
+    .section li {
+      font-size: 15px;
+      color: var(--warm-gray);
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+    .section li strong { color: var(--ink); }
+
+    /* CARDS */
+    .card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 24px 26px;
+      margin-bottom: 16px;
+    }
+    .card h4 { font-size: 16px; font-weight: 700; margin: 0 0 8px; color: var(--ink); }
+    .card h4:not(:first-child) { margin-top: 16px; }
+
+    /* TABLE */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0 4px;
+      font-size: 14px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      background: var(--moss-pale);
+      color: var(--moss);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--moss);
+    }
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--cream);
+      color: var(--warm-gray);
+      vertical-align: top;
+    }
+
+    /* CALLOUT */
+    .callout {
+      padding: 16px 20px;
+      background: var(--moss-pale);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--moss);
+      line-height: 1.5;
+      margin: 16px 0;
+    }
+    .callout.amber { background: var(--amber-pale); color: var(--amber); }
+    .callout.terra { background: var(--terracotta-light); color: var(--terracotta); }
+
+    /* POLICY */
+    .policy {
+      background: white;
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--amber);
+    }
+    .policy-num { font-size: 12px; font-weight: 700; color: var(--amber); letter-spacing: 0.5px; margin-bottom: 3px; }
+    .policy-title { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+    .policy-date { font-size: 12px; color: var(--light-gray); margin-bottom: 8px; }
+    .policy p, .policy li { font-size: 14px; color: var(--warm-gray); line-height: 1.6; }
+    .policy ul { margin: 6px 0 4px 18px; }
+
+    /* DIVIDER */
+    hr {
+      border: none;
+      height: 3px;
+      margin: 40px 0;
+      border-radius: 2px;
+      background: var(--border);
+    }
+    hr.green { background: linear-gradient(90deg, var(--moss), var(--moss-pale)); }
+    hr.amber { background: linear-gradient(90deg, var(--amber), var(--amber-pale)); }
+    hr.blue { background: linear-gradient(90deg, var(--slate), var(--slate-pale)); }
+    hr.terra { background: linear-gradient(90deg, var(--terracotta), var(--terracotta-light)); }
+
+    /* FOOTER */
+    .doc-footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--light-gray);
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .doc { padding: 20px 18px 80px; }
+      .cover { padding: 36px 24px 32px; }
+      .cover h1 { font-size: 27px; }
+      .section h2 { font-size: 25px; }
+    }
+
+    /* PRINT */
+    @media print {
+      .print-bar { display: none !important; }
+      body { background: white; font-size: 12px; }
+      .doc { padding: 0; max-width: none; }
+      .cover {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        page-break-after: avoid;
+      }
+      .section { page-break-inside: avoid; margin-bottom: 26px; }
+      .policy, .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+      .section h2 { font-size: 21px; }
+      .section h3 { font-size: 16px; }
+      hr { margin: 26px 0; }
+      .data-table th, .callout, .cover, .section-badge {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc">
+
+  <div class="print-bar">
+    <button class="print-btn" onclick="window.print()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+  </div>
+
+  <!-- COVER -->
+  <div class="cover">
+    <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="cover-logo">
+    <div class="eyebrow">Quakertown Food Pantry</div>
+    <h1>Orientation Handbook</h1>
+    <div class="addr">
+      101B N. Third Street · P.O. Box 278 · Quakertown, PA 18951<br>
+      215-536-0240 · quakertownfoodpantry@gmail.com
+    </div>
+    <div class="updated">Updated July 17, 2026</div>
+  </div>
+
+  <!-- CONFIDENTIALITY -->
+  <div class="confidential">
+    <h3>To all volunteers: client confidentiality is vital</h3>
+    <p>Please do not divulge, under any circumstances, the identity of any client coming to the pantry. Do not access or discuss client information with anyone.</p>
+    <p>Client information books store important, confidential information. Other than the desk person or Shift Supervisor accessing that information for Food Pantry operational purposes, <strong>no one</strong> should be reading or looking up client information.</p>
+    <p>Anyone asking for information about another client should be directed to the <strong>Shift Supervisor</strong>, who will take appropriate measures.</p>
+  </div>
+
+  <!-- MISSION -->
+  <div class="section" id="mission">
+    <div class="section-badge start">Mission &amp; Overview</div>
+    <h2>Our mission</h2>
+    <p>To provide emergency food assistance to those in need in our community.</p>
+
+    <h3>Community</h3>
+    <p>Our community is primarily those living in the Quakertown School District area and other portions of Upper Bucks County. Food is distributed to those who request help — we provide a supplemental food supply intended to supplement a household's grocery budget.</p>
+
+    <h3>Hours of operation</h3>
+    <div class="card">
+      <table class="data-table">
+        <tr><td><strong>Monday</strong></td><td>10:00 AM – 1:00 PM</td></tr>
+        <tr><td><strong>Tuesday</strong></td><td>6:00 PM – 8:00 PM</td></tr>
+        <tr><td><strong>Wednesday</strong></td><td>10:00 AM – 1:00 PM</td></tr>
+        <tr><td><strong>Thursday</strong></td><td>6:00 PM – 8:00 PM</td></tr>
+        <tr><td><strong>Friday</strong></td><td>10:00 AM – 1:00 PM</td></tr>
+        <tr><td><strong>Weekends</strong></td><td>Closed</td></tr>
+      </table>
+    </div>
+
+    <h3>Sources for food</h3>
+    <ul>
+      <li><strong>TEFAP</strong> — The Emergency Food Assistance Program (federal government)</li>
+      <li><strong>SFPP</strong> — State Food Purchase Program (state grant). Both government programs come through the Bucks County Opportunity Council (BCOC).</li>
+      <li>Food purchased from <strong>Philabundance</strong> and area grocery stores</li>
+      <li>Regular contributions of baked goods and other items from local grocery stores</li>
+      <li>Food donations collected in local schools, businesses, churches, groups, families, and individuals</li>
+      <li>Funds received from private donors, churches, and area businesses</li>
+    </ul>
+
+    <div class="callout">The pantry is run solely by volunteers — there are no paid positions.</div>
+  </div>
+
+  <hr class="terra">
+
+  <!-- FACTS -->
+  <div class="section" id="facts">
+    <div class="section-badge start">Getting Started</div>
+    <h2>Pantry facts</h2>
+    <ul>
+      <li>We give out about <strong>11,000 lbs of food each week</strong> — much more at the holidays</li>
+      <li>Families range from <strong>1 person up to 14</strong></li>
+      <li>We generally serve <strong>30 to 50 families a day</strong> (more at the holidays)</li>
+      <li>The Management Team creates a weekly menu that strives to provide <strong>3 meals a day for 3 days</strong> when donations permit</li>
+      <li>The size of the family determines the amount of food given</li>
+    </ul>
+
+    <h3>Serving clients</h3>
+    <p>Clients must complete a government affidavit of need once a year, and provide a current ID showing they live in the Quakertown School District area each time they visit the pantry.</p>
+  </div>
+
+  <hr class="terra">
+
+  <!-- HISTORY -->
+  <div class="section" id="history">
+    <div class="section-badge start">Our Story</div>
+    <h2>Pantry history</h2>
+    <p>In the 1980s, the Bucks County Opportunity Council (BCOC) kept a small supply of food in their offices for clients in immediate need. BCOC approached area churches for help meeting the needs of the poor, and the churches of the Quakertown Ministerium — 12 houses of worship — agreed to support the effort.</p>
+    <p>In 2004, the Ministerium agreed to take over running the food pantry. It was formally named the Quakertown Food Pantry, and hours expanded greatly — from one day a month to five days a week.</p>
+    <p>In 2008, the pantry became a 501(c)(3), independent from the Ministerium, with every board member taking an active role in operations. In 2010, the pantry moved to its current home — the maintenance wood shop offered by the Quakertown Borough.</p>
+    <p>Today we pick up food most days of the week from the two Giant supermarkets, Walmart, and Target. Many businesses, schools, churches, organizations, and individuals donate food and funds, and we receive annual federal and state grants. QFP is a proud member of Philabundance and BCOC.</p>
+  </div>
+
+  <hr class="blue">
+
+  <!-- CIVIL RIGHTS -->
+  <div class="section" id="civil-rights">
+    <div class="section-badge ref">Annual Training Required</div>
+    <h2>A quick guide to civil rights</h2>
+    <p>U.S. Department of Agriculture, Food and Nutrition Service. To ensure equal access to our programs, participating entities must:</p>
+
+    <div class="card">
+      <h4>1. Let people know how to apply and how to file a complaint</h4>
+      <ul>
+        <li>Place the "And Justice For All" poster where it can easily be seen</li>
+        <li>Use the Nondiscrimination Statement on all materials and websites that mention FNS Programs</li>
+        <li>Notify community groups that the program is available; provide information when requested</li>
+        <li>Schedule hours of operation according to the needs of the community</li>
+      </ul>
+      <h4>2. Identify and accommodate language needs</h4>
+      <ul>
+        <li>Find out what languages are spoken in your service area</li>
+        <li>Make sure everyone knows what to do when a Limited English Proficient client needs help</li>
+        <li>Provide translated material where many people speak another language; use certified interpreters when needed</li>
+        <li>Do not ask clients to bring their own interpreters</li>
+      </ul>
+      <h4>3. Accommodate persons with disabilities</h4>
+      <ul>
+        <li>Allow persons with disabilities to use predesignated proxies to pick up food packages</li>
+        <li>Provide clients with hearing and vision impairments the accommodations they need</li>
+      </ul>
+      <h4>4. Data on race and ethnicity (CSFP)</h4>
+      <ul>
+        <li>Explain that collecting the data is required by law, will not affect eligibility, and helps prevent discrimination</li>
+        <li>You must ask clients to self-identify; clients may identify more than one race</li>
+      </ul>
+      <h4>5. If a client reports being treated differently</h4>
+      <ul>
+        <li>Try to resolve issues as quickly as possible</li>
+        <li>Refer the client to the Civil Rights contact or the address on the poster</li>
+        <li>Offer the client a civil rights complaint form</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="green">
+
+  <!-- DUTIES -->
+  <div class="section" id="duties">
+    <div class="section-badge ops">Operations</div>
+    <h2>Pantry duties &amp; positions</h2>
+
+    <h3>Board</h3>
+    <ul>
+      <li>Policy issues and financial expenditures (checks signed by President &amp; VP)</li>
+      <li>Informational talks and pantry tours as requested</li>
+      <li>Client issues; handles emergencies within the pantry as they arise</li>
+      <li>Conducts board meetings (President); updates to webpage/Facebook</li>
+      <li>Sends monthly email to Shift Supervisors on board decisions and schedule changes, with input from the Management Team</li>
+      <li>Answers donor questions about how donations are used</li>
+    </ul>
+
+    <h3>Treasurer</h3>
+    <ul><li>Financial donations, paying bills, bookkeeping, and monthly reporting</li></ul>
+
+    <h3>Secretary</h3>
+    <ul>
+      <li>Board minutes and thank-you letters to donors</li>
+      <li>Sets up the schedule for pantry holidays and posts signs when necessary</li>
+      <li>Maintains list of board members, their positions, and phone numbers</li>
+    </ul>
+
+    <h3>Food Drive Coordinator</h3>
+    <ul>
+      <li>Liaison for food drives; coordinates scheduling and volunteers during drives</li>
+      <li>Date checking and shelving of large donations</li>
+    </ul>
+
+    <h3>Communication Team</h3>
+    <ul><li>Communications with the community, advertising, event coordination, Facebook, and the pantry webpage</li></ul>
+
+    <h3>Office Team</h3>
+    <ul>
+      <li>Retrieves phone messages; enters daily statistics on client visits and volunteer hours</li>
+      <li>Enters and files pantry registration forms; completes Philabundance weekly reports</li>
+      <li>Maintains computer and printer; monitors and procures office supplies</li>
+      <li>Maintains the daily summary worksheet and monthly BCOC reporting</li>
+      <li>Prints and creates front-desk forms and signs; maintains outside bulletin boards</li>
+    </ul>
+
+    <h3>Volunteer Coordinator</h3>
+    <ul>
+      <li>Welcomes new volunteers (orientation); answers emails concerning volunteering</li>
+      <li>Sets up training with the team lead; sets up volunteer schedules and shifts</li>
+      <li>Maintains shift supervisor contact list and volunteer records; handles volunteer issues</li>
+    </ul>
+
+    <h3>Management Team</h3>
+    <ul>
+      <li>Day-to-day operations: food delivery/pickups, stocking, menus, freezer, ordering &amp; buying food</li>
+      <li>Pantry cleaning; BCOC and Philabundance liaison; grant coordination</li>
+      <li>Communicates the menu to packers as needed</li>
+      <li>Maintains schedules for packing client bags and bonus bags</li>
+      <li>Maintains schedules for GAH drivers and helpers</li>
+    </ul>
+  </div>
+
+  <hr class="green">
+
+  <!-- CALLING OUT -->
+  <div class="section" id="calling-out">
+    <div class="section-badge ops">Operations</div>
+    <h2>Calling out / unable to volunteer</h2>
+    <ul>
+      <li>A <strong>minimum 2-hour notice</strong> is required when calling out</li>
+      <li>Contact your <strong>Shift Supervisor</strong> by text or phone call</li>
+      <li>You are responsible for maintaining the contact information of your shift supervisor(s)</li>
+    </ul>
+  </div>
+
+  <hr class="green">
+
+  <!-- HOLIDAYS -->
+  <div class="section" id="holidays">
+    <div class="section-badge ops">Schedule</div>
+    <h2>Holidays &amp; inclement weather</h2>
+
+    <h3>Inclement weather</h3>
+    <p>QFP follows the Quakertown School District closing schedule — if the schools are closed, the pantry is closed. This is posted on the Facebook page.</p>
+    <ul>
+      <li>Volunteers use their discretion about volunteering at their shift</li>
+      <li>The Shift Supervisor on duty makes the call about road and travel conditions — the safety of our volunteers and clients is always the first priority</li>
+      <li>For all shifts, contact your Shift Supervisor ASAP about whether you plan to be at the pantry, so they can determine if there are enough volunteers and if conditions are safe to open</li>
+      <li>Reach out to the Management Team or a Board Member if you are uncertain</li>
+    </ul>
+
+    <h3>Holidays for 2026</h3>
+    <div class="card">
+      <table class="data-table">
+        <tr><td><strong>New Year's Day</strong></td><td>Thursday, January 1</td></tr>
+        <tr><td><strong>Good Friday</strong></td><td>April 3</td></tr>
+        <tr><td><strong>Memorial Day</strong></td><td>Monday, May 25</td></tr>
+        <tr><td><strong>Independence Day</strong></td><td>Friday, July 3</td></tr>
+        <tr><td><strong>Labor Day</strong></td><td>Monday, September 7</td></tr>
+        <tr><td><strong>Thanksgiving</strong></td><td>Thursday &amp; Friday, November 26–27</td></tr>
+        <tr><td><strong>Christmas</strong></td><td>Thursday &amp; Friday, December 24–25</td></tr>
+        <tr><td><strong>New Year's Eve</strong></td><td>Thursday, December 31</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr class="amber">
+
+  <!-- POLICIES -->
+  <div class="section" id="policies">
+    <div class="section-badge policy">Board-Approved</div>
+    <h2>Policy statements &amp; approval dates</h2>
+
+    <div class="policy">
+      <div class="policy-num">Policy 01</div>
+      <div class="policy-title">Wish List</div>
+      <div class="policy-date">Approved July 13, 2017 · Revised 2/11/2021 · Revised 11/14/2024</div>
+      <p>Menu items (cans, packaged goods, small-quantity items) will only be added to the Wish List by the Management Team. Dairy or refrigerated items, except cheese, will be added by Shift Supervisors.</p>
+      <ul>
+        <li>Menu items stay on the Wish List until we run out or the Management Team removes them (no member removes an item without consulting 2 others)</li>
+        <li>Dairy/refrigerated items should be moved out quickly; the Shift Supervisor checks for these at the beginning of each shift</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 02</div>
+      <div class="policy-title">Out of Date Items</div>
+      <div class="policy-date">Approved July 13, 2017 · Revised 11/14/2024</div>
+      <p>Following Feeding America/Philabundance guidelines, any food past the 1-year expiration date shall not be put on the menu.</p>
+      <ul>
+        <li>Items with questionable dates go in a designated area (one for canned/boxed, one for frozen) for Management Team review at the weekly meeting</li>
+        <li>Large quantities with questionable dates go on the table outside the kitchen with a note asking the Management Team to review</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 03</div>
+      <div class="policy-title">Give Away</div>
+      <div class="policy-date">Approved July 13, 2017 · Revised 11/14/2024</div>
+      <p>Canned/boxed items past 1 year from expiration, dented cans, and overflow (produce, bread, candy, etc.) go in the large cart for clients to take at their own discretion.</p>
+      <ul>
+        <li>Shift Supervisors or the Management Team place odd items in the large cart</li>
+        <li>During summer/hot weather, shifts throw away any items remaining in the cart at the end of their shift</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 04</div>
+      <div class="policy-title">Repacking of Food Items</div>
+      <div class="policy-date">Approved 5-0</div>
+      <p>To comply with Philabundance and Serv-Safe guidelines, the pantry will no longer repack any food items except:</p>
+      <ul>
+        <li>Individually wrapped tea bags</li>
+        <li>Individually wrapped sugar &amp; sweetener</li>
+        <li>Keurig K cups</li>
+        <li>Loose produce</li>
+        <li>Dog &amp; cat food</li>
+      </ul>
+      <p>No loose bread items may be repacked.</p>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 05</div>
+      <div class="policy-title">Homemade Food</div>
+      <div class="policy-date">Approved August 9, 2017</div>
+      <p>Any homemade canned, frozen, or prepared food products cannot be accepted under any circumstances. The pantry only accepts commercially canned, frozen, or prepared food items, and a copy of the organization's current Serv-Safe Certification must be on file.</p>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 06</div>
+      <div class="policy-title">Organizational Prepared Food</div>
+      <div class="policy-date">Board approved 5-0 · August 9, 2017</div>
+      <p>Food prepared by organizations (frozen or prepared) is accepted only if:</p>
+      <ul>
+        <li>A copy of the organization's current Serv-Safe Certification is on file at the pantry</li>
+        <li>The food item has a label listing all ingredients (for Philabundance compliance)</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 07</div>
+      <div class="policy-title">Fresh Produce</div>
+      <div class="policy-date">Approved August 9, 2017</div>
+      <p>Produce is given out at each shift following "most perishable first." If the shift supervisor judges produce won't last until the next shift, give extra to each client.</p>
+      <ul>
+        <li><strong>Most perishable:</strong> grapes, berries, tomatoes, cut vegetables &amp; fruits, lettuce, spinach, kale, peppers, cucumbers, peaches, bananas</li>
+        <li><strong>Least perishable (whole, not cut):</strong> potatoes, carrots, onions, cabbage, broccoli, cauliflower, apples, oranges, squash</li>
+        <li>Trash bags are not safe for food and may affect a client's health</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 08</div>
+      <div class="policy-title">Frozen Food</div>
+      <div class="policy-date">Approved October 11, 2017</div>
+      <p>Following Feeding America/Philabundance guidelines, any frozen food past the 1-year expiration date shall not be put on the menu.</p>
+      <ul>
+        <li>The Management Team documents the date all frozen food is received and places like items in the same bin</li>
+        <li>The Management Team monitors the freezers to ensure frozen food is put on the menu in a timely manner and before the 1-year expiration date</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 09</div>
+      <div class="policy-title">Shelving &amp; Rotation of Food</div>
+      <div class="policy-date">Approved by the Board April 11, 2018</div>
+      <p>Rotation order: Federal food is given out first, then State food, then donated food starting with the oldest date (Philabundance is considered donated food). Items are shelved in designated shopping areas with extra storage above or below.</p>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 10</div>
+      <div class="policy-title">Out of Area Clients</div>
+      <div class="policy-date">Approved February 7, 2018 · Clarification Oct 25, 2018 · Revised Nov 13, 2024</div>
+      <p>Families outside QFP's service area (Upper Bucks County and the Quakertown School District) are advised of the nearest pantry. Only 1 pre-packed bag (canned &amp; dry good) per family — not per person — plus bread &amp; desserts.</p>
+      <ul>
+        <li>Any client without proper ID is given a pre-packed bag after the 3rd time</li>
+        <li>In an emergency, pre-packed bags may be given</li>
+        <li>Out-of-town families may also receive bread and dessert if available — no meat is given</li>
+        <li>They must fill out all paperwork as a new client and be marked as referred to the proper pantry</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 11</div>
+      <div class="policy-title">Donated Eggs</div>
+      <div class="policy-date">Approved by the Board May 13, 2020</div>
+      <p>Donated eggs must be in dozen or dozen-and-a-half cartons. Per Philabundance and Serv-Safe guidelines the pantry cannot repack any food items (see Policy 04). Always check with the Management Team or in the egg refrigerator before accepting donated eggs.</p>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 12</div>
+      <div class="policy-title">Flu and Contagious Disease</div>
+      <div class="policy-date">Approved March 11, 2020 · Revised November 30, 2020</div>
+      <p>This policy protects volunteers and clients during a pandemic, especially those at high risk. Protocols cover: (A) volunteer and client safety, (B) cleaning and disinfecting, and (C) procedures upon discovery that the pantry has been exposed to a probable or confirmed case. See the full policy for complete details.</p>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 13</div>
+      <div class="policy-title">Volunteer Training</div>
+      <div class="policy-date">Approved November 11, 2015 · Amended May 4, 2016</div>
+      <p>Anyone who comes into the pantry to volunteer must go through a training program. A student needing only a few hours for a school service project will receive on-the-job training, be paired with a trained volunteer, and will not work alone.</p>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 14</div>
+      <div class="policy-title">Volunteer Age Requirements</div>
+      <div class="policy-date">Approved August 3, 2016</div>
+      <ul>
+        <li>Volunteers 15 and under must be accompanied by a parent or guardian</li>
+        <li>Volunteers 16 and above can work without a parent/guardian</li>
+        <li>Volunteers must be 21 to work at the desk</li>
+        <li>Youth groups must have at least 2 adult supervisors from that group present</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 15</div>
+      <div class="policy-title">Pantry Clients as Volunteers</div>
+      <div class="policy-date">Approved October 8, 2019</div>
+      <p>The pantry will only accept volunteers who are not currently clients, due to conflicts and confidentiality risks.</p>
+      <ul>
+        <li>Community members who donate food expect it to go to clients, not volunteers</li>
+        <li>If a volunteer needs food, they must contact the board and may need to temporarily suspend volunteering and sign up as a client</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 16</div>
+      <div class="policy-title">Court Ordered Service Hours</div>
+      <div class="policy-date">Approved May 4, 2016 · Amended April 10, 2019</div>
+      <ul>
+        <li>Anyone with court-ordered community service will not be accepted as a volunteer</li>
+        <li>Juveniles referred to the Youth Aid Panel are accepted — applicants must email the pantry to be considered; all juveniles under 16 must be accompanied by a parent</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 17</div>
+      <div class="policy-title">Meetings by Outside Groups</div>
+      <div class="policy-date">Approved February 13, 2019</div>
+      <p>Use of the pantry for meetings is limited to groups or individuals affiliated with the pantry. Unless approved by the Board, outside groups may not use the premises.</p>
+      <ul>
+        <li>Concerns include client/volunteer confidentiality, liability, and use of utilities</li>
+        <li>Groups like the Crop Walk and Lion's Club are grandfathered in</li>
+        <li>Affiliated groups (Quakertown Outreach — Joanne's group, Code Blue) may continue</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 18</div>
+      <div class="policy-title">Food Distribution</div>
+      <div class="policy-date">Approved by the Board November 13, 2024</div>
+      <p>The pantry is a source of food for all those in need who approach us. Any volunteer providing food must:</p>
+      <ul>
+        <li>Ensure client paperwork is completed</li>
+        <li>Provide only what is on the menu that week, according to family size</li>
+        <li>Document the distribution on the sign-in sheet and client book</li>
+      </ul>
+    </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 19</div>
+      <div class="policy-title">Meat Portion Size</div>
+      <div class="policy-date">Approved at Board Meeting October 8, 2025</div>
+      <p>Weekly menus are based on estimated portion sizes relative to household size. Meats are placed in bins marked for households of 1–2 and 3+. Additional meats are in the rolling cart in the walk-in freezer.</p>
+      <ul>
+        <li><strong>Bone-in meat:</strong> ½ lb (8 oz) per person</li>
+        <li><strong>Boneless/ground meat:</strong> ⅓ lb (6 oz) per person</li>
+        <li><strong>Individual cuts</strong> (small pork chops, chicken thighs, small steaks): 1 per person. Larger cuts (extra-large chicken breasts, large/thick steaks): serve 2 people per cut.</li>
+        <li><strong>Frozen meat-based meals</strong> (Banquet, Lean Cuisine, etc.): households of 1–2 people</li>
+        <li><strong>Fish sticks:</strong> 1 box serves 1–2 people</li>
+        <li><strong>Fish fillets</strong> (10 per box): 1 box serves 3–5 people</li>
+        <li><strong>Small whole chickens:</strong> serve 2–3 people · <strong>Turkeys:</strong> serve 4+ people</li>
+        <li><strong>Hot dogs:</strong> 2 per person — 1–4 people: 1 pack of 8; 5–8 people: 2 packs; 9+ people: 3 packs</li>
+      </ul>
+      <div class="callout terra">Do not give several small portions to one large household.</div>
+    </div>
+  </div>
+
+  <hr class="blue">
+
+  <!-- CONTACTS -->
+  <div class="section" id="contacts">
+    <div class="section-badge ref">Reference</div>
+    <h2>Contact lists</h2>
+    <p>See the attachments for the current printout of Board Members and Shift Supervisors contact information. This information is always posted in the lobby of the pantry.</p>
+    <div class="callout">Volunteer contact lists, the shift supervisor schedule, and GAH driver assignments are kept in the password-protected Volunteer Handbook on our website.</div>
+  </div>
+
+  <div class="doc-footer">
+    Quakertown Food Pantry · 101B N. Third Street, Quakertown, PA 18951 · quakertownfoodpantry@gmail.com<br>
+    Reach out to those in need.
+  </div>
+
+</div>
+
+</body>
+</html>
