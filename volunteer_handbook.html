@@ -329,6 +329,7 @@
     .data-table tr:hover td { background: rgba(232,240,230,0.3); }
     .data-table a { color: var(--moss); text-decoration: none; font-weight: 500; }
     .data-table a:hover { text-decoration: underline; }
+    .data-table .muted { color: var(--light-gray); font-size: 12px; }
 
     /* CALLOUT */
     .callout {
@@ -990,7 +991,7 @@
     <h2>Calling out</h2>
     <p>If you can't make your scheduled shift, contact your <strong>Shift Supervisor</strong> as soon as possible. Their contact information is in the Shift Schedule section of this handbook.</p>
     <p>If you can't reach your supervisor, contact a member of the Management Team or a Board Member.</p>
-    <div class="callout">The earlier you let us know, the easier it is to find coverage. Even a quick text or email helps.</div>
+    <div class="callout">A minimum 2-hour notice is required when calling out. Contact your shift supervisor by text or phone call — the earlier the better, so we can find coverage.</div>
   </div>
 
   <hr class="green">
@@ -1349,16 +1350,76 @@
     </div>
 
     <div class="protected-content" id="protectedGah">
+      <p style="font-size:13px; color:var(--light-gray); margin-bottom:12px;">Driver schedule updated 9/1/2026 (Rev. 2).</p>
+
+      <h3>Driver Schedule by Store</h3>
       <div class="card">
         <table class="data-table">
-          <thead><tr><th>Day</th><th>GAH Drivers</th><th>GAH Helpers</th><th>Freezer</th></tr></thead>
+          <thead><tr><th>Store</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr></thead>
           <tbody>
-            <tr><td><strong>Monday</strong></td><td>Giant Mill St – Jim Smith &amp; Ed Angelo<br>Giant @ Lowes – Jim Smith &amp; Ed Angelo<br>Target – Todd Benner<br>Walmart – Todd Benner</td><td>Greg Shannon<br>267-897-5030</td><td>—</td></tr>
-            <tr><td><strong>Tuesday</strong></td><td>Walmart – Butch Froelich<br>Grocery Outlet – Butch Froelich<br>Both Giants – Ed Angelo</td><td>Dawn Fulton<br>Dave Ellis<br>Kim Landon</td><td>—</td></tr>
-            <tr><td><strong>Wednesday</strong></td><td>Both Giants – Ed Angelo (temp)</td><td>—</td><td>—</td></tr>
-            <tr><td><strong>Thursday</strong></td><td>Walmart – Butch Froelich &amp; Clarke Fulton<br>Target – Ed Angelo &amp; Clarke Fulton<br>Both Giants – Claude &amp; Donna Dencler</td><td>Greg Shannon<br>Dawn Fulton<br>Dave Ellis<br>Dave Dammer<br>Leslie Karcher<br>Margie Udzinski</td><td>Kent Groff<br>267-378-1538</td></tr>
-            <tr><td><strong>Friday</strong></td><td>Target – Russell Martin</td><td>Paul Yelicanin<br>Ed Angelo</td><td>—</td></tr>
-            <tr><td><strong>Saturday</strong></td><td>—</td><td>—</td><td>Kenny Kucera<br>267-772-9447</td></tr>
+            <tr><td><strong>Giant (Mill St)</strong></td><td>Jim Smith</td><td>Nicole O.</td><td>Kaitlin <span class="muted">(as avail)</span></td><td>Donna &amp; Claude</td><td>—</td></tr>
+            <tr><td><strong>Giant @ Lowes</strong></td><td>Jim Smith</td><td>—</td><td>—</td><td>Donna &amp; Claude</td><td>Alan G.</td></tr>
+            <tr><td><strong>Target</strong></td><td>Todd Benner</td><td>—</td><td>Butch</td><td>—</td><td>Ed Angelo</td></tr>
+            <tr><td><strong>Walmart</strong></td><td>Ed Angelo</td><td>Butch</td><td>—</td><td>Clark</td><td>—</td></tr>
+            <tr><td><strong>Grocery Outlet</strong></td><td>—</td><td>Alicia D.</td><td>—</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Pickup Days by Store</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Store</th><th>Pickup Days</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Giant (Mill St)</strong></td><td>Mon, Tue, Wed, Thu</td></tr>
+            <tr><td><strong>Giant @ Lowes</strong></td><td>Mon, Thu, Fri</td></tr>
+            <tr><td><strong>Target</strong></td><td>Mon, Wed, Fri</td></tr>
+            <tr><td><strong>Walmart</strong></td><td>Mon, Tue, Thu</td></tr>
+            <tr><td><strong>Grocery Outlet</strong></td><td>Tue</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Driver Contacts</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Driver</th><th>Phone</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Ed Angelo</td><td>215.280.0563</td><td>—</td></tr>
+            <tr><td>Todd Benner</td><td>610.762.9413</td><td>—</td></tr>
+            <tr><td>Butch Frolich</td><td>215.651.3425</td><td>—</td></tr>
+            <tr><td>Jim Smith</td><td>267.424.5321</td><td>—</td></tr>
+            <tr><td>Kaitlin Graham</td><td>262.207.9690</td><td>—</td></tr>
+            <tr><td>Alicia DiValerio</td><td>267.756.0014</td><td>—</td></tr>
+            <tr><td>Clark Fulton</td><td>267.471.9452</td><td>—</td></tr>
+            <tr><td>Claude &amp; Donna Dencler</td><td>717.669.8816</td><td>—</td></tr>
+            <tr><td>Nicole O.</td><td>215.783.4556</td><td>—</td></tr>
+            <tr><td>Alan Groegler</td><td>267.772.0892</td><td>—</td></tr>
+            <tr><td>Paul Y.</td><td>610.955.6487</td><td>Works November–April only</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Helpers</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Day</th><th>Helpers</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Monday</strong></td><td>Greg Shannon · 267-897-5030</td></tr>
+            <tr><td><strong>Tuesday</strong></td><td>Dawn Fulton, Dave Ellis, Kim Landon</td></tr>
+            <tr><td><strong>Thursday</strong></td><td>Greg Shannon, Dawn Fulton, Dave Ellis, Dave Dammer, Leslie Karcher, Margie Udzinski</td></tr>
+            <tr><td><strong>Friday</strong></td><td>Paul Yelicanin, Ed Angelo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Freezer Crew</h3>
+      <div class="card">
+        <table class="data-table">
+          <thead><tr><th>Day</th><th>Freezer</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Thursday</strong></td><td>Kent Groff · 267-378-1538</td></tr>
+            <tr><td><strong>Saturday</strong></td><td>Kenny Kucera · 267-772-9447</td></tr>
           </tbody>
         </table>
       </div>
