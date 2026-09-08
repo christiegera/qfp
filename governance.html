@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2Z6B6D1YEX');
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.href || '';
+    if (href.startsWith('mailto:')) { gtag('event', 'email_click'); }
+  });
+</script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constitution &amp; Bylaws · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+  <style>
+    :root {
+      --ink:#1A1A1A; --cream:#F5F3ED; --moss:#1B8A2A; --moss-light:#2DA03E; --moss-pale:#DCFADE;
+      --terracotta:#D4522A; --terracotta-light:#FDE8E0; --amber:#E09800; --amber-pale:#FFF4CC;
+      --slate:#2B7CB5; --slate-pale:#DBEDF9; --warm-gray:#6B6560; --light-gray:#B5B0A8;
+      --border:#E5E2DB; --radius:12px; --radius-lg:20px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:-apple-system,'Segoe UI',system-ui,sans-serif;
+      background:var(--cream); color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+    }
+    .doc { max-width:820px; margin:0 auto; padding:40px 32px 100px; }
+
+    .print-bar { position:sticky; top:0; z-index:50; display:flex; justify-content:flex-end; padding:12px 0; margin-bottom:8px; }
+    .print-btn {
+      display:inline-flex; align-items:center; gap:8px; padding:10px 18px;
+      background:var(--moss); color:white; border:none; border-radius:8px;
+      font-size:13px; font-weight:600; cursor:pointer; transition:background 0.15s;
+      box-shadow:0 2px 10px rgba(27,138,42,0.25);
+    }
+    .print-btn:hover { background:var(--moss-light); }
+
+    .cover {
+      background:linear-gradient(135deg, #E8751A 0%, #C75B39 100%);
+      border-radius:var(--radius-lg); padding:48px 40px 44px; text-align:center; color:white; margin-bottom:28px;
+    }
+    .cover-logo { display:block; margin:0 auto 20px; height:100px; width:auto; }
+    .cover .eyebrow { font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.75); margin-bottom:8px; }
+    .cover h1 { font-size:34px; font-weight:750; letter-spacing:-1.2px; line-height:1.1; margin-bottom:12px; }
+    .cover .dates { font-size:13px; color:rgba(255,255,255,0.85); line-height:1.6; }
+
+    /* NOTICE */
+    .notice {
+      background:var(--amber-pale); border-radius:var(--radius); border-left:5px solid var(--amber);
+      padding:18px 22px; margin-bottom:36px; font-size:14px; color:#8a6000; line-height:1.6;
+    }
+    .notice strong { color:#6e4d00; }
+
+    /* TOC */
+    .toc { background:white; border-radius:var(--radius-lg); padding:26px 30px; margin-bottom:40px; }
+    .toc h3 { font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--light-gray); margin-bottom:14px; }
+    .toc-cols { display:grid; grid-template-columns:1fr 1fr; gap:6px 28px; }
+    .toc a { display:block; font-size:14px; color:var(--warm-gray); text-decoration:none; padding:3px 0; }
+    .toc a:hover { color:var(--moss); }
+    .toc .toc-head { font-weight:700; color:var(--ink); margin-top:10px; }
+    .toc .toc-head:first-child { margin-top:0; }
+
+    /* PART HEADERS */
+    .part { margin:0 0 12px; }
+    .part-badge {
+      display:inline-block; padding:5px 14px; border-radius:100px; font-size:11px; font-weight:700;
+      letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;
+    }
+    .part-badge.con { background:var(--terracotta-light); color:var(--terracotta); }
+    .part-badge.by { background:var(--moss-pale); color:var(--moss); }
+    .part-badge.cr { background:var(--slate-pale); color:var(--slate); }
+    .part h1 { font-size:30px; font-weight:750; letter-spacing:-1px; margin-bottom:6px; }
+
+    .chapter { margin:0 0 26px; scroll-margin-top:20px; }
+    .chapter h2 {
+      font-size:17px; font-weight:750; letter-spacing:0.3px; text-transform:uppercase;
+      color:var(--ink); margin:28px 0 12px; padding-bottom:8px; border-bottom:2px solid var(--border);
+    }
+    .clause { display:flex; gap:12px; margin-bottom:11px; font-size:15px; color:var(--warm-gray); line-height:1.65; }
+    .clause .num { flex-shrink:0; font-weight:700; color:var(--ink); min-width:46px; }
+    .clause .body strong { color:var(--ink); }
+    .sub { margin:8px 0 8px 58px; }
+    .sub .clause { margin-bottom:7px; }
+    .sub .num { min-width:24px; }
+    ul.plain { margin:8px 0 12px 58px; }
+    ul.plain li { font-size:14px; color:var(--warm-gray); line-height:1.55; margin-bottom:4px; }
+
+    hr { border:none; height:3px; margin:44px 0; border-radius:2px; }
+    hr.terra { background:linear-gradient(90deg, var(--terracotta), var(--terracotta-light)); }
+    hr.green { background:linear-gradient(90deg, var(--moss), var(--moss-pale)); }
+    hr.blue  { background:linear-gradient(90deg, var(--slate), var(--slate-pale)); }
+
+    .sig {
+      background:white; border-radius:var(--radius); padding:22px 26px; margin-top:20px;
+      font-size:14px; color:var(--warm-gray); line-height:1.7;
+    }
+    .sig strong { color:var(--ink); }
+
+    .doc-footer { text-align:center; font-size:12px; color:var(--light-gray); margin-top:44px; padding-top:22px; border-top:1px solid var(--border); }
+
+    @media (max-width:640px) {
+      .doc { padding:20px 18px 80px; }
+      .cover { padding:36px 24px 32px; } .cover h1 { font-size:26px; }
+      .part h1 { font-size:24px; }
+      .toc-cols { grid-template-columns:1fr; }
+      .clause { gap:8px; } .clause .num { min-width:40px; }
+      .sub { margin-left:32px; } ul.plain { margin-left:32px; }
+    }
+
+    @media print {
+      .print-bar { display:none !important; }
+      body { background:white; font-size:12px; }
+      .doc { padding:0; max-width:none; }
+      .cover, .part-badge, .notice { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      .cover { page-break-after:avoid; }
+      .chapter { page-break-inside:avoid; }
+      hr { margin:26px 0; }
+      .toc { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc">
+
+  <div class="print-bar">
+    <button class="print-btn" onclick="window.print()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+  </div>
+
+  <div class="cover">
+    <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="cover-logo">
+    <div class="eyebrow">Quakertown Food Pantry</div>
+    <h1>Constitution &amp; Bylaws</h1>
+    <div class="dates">
+      Constitution approved 6/12/04 · Revised 9/10/08 · Revised 6/12/13<br>
+      Bylaws approved 9/23/04 · Revised 9/10/08 · 8/26/10 · 6/12/13
+    </div>
+  </div>
+
+  <div class="notice">
+    <strong>Under review.</strong> These governing documents were last revised in 2013. The Board is reviewing them for updates. This page reproduces the current adopted text (with typographical corrections only).
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>Contents</h3>
+    <div class="toc-cols">
+      <div>
+        <a class="toc-head" href="#constitution">Constitution</a>
+        <a href="#c1">1 · Name</a>
+        <a href="#c2">2 · Statement of Purpose</a>
+        <a href="#c3">3 · Standards of Operation</a>
+        <a href="#c4">4 · Powers of the Board</a>
+        <a href="#c5">5 · Board Meetings</a>
+        <a href="#c6">6 · Officers</a>
+        <a href="#c7">7 · Executive Committee</a>
+        <a href="#c8">8 · Pantry Board</a>
+        <a href="#c9">9 · Board Committees</a>
+        <a href="#c10">10 · Amendments</a>
+        <a href="#c11">11 · Bylaws</a>
+        <a href="#c12">12 · Continuing Resolutions</a>
+        <a href="#c13">13 · Dissolution</a>
+      </div>
+      <div>
+        <a class="toc-head" href="#bylaws">Bylaws</a>
+        <a href="#b1">1 · Mission Statement</a>
+        <a href="#b2">2 · Organizational Structure</a>
+        <a href="#b3">3 · Committees</a>
+        <a href="#b4">4 · Board Meetings</a>
+        <a href="#b5">5 · Membership</a>
+        <a href="#b6">6 · Officers</a>
+        <a class="toc-head" href="#resolutions">Continuing Resolutions</a>
+        <a href="#cr1">CR-10-1 · Board Membership</a>
+        <a href="#cr2">CR-10-2 · Abundance Sharing</a>
+        <a href="#cr3">CR-10-3 · Email / Phone Votes</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CONSTITUTION ===================== -->
+  <div class="part" id="constitution">
+    <div class="part-badge con">Part One</div>
+    <h1>Constitution</h1>
+  </div>
+
+  <div class="chapter" id="c1">
+    <h2>Chapter 1 · Name</h2>
+    <div class="clause"><span class="num">1.01</span><span class="body">This organization shall be known as the Quakertown Food Pantry.</span></div>
+    <div class="clause"><span class="num">1.02</span><span class="body">The governing body of the Quakertown Food Pantry shall be the Quakertown Food Pantry Board of Directors.</span></div>
+    <div class="clause"><span class="num">1.03</span><span class="body">For the purpose of this constitution and the accompanying bylaws, the Quakertown Food Pantry is hereinafter designated as "the Pantry."</span></div>
+    <div class="clause"><span class="num">1.04</span><span class="body">For the purpose of this constitution and the accompanying bylaws, the Quakertown Food Pantry Board of Directors is hereinafter designated as "the Board."</span></div>
+  </div>
+
+  <div class="chapter" id="c2">
+    <h2>Chapter 2 · Statement of Purpose</h2>
+    <div class="clause"><span class="num">2.01</span><span class="body">The Pantry is a source of food for all people in need who approach us.</span></div>
+    <div class="clause"><span class="num">2.02</span><span class="body">To help all people in need who approach us, this Pantry shall:</span></div>
+    <div class="sub">
+      <div class="clause"><span class="num">a.</span><span class="body">Give food to those in need of assistance, <strong>regardless of residency. No one will be turned away.</strong></span></div>
+      <div class="clause"><span class="num">b.</span><span class="body">Accept donations of food from all good-faith donors (i.e., congregations, individuals, etc.) as per the 1996 Bill Emerson Good Samaritan Food Donation Act.</span></div>
+      <div class="clause"><span class="num">c.</span><span class="body">Apply for food and resources from the local, state, and federal governments.</span></div>
+    </div>
+    <div class="clause"><span class="num">2.03</span><span class="body">To fulfill these purposes, this Pantry shall maintain itself in accord with Chapter 3, Standards of Operation.</span></div>
+    <div class="clause"><span class="num">2.04</span><span class="body">This Board shall develop an organizational structure for the Pantry (Attachment "A") to be described in the bylaws. The Board shall prepare descriptions of the responsibilities for each leadership position, committee, task force, or other organizational group and shall review their actions.</span></div>
+    <div class="clause"><span class="num">2.05</span><span class="body">The Board shall adopt a mission statement that will provide specific direction for the Pantry and shall review it yearly and make changes as necessary.</span></div>
+    <div class="clause"><span class="num">2.06</span><span class="body">The Pantry is organized exclusively for charitable, religious, educational, and specific purposes, including, for such purposes, the making of distributions to organizations that qualify as exempt organizations under section 501(c)(3) of the Internal Revenue Code, or corresponding section of any future federal tax code.</span></div>
+    <div class="clause"><span class="num">2.07</span><span class="body">No part of the net earnings of the Pantry shall inure to the benefit of, or be distributable to, its members, trustees, officers, or other private persons, except that the Pantry shall be authorized and empowered to pay reasonable compensation for services rendered and to make payments and distributions in furtherance of the purposes set forth herein. No substantial part of the activities of the Pantry shall be the carrying on of propaganda, or otherwise attempting to influence legislation, and the organization shall not participate in, or intervene in (including the publishing or distribution of statements), any political campaign on behalf of any candidate for public office. Notwithstanding any other provision of this document, the Pantry shall not carry on any activities not permitted to be carried on (a) by an organization exempt from federal income tax under section 501(c)(3) of the Internal Revenue Code, or (b) by an organization contributions to which are deductible under section 170(c)(2) of the Internal Revenue Code, or corresponding section of any future federal tax code.</span></div>
+  </div>
+
+  <div class="chapter" id="c3">
+    <h2>Chapter 3 · Standards of Operation</h2>
+    <div class="clause"><span class="num">3.01</span><span class="body">Provide hours of operation in which those in need may come to receive food.</span></div>
+    <div class="clause"><span class="num">3.02</span><span class="body">Maintain a list of all area food pantries and make recommendations when geographically appropriate.</span></div>
+    <div class="clause"><span class="num">3.03</span><span class="body">Provide training to those who wish to volunteer to work at the Pantry.</span></div>
+    <div class="clause"><span class="num">3.04</span><span class="body">Keep the necessary records for government-assisted food.</span></div>
+    <div class="clause"><span class="num">3.05</span><span class="body">Stock the shelves on a regular basis.</span></div>
+    <div class="clause"><span class="num">3.06</span><span class="body">Keep the Pantry clean and free from infestation.</span></div>
+  </div>
+
+  <div class="chapter" id="c4">
+    <h2>Chapter 4 · Powers of the Board</h2>
+    <div class="clause"><span class="num">4.01</span><span class="body">The powers of this Board are those necessary to fulfill its purpose.</span></div>
+    <div class="clause"><span class="num">4.02</span><span class="body">The powers of this Board are vested in the Board Meetings called and conducted as provided in this constitution and bylaws.</span></div>
+    <div class="clause"><span class="num">4.03</span><span class="body">Only such authority as is delegated to the Board or other organizational units in the Pantry's governing documents is recognized. The Board is authorized to:</span></div>
+    <div class="sub">
+      <div class="clause"><span class="num">a.</span><span class="body">Elect / appoint its leadership and require them to carry out their duties in accordance with the constitution, bylaws, and continuing resolutions.</span></div>
+      <div class="clause"><span class="num">b.</span><span class="body">Terminate its own leadership when they do not comply with the constitution, bylaws, and continuing resolutions.</span></div>
+      <div class="clause"><span class="num">c.</span><span class="body">Approve the annual budget.</span></div>
+      <div class="clause"><span class="num">d.</span><span class="body">Acquire real and personal property by gift, devise, purchase, or other lawful means.</span></div>
+    </div>
+  </div>
+
+  <div class="chapter" id="c5">
+    <h2>Chapter 5 · Board Meetings</h2>
+    <div class="clause"><span class="num">5.01</span><span class="body">The Board Meetings shall be held as agreed to by the Board.</span></div>
+    <div class="clause"><span class="num">5.02</span><span class="body">A special Board Meeting may be called by the Operations Management Committee, the Board, or the President of this Board, or shall be called at the written request of ten percent (10%) of the voting members. The call for each special meeting shall specify the purposes for which it is to be held, and no other business shall be transacted.</span></div>
+    <div class="clause"><span class="num">5.03</span><span class="body">Notice of all meetings of this Board shall be given at least ten days in advance of the date of the meeting. The posting of such notice in the regular mail, with sufficient postage affixed or paid, sent to the last known address of such member, shall be sufficient.</span></div>
+    <div class="clause"><span class="num">5.04</span><span class="body">34% of the voting members shall constitute a quorum.</span></div>
+    <div class="clause"><span class="num">5.05</span><span class="body">Voting by proxy or by absentee ballot shall not be permitted.</span></div>
+    <div class="clause"><span class="num">5.06</span><span class="body">All actions by the Board shall be by majority vote of voting members present except as otherwise provided in this constitution.</span></div>
+    <div class="clause"><span class="num">5.07</span><span class="body">All matters to be voted on at Board Meetings shall be submitted to the Board in time to be placed on the agenda.</span></div>
+    <div class="clause"><span class="num">5.08</span><span class="body">Robert's Rules of Order, latest edition, shall govern parliamentary procedure of all meetings of this Board.</span></div>
+  </div>
+
+  <div class="chapter" id="c6">
+    <h2>Chapter 6 · Officers</h2>
+    <div class="clause"><span class="num">6.01</span><span class="body">The officers of this Board shall be a President, Vice President, Treasurer, and Secretary.</span></div>
+    <div class="sub">
+      <div class="clause"><span class="num">a.</span><span class="body">Duties of the officers shall be specified in the bylaws.</span></div>
+      <div class="clause"><span class="num">b.</span><span class="body">The officers shall be voting members of the Board.</span></div>
+    </div>
+    <div class="clause"><span class="num">6.02</span><span class="body">The officers shall be elected by the Board by written ballot and shall serve for one (1) year and may be reelected, or until their successor is elected, not to exceed three (3) additional months. The term shall begin on February 1st and end on January 31st.</span></div>
+    <div class="clause"><span class="num">6.03</span><span class="body">No officer shall hold more than one office at a time. All officers shall not be eligible to serve more than three (3) consecutive years in the same office unless there is a unanimous vote by written ballot of the Board to retain the individual in the same office; in such cases, subsequent additional years in the same office must also be annually ratified by unanimous vote by written ballot of the Board.</span></div>
+    <div class="clause"><span class="num">6.04</span><span class="body">Should a Board Officer's position be declared vacant, the Board may elect, by majority vote on written ballot, a successor for the remainder of the term.</span></div>
+  </div>
+
+  <div class="chapter" id="c7">
+    <h2>Chapter 7 · Executive Committee</h2>
+    <div class="clause"><span class="num">7.01</span><span class="body">The officers of the Board shall constitute the Executive Committee of the Board.</span></div>
+    <div class="clause"><span class="num">7.02</span><span class="body">The Executive Committee of the Board shall meet on a regular basis. The meetings will be held as determined by the Executive Committee.</span></div>
+  </div>
+
+  <div class="chapter" id="c8">
+    <h2>Chapter 8 · Pantry Board</h2>
+    <div class="clause"><span class="num">8.01</span><span class="body">The voting membership of the Board shall consist of the officers and the At-Large Board members. Voting by proxy or absentee ballot shall not be allowed at any time.</span></div>
+    <div class="clause"><span class="num">8.02</span><span class="body">The Board shall have general oversight of the life and activities of the Pantry, and in particular its operations. The duties of the Board shall include the following:</span></div>
+    <div class="sub">
+      <div class="clause"><span class="num">a.</span><span class="body">To lead this Board in stating the Pantry's mission, to feed the hungry of our community.</span></div>
+      <div class="clause"><span class="num">b.</span><span class="body">To seek to involve members of any supporting agency/congregation in volunteering at the Pantry.</span></div>
+      <div class="clause"><span class="num">c.</span><span class="body">To oversee and provide for the administration of the Pantry to enable it to fulfill its functions and perform its mission.</span></div>
+      <div class="clause"><span class="num">d.</span><span class="body">To maintain supportive relationships with the supporting congregations, organizations, and other social service agencies of our community.</span></div>
+      <div class="clause"><span class="num">e.</span><span class="body">To maintain supportive relationships with the people in need in our community.</span></div>
+      <div class="clause"><span class="num">f.</span><span class="body">To be examples individually and corporately of the style of life and respect expected of all moral human beings.</span></div>
+      <div class="clause"><span class="num">g.</span><span class="body">To promote a climate of peace and goodwill and, as differences and conflicts arise, to endeavor to foster mutual understanding.</span></div>
+      <div class="clause"><span class="num">h.</span><span class="body">A Board member shall be removed from the Board if his/her behavior would be so egregious as to call for such action. If this action were needed, a written recommendation would be presented to the Board for a vote, which would require a 2/3 majority of those present at a Board meeting.</span></div>
+    </div>
+    <div class="clause"><span class="num">8.03</span><span class="body">The Board shall be responsible for the financial and property matters of this Pantry.</span></div>
+    <div class="sub">
+      <div class="clause"><span class="num">a.</span><span class="body">The Board shall be responsible for maintaining and protecting its property and the management of its business and fiscal affairs. It shall have the powers and be subject to the obligations that pertain to such boards under the laws of the Commonwealth of Pennsylvania.</span></div>
+      <div class="clause"><span class="num">b.</span><span class="body">The Board shall prepare an annual budget for adoption by the members of the Board. The Board shall supervise the expenditure of funds in accordance with expendable income.</span></div>
+      <div class="clause"><span class="num">c.</span><span class="body">The Board shall ascertain that the financial affairs of the Pantry are being conducted efficiently, giving particular attention to the prompt payment of all obligations.</span></div>
+      <div class="clause"><span class="num">d.</span><span class="body">The Board shall make provisions for an annual audit of all financial records. Once every two (2) years, this shall be an external audit.</span></div>
+      <div class="clause"><span class="num">e.</span><span class="body">The Board shall be responsible for this Pantry's investments and its total insurance program.</span></div>
+    </div>
+    <div class="clause"><span class="num">8.04</span><span class="body">The Board shall see that the provisions of this constitution, its bylaws, and the continuing resolutions are carried out.</span></div>
+    <div class="clause"><span class="num">8.05</span><span class="body">The Board shall provide for an annual review of the Pantry records as described in the bylaws and/or continuing resolutions.</span></div>
+    <div class="clause"><span class="num">8.06</span><span class="body">The Board shall be responsible for the appointment and supervision of the salaried workers of the Pantry, if applicable.</span></div>
+    <div class="clause"><span class="num">8.07</span><span class="body">The Board shall normally meet quarterly or more frequently as described in bylaws Section 4.A. Special meetings may be called by an officer of the Board or by the request of at least three (3) members. Notice of each special meeting shall be given at least 10 days in advance of the meeting to all who are entitled to be present.</span></div>
+  </div>
+
+  <div class="chapter" id="c9">
+    <h2>Chapter 9 · Board Committees</h2>
+    <div class="clause"><span class="num">9.01</span><span class="body">Duties of standing committees shall be specified in the bylaws and/or continuing resolutions.</span></div>
+    <div class="clause"><span class="num">9.02</span><span class="body">The standing committees shall be delineated in the bylaws.</span></div>
+    <div class="clause"><span class="num">9.03</span><span class="body">Other committees may be formed as the need arises by decision of the Board.</span></div>
+  </div>
+
+  <div class="chapter" id="c10">
+    <h2>Chapter 10 · Amendments to the Constitution</h2>
+    <div class="clause"><span class="num">10.01</span><span class="body">Amendments to this constitution may be proposed by at least three (3) voting members of the Board. Proposed amendments must be filed in writing with the Board thirty (30) days before formal consideration by the Board at its regular or special meeting called for that purpose. The Board shall notify the members of the proposed amendments with their recommendations at least fifteen (15) days in advance of the meeting.</span></div>
+    <div class="clause"><span class="num">10.02</span><span class="body">A proposed amendment to this constitution shall:</span></div>
+    <div class="sub">
+      <div class="clause"><span class="num">a.</span><span class="body">Be approved and ratified without change at a legally called Board Meeting according to this constitution by a two-thirds (2/3) vote of those present and voting.</span></div>
+      <div class="clause"><span class="num">b.</span><span class="body">Have the effective date included in the resolution and noted in the constitution.</span></div>
+      <div class="clause"><span class="num">c.</span><span class="body">Be voted on by written ballot.</span></div>
+    </div>
+    <div class="clause"><span class="num">10.03</span><span class="body">Any amendments to this constitution shall be sent by the secretary of this Board to its voting members. The amendment(s) shall become effective upon approval of the Board.</span></div>
+  </div>
+
+  <div class="chapter" id="c11">
+    <h2>Chapter 11 · Bylaws</h2>
+    <div class="clause"><span class="num">11.01</span><span class="body">This Board may adopt bylaws. No bylaw may conflict with this constitution.</span></div>
+    <div class="clause"><span class="num">11.02</span><span class="body">Bylaws may be adopted or amended at any legally called meeting of this Board with a quorum present by a majority vote of those voting members present.</span></div>
+    <div class="clause"><span class="num">11.03</span><span class="body">Changes to the bylaws may be proposed by any voting member, provided, however, that such additions or amendments be submitted in writing to the Board at least thirty (30) days before a regular or special Board Meeting called for that purpose, and that the Board notify the members of the proposal with its recommendations at least fifteen (15) days in advance of the Board Meeting.</span></div>
+    <div class="clause"><span class="num">11.04</span><span class="body">Approved changes to the bylaws shall be sent by the secretary of this Board to its voting members.</span></div>
+  </div>
+
+  <div class="chapter" id="c12">
+    <h2>Chapter 12 · Continuing Resolutions</h2>
+    <div class="clause"><span class="num">12.01</span><span class="body"><strong>A.</strong> The Board may enact continuing resolutions which describe the functions of the various ministries, committees, and organizations of this Board. <strong>B.</strong> The Board may act on matters that have a continuing effect on the functions of the Pantry.</span></div>
+    <div class="clause"><span class="num">12.02</span><span class="body">Continuing resolutions shall be enacted or amended by a two-thirds vote of all voting members of the Board present.</span></div>
+  </div>
+
+  <div class="chapter" id="c13">
+    <h2>Chapter 13 · Dissolution</h2>
+    <div class="clause"><span class="num"></span><span class="body">Upon the dissolution of the Pantry, assets shall be distributed for one or more exempt purposes within the meaning of section 501(c)(3) of the Internal Revenue Code, or corresponding section of any future federal tax code, or shall be distributed to the federal government, or to a state or local government, for a public purpose. Any such assets not disposed of shall be disposed of by the Court of Common Pleas of the county in which the principal office of the Pantry is then located, exclusively for such organization or organizations, as said Court shall determine, which are organized and operated exclusively for such purposes.</span></div>
+    <div class="sig">
+      <strong>Signed:</strong> Donna Serok, President &nbsp;·&nbsp; Linda Strickland, Treasurer<br>
+      Approved 6/12/04 &nbsp;·&nbsp; Revision 9/10/08 &nbsp;·&nbsp; Revision 6/12/13
+    </div>
+  </div>
+
+  <hr class="green">
+
+  <!-- ===================== BYLAWS ===================== -->
+  <div class="part" id="bylaws">
+    <div class="part-badge by">Part Two</div>
+    <h1>Bylaws</h1>
+  </div>
+
+  <div class="chapter" id="b1">
+    <h2>Section 1 · Mission Statement</h2>
+    <div class="clause"><span class="num"></span><span class="body"><em>Reference 2.05 — "The Board shall, from time to time, adopt a mission statement that will provide specific direction for the Pantry."</em></span></div>
+    <div class="clause"><span class="num"></span><span class="body"><strong>Our Mission:</strong> As children of God, to provide food to those in need.</span></div>
+  </div>
+
+  <div class="chapter" id="b2">
+    <h2>Section 2 · Organizational Structure</h2>
+    <div class="clause"><span class="num"></span><span class="body"><em>Reference 2.04 — "The Board shall develop an organizational structure for the Pantry to be described in the bylaws."</em></span></div>
+    <div class="clause"><span class="num">A.</span><span class="body">The Board shall consist of a President and Vice President, and up to two (2) At-Large Board members from a supporting congregation/agency, or the local business community.</span></div>
+    <div class="clause"><span class="num">B.</span><span class="body">The Executive Committee shall consist of the President, Vice President, Treasurer, and Secretary.</span></div>
+    <div class="clause"><span class="num">C.</span><span class="body">The original supporting congregations/agencies are:</span></div>
+    <ul class="plain">
+      <li>Bucks County Opportunity Council</li>
+      <li>Christ's Lutheran Church, Trumbauersville</li>
+      <li>Christ UCC, Trumbauersville</li>
+      <li>Emmanuel Episcopal, Quakertown</li>
+      <li>First UCC, Quakertown</li>
+      <li>Quakertown United Methodist, Quakertown</li>
+      <li>Richland Friends Meeting, Quakertown</li>
+      <li>St. John's Lutheran, Quakertown</li>
+      <li>St. John's Lutheran, Spinnerstown</li>
+      <li>Trinity Lutheran, Quakertown</li>
+      <li>Trinity Great Swamp, Spinnerstown</li>
+      <li>Trinity UCC, Pleasant Valley</li>
+      <li>Zion Lutheran Church, Zion Hill</li>
+    </ul>
+    <div class="clause"><span class="num">D.</span><span class="body">The Board may adopt other policies concerning its membership and operation as continuing resolutions.</span></div>
+  </div>
+
+  <div class="chapter" id="b3">
+    <h2>Section 3 · Committees</h2>
+    <div class="clause"><span class="num"></span><span class="body"><em>Reference 8.01 — "Duties of standing committees shall be specified in the bylaws."</em></span></div>
+    <div class="clause"><span class="num"></span><span class="body">Initial responsibility for the fulfillment of the goals and functions of the Pantry shall be delegated by the Board to the standing committees. The duties of all ministries and committees not otherwise defined shall be fixed by the Board, from whom they shall receive needed instructions, and by whom their acts shall be subject to review. All committee members' terms, unless otherwise designated, shall begin January 1st and end December 31st. All chairpersons of committees shall be members of the Board. Chairpersons shall serve a one-year term, subject to reappointment, and shall not serve more than three consecutive terms as chairperson. Chairpersons shall deliver a report of their committee at all regular Board meetings. The President of the Board shall have a voice and vote in all standing committees.</span></div>
+    <div class="clause"><span class="num">A.</span><span class="body">The Committee on Finance shall consist of at least the Treasurer and two (2) other board members.</span></div>
+    <div class="clause"><span class="num">B.</span><span class="body">The Committee on Communications shall consist of at least the Communications Coordinator, Secretary, and two (2) other board members.</span></div>
+    <div class="clause"><span class="num">C.</span><span class="body">The Committee on Fundraising/Appeals shall consist of the Fundraising Coordinator and at least two (2) other board members.</span></div>
+    <div class="clause"><span class="num">D.</span><span class="body">The Committee on Volunteers &amp; Training shall consist of the Volunteer Coordinator and at least two (2) other board members.</span></div>
+    <div class="clause"><span class="num">E.</span><span class="body">The Committee on Nominations shall consist of the Vice-President and at least two (2) other board members.</span></div>
+  </div>
+
+  <div class="chapter" id="b4">
+    <h2>Section 4 · Board Meetings</h2>
+    <div class="clause"><span class="num">A.</span><span class="body">The Board shall meet regularly, as determined by the Board, to receive and act on reports of the President, Operations Management Committee, Treasurer, Volunteer Coordinator, Training Coordinator, Communications Coordinator, Fundraising/Appeals Coordinator, and Committee Chairpersons, and transact other business as necessary according to its purposes.</span></div>
+    <div class="clause"><span class="num">B.</span><span class="body">The Board shall meet in the Fall, as determined by the Board (November), to elect its officers and adopt a budget.</span></div>
+  </div>
+
+  <div class="chapter" id="b5">
+    <h2>Section 5 · Membership</h2>
+    <div class="clause"><span class="num"></span><span class="body">Each of the supporting congregations shall be encouraged to provide volunteers to fill the At-Large member positions on the Board. If these persons do not attend the board meetings on a regular basis — if they have missed two board meetings — they shall be contacted by the President concerning their lack of participation. If, after one more missed board meeting, the President will seek to replace the board member.</span></div>
+    <div class="clause"><span class="num">A.</span><span class="body">"Supporting Congregations" are faith-based groups that currently provide ongoing support for the Pantry through providing volunteer staff, conducting food/fund drives, or direct financial support. These groups may recommend individuals for At-Large board positions to the nominations committee.</span></div>
+    <div class="clause"><span class="num">B.</span><span class="body">All board members are expected to be in regular attendance at meetings. If a board member misses two consecutive board meetings, the President will contact them concerning their lack of participation. In addition, if the member holds a specified position, the Executive Committee will review their performance in that role. After a third absence, the President will seek to replace the board member.</span></div>
+  </div>
+
+  <div class="chapter" id="b6">
+    <h2>Section 6 · Officers</h2>
+    <div class="clause"><span class="num"></span><span class="body"><em>Reference 5.1a — "Duties of the officers shall be specified in the bylaws."</em></span></div>
+    <div class="clause"><span class="num">A.</span><span class="body">The Board shall elect a President, Vice-President, Secretary, Treasurer, and Operations Management Committee.</span></div>
+    <div class="clause"><span class="num">B.</span><span class="body">The President shall preside at all meetings of the Board and be an ex-officio member of all committees. The President shall not be the chairperson of any committee. The President may be acting chairperson on all committees where that position is vacant, except where designated otherwise, until a permanent director or chairperson is appointed.</span></div>
+    <div class="clause"><span class="num">C.</span><span class="body">The Vice-President shall assume the President's role in the event of the President's inability to serve. The Vice-President may be acting chairperson on all committees where that position is vacant, except where designated otherwise, until a permanent director or chairperson is appointed.</span></div>
+    <div class="clause"><span class="num">D.</span><span class="body">The Secretary shall keep accurate minutes of all meetings of the Board and its Executive Committee. The minutes shall be kept in a receptacle provided by the Board, which shall be preserved permanently in its archives. The Secretary shall be responsible for correspondence of the board and be available to sign official documents as required.</span></div>
+    <div class="clause"><span class="num">E.</span><span class="body">The Treasurer shall keep books of account of the Pantry and shall receive all funds and disburse them on proper orders. The Treasurer shall make written report of all financial transactions to the board and shall present all treasurer's reports to the Executive Committee at their monthly meetings. The Treasurer is an ex-officio member of the Committee on Finance with full voice and vote.</span></div>
+    <div class="clause"><span class="num">F.</span><span class="body">Audits of the reports of the Treasurer shall be provided to the board annually.</span></div>
+    <div class="clause"><span class="num">G.</span><span class="body">The Operations Management Committee shall oversee the daily operations of the food pantry. The daily operations include, but are not limited to:</span></div>
+    <ul class="plain">
+      <li>Ordering food</li>
+      <li>Checking daily paperwork</li>
+      <li>Summarizing paperwork on a monthly basis</li>
+      <li>Overseeing that facilities are maintained (clean, neat, vacuumed, etc.)</li>
+      <li>Overseeing shelf stocking</li>
+      <li>Being the primary liaison between the food pantry and the Bucks County Opportunity Council</li>
+      <li>Reporting to the Executive Committee monthly and to the general board at their general meetings</li>
+    </ul>
+    <div class="sig">
+      <strong>Signed:</strong> Donna Serok, President &nbsp;·&nbsp; Linda Strickland, Treasurer<br>
+      Approved 9/23/04 &nbsp;·&nbsp; Revised 9/10/08 &nbsp;·&nbsp; 8/26/10 &nbsp;·&nbsp; 6/12/13
+    </div>
+  </div>
+
+  <hr class="blue">
+
+  <!-- ===================== CONTINUING RESOLUTIONS ===================== -->
+  <div class="part" id="resolutions">
+    <div class="part-badge cr">Part Three</div>
+    <h1>Continuing Resolutions</h1>
+  </div>
+
+  <div class="chapter" id="cr1">
+    <h2>CR-10-1 · Board Membership and Meetings</h2>
+    <div class="clause"><span class="num"></span><span class="body"><em>Ref. Bylaws 2A, 2D, 4, 5; Constitution Sec. 8</em></span></div>
+    <div class="clause"><span class="num">A.</span><span class="body">The Board membership is normally 12 persons. Officers are elected annually by the Board.</span></div>
+    <div class="clause"><span class="num">B.</span><span class="body">At-Large members may be drawn from the Pantry's volunteers with a minimum of 40 hours of service in the previous 23 months (at time of nomination and election) or individuals from the community whose involvement can enhance the mission of the Pantry.</span></div>
+    <div class="clause"><span class="num">C.</span><span class="body">In the event that a specified position is not filled (there is an extended vacancy in an office or coordinator position, or an individual holds two positions), the Board may elect an additional At-Large member for a one-year term. Should the vacancy be filled during this term, the additional At-Large member may serve until the end of their stated term.</span></div>
+    <div class="clause"><span class="num">D.</span><span class="body">Should two individuals share a specified position, the Board will name one of them to serve as a Board member.</span></div>
+    <div class="clause"><span class="num">E.</span><span class="body">The Executive Committee will meet as called by the President.</span></div>
+    <div class="clause"><span class="num"></span><span class="body"><em>Motion passed August 10, 2010.</em></span></div>
+  </div>
+
+  <div class="chapter" id="cr2">
+    <h2>CR-10-2 · Abundance Sharing</h2>
+    <div class="clause"><span class="num"></span><span class="body">Should the Board determine that the Pantry has an abundance of unrestricted financial resources, defined as more than an 18-month operation cushion or $1000,000.00, the Board may allocate some or all of the excess to purposes consistent with the Pantry's mission.</span></div>
+    <div class="clause"><span class="num"></span><span class="body">The Board may from time to time make grants of funds or food to agencies or programs that supplement or augment the Pantry's mission to relieve food insecurity in Upper Bucks County and environs.</span></div>
+    <div class="clause"><span class="num"></span><span class="body">The Operations Management Committee, with the concurrence of another Executive Committee member/officer, is empowered to engage in exchanges or sharing of food resources necessary in the course of operations.</span></div>
+    <div class="clause"><span class="num"></span><span class="body"><em>Motion passed August 10, 2010.</em></span></div>
+  </div>
+
+  <div class="chapter" id="cr3">
+    <h2>CR-10-3 · Email / Phone Votes</h2>
+    <div class="clause"><span class="num"></span><span class="body">The Board may utilize a telephone or email vote to take actions (with the exception of significant financial transactions) that should be handled prior to the next regularly scheduled Board meeting. Board members have five (5) business days to respond from the date of the email/telephone call outlining the question, at which time the vote will be considered closed. The number of persons responding by email/telephone must constitute a quorum of the Board for the vote to be considered valid.</span></div>
+    <div class="clause"><span class="num"></span><span class="body"><em>Motion / resolution passed August 10, 2010, with qualifications.</em></span></div>
+  </div>
+
+  <div class="doc-footer">
+    Quakertown Food Pantry · 501(c)(3) Nonprofit · 101B N. Third Street, Quakertown, PA 18951 · quakertownfoodpantry@gmail.com
+  </div>
+
+</div>
+
+</body>
+</html>
