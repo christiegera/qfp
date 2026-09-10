@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2Z6B6D1YEX');
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Apply to Volunteer · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+  <style>
+    :root {
+      --ink:#1A1A1A; --cream:#F5F3ED; --moss:#1B8A2A; --moss-light:#2DA03E;
+      --warm-gray:#6B6560; --border:#E5E2DB;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,'Segoe UI',system-ui,sans-serif; background:var(--cream); color:var(--ink); -webkit-font-smoothing:antialiased; }
+
+    .kiosk-bar {
+      display:flex; position:fixed; top:0; left:0; right:0; z-index:200;
+      align-items:center; gap:14px; height:60px; padding:0 18px;
+      background:rgba(255,255,255,0.96); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+    }
+    .kiosk-home {
+      display:inline-flex; align-items:center; gap:8px; padding:10px 16px;
+      border-radius:10px; background:var(--moss); color:white; text-decoration:none;
+      font-size:14px; font-weight:700;
+    }
+    .kiosk-home:hover { background:var(--moss-light); }
+    .kiosk-title { font-size:16px; font-weight:750; color:var(--ink); flex:1; }
+
+    .form-wrap { position:fixed; top:60px; left:0; right:0; bottom:0; overflow:auto; -webkit-overflow-scrolling:touch; }
+    .form-wrap iframe { display:block; width:100%; max-width:700px; margin:0 auto; height:4163px; border:0; background:var(--cream); }
+
+    /* Fallback shown if the form can't be framed */
+    .fallback { max-width:520px; margin:60px auto; padding:32px; text-align:center; }
+    .fallback h2 { font-size:22px; font-weight:750; letter-spacing:-0.5px; margin-bottom:10px; }
+    .fallback p { font-size:15px; color:var(--warm-gray); line-height:1.6; margin-bottom:20px; }
+    .fallback a {
+      display:inline-block; padding:14px 24px; border-radius:12px; background:var(--moss);
+      color:white; text-decoration:none; font-size:15px; font-weight:700;
+    }
+  </style>
+</head>
+<body>
+
+<div class="kiosk-bar">
+  <a href="portal.html" class="kiosk-home">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+    Portal
+  </a>
+  <span class="kiosk-title">Apply to Volunteer</span>
+</div>
+
+<div class="form-wrap">
+  <iframe
+    src="https://docs.google.com/forms/d/e/1FAIpQLSeUZK0htmert3T0ijdJbVK3k_E_IoUIhuH7KrXP2YHgDoG7FQ/viewform?embedded=true"
+    title="Volunteer Application"
+    loading="lazy">
+    Loading the application form…
+  </iframe>
+</div>
+
+</body>
+</html>
