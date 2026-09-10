@@ -115,8 +115,32 @@
       .sub { margin-left:32px; } ul.plain { margin-left:32px; }
     }
 
+    /* ===== KIOSK HOME BAR (activated by ?kiosk) ===== */
+    .kiosk-bar { display:none; }
+    body.kiosk .print-bar { display:none; }
+    body.kiosk .doc { padding-top:80px; }
+    body.kiosk .kiosk-bar {
+      display:flex; position:fixed; top:0; left:0; right:0; z-index:200;
+      align-items:center; gap:14px; height:60px; padding:0 18px;
+      background:rgba(255,255,255,0.96); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+    }
+    .kiosk-home {
+      display:inline-flex; align-items:center; gap:8px; padding:10px 16px;
+      border-radius:10px; background:var(--moss); color:white; text-decoration:none;
+      font-size:14px; font-weight:700;
+    }
+    .kiosk-home:hover { background:var(--moss-light); }
+    .kiosk-bar .kiosk-title { font-size:16px; font-weight:750; color:var(--ink); flex:1; }
+    .kiosk-bar .kiosk-print {
+      display:inline-flex; align-items:center; gap:8px; padding:10px 16px;
+      border-radius:10px; background:var(--cream); border:1px solid var(--border);
+      color:var(--ink); font-size:14px; font-weight:700; cursor:pointer;
+    }
+
     @media print {
       .print-bar { display:none !important; }
+      .kiosk-bar { display:none !important; }
       body { background:white; font-size:12px; }
       .doc { padding:0; max-width:none; }
       .cover, .part-badge, .notice { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -130,6 +154,16 @@
 <body>
 
 <div class="doc">
+
+  <!-- KIOSK HOME BAR (only visible with ?kiosk) -->
+  <div class="kiosk-bar">
+    <a href="portal.html" class="kiosk-home">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+      Portal
+    </a>
+    <span class="kiosk-title">Constitution &amp; Bylaws</span>
+    <button class="kiosk-print" onclick="window.print()">Print</button>
+  </div>
 
   <div class="print-bar">
     <button class="print-btn" onclick="window.print()">
@@ -466,6 +500,9 @@
   </div>
 
 </div>
+<script>
+  if (location.search.indexOf('kiosk') > -1) document.body.classList.add('kiosk');
+</script>
 
 </body>
 </html>
