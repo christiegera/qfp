@@ -302,8 +302,32 @@
     }
 
     /* PRINT */
+    /* ===== KIOSK HOME BAR (activated by ?kiosk) ===== */
+    .kiosk-bar { display: none; }
+    body.kiosk .print-bar { display: none; }
+    body.kiosk .doc { padding-top: 80px; }
+    body.kiosk .kiosk-bar {
+      display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      align-items: center; gap: 14px; height: 60px; padding: 0 18px;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .kiosk-home {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px;
+      border-radius: 10px; background: var(--moss); color: white; text-decoration: none;
+      font-size: 14px; font-weight: 700;
+    }
+    .kiosk-home:hover { background: var(--moss-light); }
+    .kiosk-bar .kiosk-title { font-size: 16px; font-weight: 750; color: var(--ink); flex: 1; }
+    .kiosk-bar .kiosk-print {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px;
+      border-radius: 10px; background: var(--cream); border: 1px solid var(--border);
+      color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+
     @media print {
       .print-bar { display: none !important; }
+      .kiosk-bar { display: none !important; }
       body { background: white; font-size: 12px; }
       .doc { padding: 0; max-width: none; }
       .cover {
@@ -326,6 +350,16 @@
 <body>
 
 <div class="doc">
+
+  <!-- KIOSK HOME BAR (only visible with ?kiosk) -->
+  <div class="kiosk-bar">
+    <a href="portal.html" class="kiosk-home">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+      Portal
+    </a>
+    <span class="kiosk-title">Orientation Handbook</span>
+    <button class="kiosk-print" onclick="window.print()">Print</button>
+  </div>
 
   <div class="print-bar">
     <button class="print-btn" onclick="window.print()">
@@ -672,14 +706,14 @@
     <div class="policy">
       <div class="policy-num">Policy 10</div>
       <div class="policy-title">Out of Area Clients</div>
-      <div class="policy-date">Approved February 7, 2018 · Clarification Oct 25, 2018 · Revised Nov 13, 2024</div>
-      <p>Families outside QFP's service area (Upper Bucks County and the Quakertown School District) are advised of the nearest pantry. Only 1 pre-packed bag (canned &amp; dry good) per family — not per person — plus bread &amp; desserts.</p>
+      <div class="policy-date">Approved February 7, 2018 · Revised Nov 13, 2024 · Amended September 9, 2026</div>
+      <p>Families outside QFP's service area are advised of the nearest pantry and given 1 pre-packed bag (canned &amp; dry goods) per family plus bread &amp; desserts.</p>
       <ul>
-        <li>Any client without proper ID is given a pre-packed bag after the 3rd time</li>
-        <li>In an emergency, pre-packed bags may be given</li>
-        <li>Out-of-town families may also receive bread and dessert if available — no meat is given</li>
-        <li>They must fill out all paperwork as a new client and be marked as referred to the proper pantry</li>
+        <li>They receive food regardless of whether they present ID or proof of residency</li>
+        <li>No distinction is made between regular, federal, or state food or meats</li>
+        <li>They complete all paperwork and are marked as referred to the proper pantry</li>
       </ul>
+      <p style="margin-top:8px; font-size:13px; color:var(--light-gray);">Amended September 9, 2026. See Policy 22.</p>
     </div>
 
     <div class="policy">
@@ -777,6 +811,41 @@
       </ul>
       <div class="callout terra">Do not give several small portions to one large household.</div>
     </div>
+
+    <div class="policy">
+      <div class="policy-num">Policy 21</div>
+      <div class="policy-title">Donation Procedure</div>
+      <div class="policy-date">Approved May 13, 2026</div>
+      <p>For community drop-offs and food drives:</p>
+      <ol>
+        <li>Weigh all items.</li>
+        <li>Record the total pounds in the donation book with the donor's name and the date.</li>
+        <li>Put away any produce, breads, desserts, or items that need to go in the refrigerator or freezer.</li>
+        <li>Put all cans and dry goods in the blue cart, or — if it's full — on the wood pallet next to the cart.</li>
+        <li>If the blue cart is full, text Melissa, our Food Drive Coordinator.</li>
+      </ol>
+      <div class="callout amber">Do not date-check, tray, or restock any cans or dry goods (bagged or boxed). Food donation team volunteers are assigned time slots throughout the week to process all donations; Melissa manages this process.</div>
+    </div>
+
+    <div class="policy" style="border-left-color: var(--moss);">
+      <div class="policy-num" style="color: var(--moss);">Policy 22 · New</div>
+      <div class="policy-title">Client Self-Declaration — No ID or Proof Required</div>
+      <div class="policy-date">Approved September 9, 2026 · Effective immediately</div>
+      <p><strong>Eligibility to receive food is established by the client's signed self-declaration of need.</strong> No photo identification, proof of address, proof of income, or other documentation may be required as a condition of receiving food. No client shall be turned away for lack of ID or proof of residency.</p>
+      <p><strong>Background.</strong> Our supporting agencies establish eligibility through self-declaration alone, with no proof requested. TEFAP (administered by the PA Department of Agriculture) uses a Declaration of Need form on which the client self-certifies that household income does not exceed program limits and that the household lives in the area served — no proof is requested. The Bucks County Opportunity Council (BCOC) likewise establishes eligibility by self-declaration, with no proof required. This is consistent with our Constitution 2.02a: "Give food to those in need of assistance, regardless of residency. No one will be turned away."</p>
+      <p><strong>Guidance for volunteers.</strong></p>
+      <ul>
+        <li>The client completes and signs the self-declaration form. That signature is all that is required to receive food.</li>
+        <li>Photo ID or proof of address may be offered voluntarily and kept for our records, but is not required to receive food or to become a client. Volunteers must make clear it is optional, and no client may be turned away, delayed, or made to feel unwelcome for declining.</li>
+        <li>The household size stated by the client determines the amount of food provided.</li>
+        <li>Client information is held in confidence. It may be released to the BCOC as our administering agency, and to the PA Department of Agriculture or the USDA upon request, as stated on the TEFAP Declaration of Need form.</li>
+      </ul>
+      <p><strong>Clarifications.</strong></p>
+      <ul>
+        <li>This replaces the pantry's prior practice of requiring a photo ID and a utility bill.</li>
+        <li>Any earlier policy language requiring ID or proof of address (including the "proper ID after the 3rd visit" clause in Policy 10) is superseded by this policy.</li>
+      </ul>
+    </div>
   </div>
 
   <hr class="blue">
@@ -795,6 +864,9 @@
   </div>
 
 </div>
+<script>
+  if (location.search.indexOf('kiosk') > -1) document.body.classList.add('kiosk');
+</script>
 
 </body>
 </html>
