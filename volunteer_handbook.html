@@ -554,6 +554,83 @@
       .quick-ref-grid { grid-template-columns: 1fr; }
     }
 
+    /* ===== KIOSK MODE (activated by ?kiosk in URL) ===== */
+    .kiosk-bar, .kiosk-bottombar, .kiosk-menu-overlay { display: none; }
+
+    body.kiosk .sidebar,
+    body.kiosk .mobile-header { display: none !important; }
+    body.kiosk .handbook-wrap { display: block; }
+    body.kiosk .main { max-width: 860px; margin: 0 auto; padding: 96px 32px 112px; }
+
+    body.kiosk #welcome,
+    body.kiosk #quick-ref,
+    body.kiosk .section { display: none; }
+    body.kiosk #welcome.kiosk-active,
+    body.kiosk #quick-ref.kiosk-active,
+    body.kiosk .section.kiosk-active { display: block !important; margin-bottom: 0; }
+    body.kiosk hr { display: none; }
+
+    body.kiosk .kiosk-bar {
+      display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      align-items: center; gap: 14px; height: 64px; padding: 0 18px;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .kiosk-home {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px;
+      border-radius: 10px; background: var(--moss); color: white; text-decoration: none;
+      font-size: 14px; font-weight: 700; flex-shrink: 0;
+    }
+    .kiosk-home:hover { background: var(--moss-light); }
+    .kiosk-title {
+      font-size: 17px; font-weight: 750; letter-spacing: -0.3px; color: var(--ink);
+      flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .kiosk-menu-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px;
+      border-radius: 10px; background: var(--cream); border: 1px solid var(--border);
+      color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+    }
+    .kiosk-menu-btn:hover { background: var(--moss-pale); color: var(--moss); border-color: var(--moss); }
+
+    body.kiosk .kiosk-bottombar {
+      display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+    }
+    .kiosk-nav-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 22px; border-radius: 12px; background: white; border: 1.5px solid var(--border);
+      color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; min-width: 132px;
+    }
+    .kiosk-nav-btn:hover { border-color: var(--moss); color: var(--moss); }
+    .kiosk-nav-btn:disabled { opacity: 0.35; cursor: default; }
+    .kiosk-nav-btn.next { background: var(--moss); color: white; border-color: var(--moss); }
+    .kiosk-nav-btn.next:hover { background: var(--moss-light); }
+
+    body.kiosk .kiosk-menu-overlay.open { display: block; }
+    .kiosk-menu-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(26,26,26,0.5); }
+    .kiosk-menu-panel {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 340px; max-width: 85%;
+      background: white; padding: 24px 0; overflow-y: auto; box-shadow: -8px 0 30px rgba(0,0,0,0.2);
+    }
+    .kiosk-menu-panel h3 {
+      font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--light-gray); padding: 0 24px 12px;
+    }
+    .kiosk-menu-panel a {
+      display: block; padding: 14px 24px; font-size: 16px; font-weight: 600;
+      color: var(--warm-gray); text-decoration: none; cursor: pointer;
+    }
+    .kiosk-menu-panel a:hover, .kiosk-menu-panel a.current { background: var(--moss-pale); color: var(--moss); }
+
+    @media print {
+      .kiosk-bar, .kiosk-bottombar, .kiosk-menu-overlay { display: none !important; }
+      body.kiosk #welcome, body.kiosk #quick-ref, body.kiosk .section { display: block !important; }
+      body.kiosk .main { padding: 0; max-width: none; }
+    }
+
     /* PRINT */
     @media print {
       .sidebar, .mobile-header, .print-btn, .pw-gate { display: none !important; }
@@ -571,6 +648,30 @@
   </style>
 </head>
 <body>
+
+<!-- KIOSK BARS (only visible when URL has ?kiosk) -->
+<div class="kiosk-bar">
+  <a href="portal.html" class="kiosk-home">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+    Portal
+  </a>
+  <div class="kiosk-title" id="kioskTitle">Welcome</div>
+  <button class="kiosk-menu-btn" onclick="document.getElementById('kioskMenu').classList.add('open')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    Sections
+  </button>
+</div>
+
+<div class="kiosk-bottombar">
+  <button class="kiosk-nav-btn prev" id="kioskPrev" onclick="kioskStep(-1)">&lsaquo; Previous</button>
+  <button class="kiosk-nav-btn next" id="kioskNext" onclick="kioskStep(1)">Next &rsaquo;</button>
+</div>
+
+<div class="kiosk-menu-overlay" id="kioskMenu" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="kiosk-menu-panel" id="kioskMenuPanel">
+    <h3>Sections</h3>
+  </div>
+</div>
 
 <!-- MOBILE HEADER -->
 <div class="mobile-header">
@@ -1152,15 +1253,16 @@
 
     <div class="policy amber-border" onclick="this.classList.toggle('open')">
       <div class="policy-num">Policy 12</div>
-      <div class="policy-title">Pre-Packed Bag / Out of Area Clients</div>
-      <div class="policy-date">Approved February 7, 2018 · Revised November 13, 2024</div>
+      <div class="policy-title">Pre-Packed Bags / Out of Area Families</div>
+      <div class="policy-date">Approved February 7, 2018 · Revised November 13, 2024 · Amended September 9, 2026</div>
       <div class="policy-body">
         <p>Out-of-area families will be advised of the nearest pantry and given 1 pre-packed bag (canned &amp; dry goods) per family plus bread &amp; desserts.</p>
         <ul>
-          <li>Clients without proper ID get a pre-packed bag after the 3rd time</li>
-          <li>Out-of-town families are not given Federal/State food or meats</li>
-          <li>Must fill out all paperwork and be marked as referred to the proper pantry</li>
+          <li>They receive food regardless of whether they present ID or proof of residency</li>
+          <li>No distinction is made between regular, federal, or state food or meats</li>
+          <li>Must complete all paperwork and be marked as referred to the proper pantry</li>
         </ul>
+        <p style="margin-top:8px;">Amended September 9, 2026 to remove the prior clauses requiring ID after the 3rd visit and withholding federal/state food and meats from out-of-area families. See Policy 22.</p>
       </div>
     </div>
 
@@ -1192,6 +1294,45 @@
           <li>Client paperwork must be completed</li>
           <li>Provide only what is on the menu that week, according to family size</li>
           <li>Document the distribution on the sign-in sheet and client book</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="policy amber-border" onclick="this.classList.toggle('open')">
+      <div class="policy-num">Policy 21</div>
+      <div class="policy-title">Donation Procedure</div>
+      <div class="policy-date">Approved May 13, 2026</div>
+      <div class="policy-body">
+        <p>For community drop-offs and food drives:</p>
+        <ol>
+          <li>Weigh all items.</li>
+          <li>Record the total pounds in the donation book with the donor's name and the date.</li>
+          <li>Put away any produce, breads, desserts, or items that need to go in the refrigerator or freezer.</li>
+          <li>Put all cans and dry goods in the blue cart, or — if it's full — on the wood pallet next to the cart.</li>
+          <li>If the blue cart is full, text Melissa, our Food Drive Coordinator (number in the Contact Lists section).</li>
+        </ol>
+        <div class="callout amber-callout">Do not date-check, tray, or restock any cans or dry goods (bagged or boxed). Food donation team volunteers are assigned time slots throughout the week to process all donations; Melissa manages this process.</div>
+      </div>
+    </div>
+
+    <div class="policy amber-border open" onclick="this.classList.toggle('open')" style="border-left-color: var(--moss);">
+      <div class="policy-num" style="color: var(--moss);">Policy 22 · New</div>
+      <div class="policy-title">Client Self-Declaration — No ID or Proof Required</div>
+      <div class="policy-date">Approved September 9, 2026 · Effective immediately</div>
+      <div class="policy-body">
+        <p><strong>Eligibility to receive food is established by the client's signed self-declaration of need.</strong> No photo identification, proof of address, proof of income, or other documentation may be required as a condition of receiving food. No client shall be turned away for lack of ID or proof of residency.</p>
+        <p><strong>Background.</strong> Our supporting agencies establish eligibility through self-declaration alone, with no proof requested. The Pennsylvania Emergency Food Assistance Program (TEFAP), administered by the PA Department of Agriculture, uses a Declaration of Need form on which the client self-certifies that household income does not exceed program limits and that the household lives in the area served — no proof of any kind is requested. The Bucks County Opportunity Council (BCOC) likewise establishes eligibility by self-declaration, with no proof required. This is consistent with our Constitution 2.02a: "Give food to those in need of assistance, regardless of residency. No one will be turned away."</p>
+        <p><strong>Guidance for volunteers.</strong></p>
+        <ul>
+          <li>The client completes and signs the self-declaration form. That signature is all that is required to receive food.</li>
+          <li>Photo ID or proof of address may be offered voluntarily and kept for our records, but is not required to receive food or to become a client. Volunteers must make clear it is optional, and no client may be turned away, delayed, or made to feel unwelcome for declining.</li>
+          <li>The household size stated by the client determines the amount of food provided.</li>
+          <li>Client information is held in confidence. It may be released to the Bucks County Opportunity Council as our administering agency, and to the PA Department of Agriculture or the USDA upon request, as stated on the TEFAP Declaration of Need form.</li>
+        </ul>
+        <p><strong>Clarifications.</strong></p>
+        <ul>
+          <li>This replaces the pantry's prior practice of requiring a photo ID and a utility bill.</li>
+          <li>Any earlier policy language requiring ID or proof of address (including the "proper ID after the 3rd visit" clause in the out-of-area policy) is superseded by this policy.</li>
         </ul>
       </div>
     </div>
@@ -1489,6 +1630,73 @@ var observer = new IntersectionObserver(function(entries) {
 }, { rootMargin: '-20% 0px -70% 0px' });
 
 document.querySelectorAll('.section').forEach(function(s) { observer.observe(s); });
+
+// ===== KIOSK MODE =====
+(function() {
+  if (location.search.indexOf('kiosk') === -1) return;
+  document.body.classList.add('kiosk');
+
+  var PANELS = [
+    ['welcome', 'Welcome'],
+    ['quick-ref', 'Quick Reference'],
+    ['mission', 'Mission & Overview'],
+    ['history', 'Our History'],
+    ['requirements', 'Requirements'],
+    ['civil-rights', 'Civil Rights'],
+    ['duties', 'Duties & Roles'],
+    ['cleaning', 'Cleaning Duties'],
+    ['calling-out', 'Calling Out'],
+    ['holidays', 'Holidays & Weather'],
+    ['policies', 'Policy Statements'],
+    ['contacts', 'Contact Lists'],
+    ['shifts', 'Shift Schedule'],
+    ['gah', 'GAH & Freezer'],
+    ['freshconnect', 'Fresh Connect']
+  ];
+  var ids = PANELS.map(function(p) { return p[0]; });
+  var menuPanel = document.getElementById('kioskMenuPanel');
+
+  PANELS.forEach(function(p) {
+    var a = document.createElement('a');
+    a.textContent = p[1];
+    a.setAttribute('data-id', p[0]);
+    a.onclick = function() {
+      document.getElementById('kioskMenu').classList.remove('open');
+      if (location.hash === '#' + p[0]) { render(p[0]); } else { location.hash = p[0]; }
+    };
+    menuPanel.appendChild(a);
+  });
+
+  function render(id) {
+    if (ids.indexOf(id) === -1) id = 'welcome';
+    ids.forEach(function(pid) {
+      var el = document.getElementById(pid);
+      if (el) el.classList.toggle('kiosk-active', pid === id);
+    });
+    var idx = ids.indexOf(id);
+    document.getElementById('kioskTitle').textContent = PANELS[idx][1];
+    document.getElementById('kioskPrev').disabled = (idx <= 0);
+    document.getElementById('kioskNext').disabled = (idx >= ids.length - 1);
+    Array.prototype.forEach.call(menuPanel.querySelectorAll('a'), function(a) {
+      a.classList.toggle('current', a.getAttribute('data-id') === id);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  window.kioskStep = function(dir) {
+    var cur = (location.hash || '#welcome').slice(1);
+    var idx = ids.indexOf(cur); if (idx === -1) idx = 0;
+    var n = idx + dir;
+    if (n < 0 || n >= ids.length) return;
+    location.hash = ids[n];
+  };
+
+  window.addEventListener('hashchange', function() {
+    render((location.hash || '#welcome').slice(1));
+  });
+
+  render((location.hash || '#welcome').slice(1));
+})();
 </script>
 
 </body>
