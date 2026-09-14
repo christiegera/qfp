@@ -465,7 +465,7 @@ nav {
 .hour-closed { color: var(--light-gray); font-style: italic; }
 
 /* SPONSOR CARD */
-.sponsor-card {
+.partner-card {
   background: white;
   border-radius: var(--radius-lg);
   padding: 32px 28px;
@@ -475,18 +475,18 @@ nav {
   color: inherit;
   display: block;
 }
-.sponsor-card:hover {
+.partner-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
   border-color: var(--border);
 }
-.sponsor-card h3 {
+.partner-card h3 {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 4px;
   color: var(--ink);
 }
-.sponsor-card .sponsor-type {
+.partner-card .partner-type {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 1px;
@@ -494,12 +494,12 @@ nav {
   color: var(--moss);
   margin-bottom: 12px;
 }
-.sponsor-card p {
+.partner-card p {
   font-size: 14px;
   color: var(--warm-gray);
   line-height: 1.55;
 }
-.sponsor-card .sponsor-link {
+.partner-card .partner-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -513,7 +513,7 @@ nav {
   text-decoration: none;
   transition: all 0.2s;
 }
-.sponsor-card .sponsor-link:hover {
+.partner-card .partner-link:hover {
   background: var(--moss-light);
   transform: translateY(-1px);
 }
@@ -723,5 +723,5 @@ footer a:hover { color: var(--ink); }
     padding-bottom: 100px;
   }
 
-  .sponsor-card { padding: 24px 20px; }
+  .partner-card { padding: 24px 20px; }
 }
