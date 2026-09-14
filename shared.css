@@ -502,12 +502,22 @@ nav {
 .sponsor-card .sponsor-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 12px;
-  font-size: 13px;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: var(--moss);
+  color: white;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--moss);
+  text-decoration: none;
+  transition: all 0.2s;
 }
+.sponsor-card .sponsor-link:hover {
+  background: var(--moss-light);
+  transform: translateY(-1px);
+}
+
 
 /* DONATE OPTION */
 .donate-option {
