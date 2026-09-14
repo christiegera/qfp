@@ -74,10 +74,21 @@
       top: 0;
       z-index: 50;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       padding: 12px 0;
       margin-bottom: 8px;
     }
+    .doc-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--warm-gray);
+      text-decoration: none;
+    }
+    .doc-back:hover { color: var(--ink); }
     .print-btn {
       display: inline-flex;
       align-items: center;
@@ -362,6 +373,10 @@
   </div>
 
   <div class="print-bar">
+    <a href="portal.html" class="doc-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Portal
+    </a>
     <button class="print-btn" onclick="window.print()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
       Print
