@@ -713,5 +713,17 @@ footer a:hover { color: var(--ink); }
     padding-bottom: 100px;
   }
 
+  .sponsor-link {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #C1502E !important;   /* swap for your rust/green accent */
+  pointer-events: auto !important;
+}
+
+
   .sponsor-card { padding: 24px 20px; }
 }
