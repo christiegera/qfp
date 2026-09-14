@@ -85,6 +85,17 @@
       width: auto;
       margin-bottom: 16px;
     }
+    .portal-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--warm-gray);
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+    .portal-back:hover { color: var(--ink); }
     .portal-header h1 {
       font-size: 28px;
       font-weight: 750;
@@ -223,6 +234,10 @@
 <div class="portal">
 
   <div class="portal-header">
+    <a href="index.html" class="portal-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to website
+    </a>
     <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="portal-logo">
     <h1>Quakertown Food Pantry</h1>
     <p>Volunteer Portal</p>
