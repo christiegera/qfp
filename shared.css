@@ -725,3 +725,5 @@ footer a:hover { color: var(--ink); }
 
   .partner-card { padding: 24px 20px; }
 }
+
+.partner-type { display: none; }
