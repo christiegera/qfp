@@ -727,3 +727,22 @@ footer a:hover { color: var(--ink); }
 }
 
 .partner-type { display: none; }
+
+.partner-logo {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+.partner-logo img {
+  max-height: 48px;
+  max-width: 88%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
