@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Volunteer Sign Up · Quakertown Food Pantry</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2254%22 font-size=%2282%22 dominant-baseline=%22central%22 text-anchor=%22middle%22>%F0%9F%A5%95</text></svg>">
 <style>
   :root{
     --orange:#fd7f54; --orange-deep:#f97316; --ink:#1f2937; --ink-soft:#6b7280;
@@ -35,7 +36,7 @@
   .dot.open{background:#fff;border:2px solid var(--green);}
   .dot.sel{background:var(--orange);}
   .dot.full{background:#e5e7eb;}
-  .dot.grp{background:var(--blue);}
+  .dot.grp{background:#aab0ba;}
 
   .weekhead{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-bottom:8px;}
   .weekhead div{text-align:center;font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);}
@@ -45,13 +46,17 @@
   .cell.blank{background:transparent;border:none;}
   .cell.weekend{background:#fafafa;border-style:dashed;opacity:.5;}
   .daynum{font-size:1.05em;font-weight:700;color:var(--ink);margin-bottom:3px;}
+  .celldate{display:none;font-weight:700;color:var(--ink);font-size:1.05em;margin-bottom:3px;}
   .cell.shift{cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s;}
   .cell.shift:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);border-color:var(--orange);}
   .cell.selected{border-color:var(--orange);background:#fff7f3;box-shadow:0 0 0 2px rgba(253,127,84,.25);}
-  .cell.full{cursor:default;background:#f9fafb;opacity:.72;}
-  .cell.full:hover{transform:none;box-shadow:none;border-color:var(--line);}
-  .cell.group{cursor:default;border-color:var(--blue);background:#eff6ff;}
-  .cell.group:hover{transform:none;box-shadow:none;border-color:var(--blue);}
+  .cell.full,.cell.group{cursor:default;background:#eceef1;border-color:#d7dbe0;}
+  .cell.full:hover,.cell.group:hover{transform:none;box-shadow:none;border-color:#d7dbe0;}
+  .cell.full .daynum,.cell.group .daynum,.cell.full .celldate,.cell.group .celldate{color:#7b828c;}
+  .cell.full .time,.cell.group .time{color:#9199a3;}
+  .cell.full .slot.filled,.cell.full .avail{color:#6b7280;}
+  .cell.group .pill{background:#dde1e6;color:#5f6771;}
+  .cell.group .slot.group{color:#5f6771;}
 
   .time{font-size:.74em;font-weight:600;color:var(--orange-deep);margin-bottom:6px;}
   .roster{display:flex;flex-direction:column;gap:2px;}
@@ -100,10 +105,19 @@
   .success button{padding:12px 26px;border:none;border-radius:10px;background:var(--orange);color:#fff;font-weight:700;font-family:inherit;font-size:1em;cursor:pointer;}
 
   @media(max-width:640px){
-    .grid,.weekhead{gap:4px;}
-    .cell{min-height:92px;padding:5px;border-radius:7px;}
-    .sup{display:none;}
-    .daynum{font-size:.9em;}
+    .weekhead{display:none;}
+    .grid{display:block;}
+    .cell:not(.shift){display:none;}
+    .cell.shift{width:100%;margin-bottom:10px;min-height:0;padding:12px 14px;}
+    .daynum{display:none;}
+    .celldate{display:block;}
+    .time{font-size:.92em;margin-bottom:8px;}
+    .slot{font-size:.92em;line-height:1.65;}
+    .sup{display:block;font-size:.82em;margin-top:8px;}
+    .check{top:12px;right:12px;width:26px;height:26px;}
+    .container{padding:16px 12px;}
+    body{padding-bottom:250px;}
+    .fields{grid-template-columns:1fr 1fr;}
   }
 </style>
 </head>
@@ -286,6 +300,7 @@
       html+='<div class="'+cls+'" data-key="'+k+'">';
       html+='<div class="check">&#10003;</div>';
       html+='<div class="daynum">'+dd+'</div>';
+      html+='<div class="celldate">'+shift.date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+'</div>';
       html+='<div class="time">'+shift.time+'</div>';
       if(isGroup){
         html+='<div class="pill">Group day</div>';
@@ -399,7 +414,7 @@
       ['Tuesday','','Melissa Neville','215-555-0102','melissa@example.org'],
       ['Wednesday','','Amy Stank','215-555-0103','amys@example.org'],
       ['Thursday','','Christie Gera','215-555-0104','christie@example.org'],
-      ['Friday','','Rosemarie K.','215-555-0105','rose@example.org']];
+      ['Friday','Scouts Troop 5','Rosemarie K.','215-555-0105','rose@example.org']];
     signupsData=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status']];
     var sampleNames=[['Dawn','Miller'],['Robert','Hayes'],['Linda','Carter'],['James','Boyd'],['Susan','Reed']];
     var t=new Date(); t.setHours(0,0,0,0); var cnt=0;
@@ -407,7 +422,7 @@
       var dd=new Date(t); dd.setDate(t.getDate()+i);
       if(dd.getDay()===0||dd.getDay()===6) continue;
       var iso=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
-      var fillN=(cnt%3)+1;
+      var fillN=(cnt===0?5:(cnt%3)+1);
       for(var j=0;j<fillN;j++){ var nm=sampleNames[(cnt+j)%sampleNames.length]; signupsData.push(['',nm[0],nm[1],'','',iso,'','']); }
       cnt++;
     }
