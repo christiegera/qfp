@@ -1,434 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volunteer Sign Up · Quakertown Food Pantry</title>
+<style>
+  :root{
+    --orange:#fd7f54; --orange-deep:#f97316; --ink:#1f2937; --ink-soft:#6b7280;
+    --line:#e5e7eb; --paper:#f8f9fa; --paper-2:#ffffff;
+    --green:#059669; --green-light:#10b981; --blue:#3b82f6; --blue-deep:#1d4ed8;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--sans);background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);color:var(--ink);padding-bottom:160px;}
 
-gtag('config', 'G-2Z6B6D1YEX');
-gtag('config', 'AW-18452193951');
+  .hero{background:linear-gradient(135deg,var(--orange) 0%,var(--orange-deep) 100%);color:#fff;padding:30px 20px;text-align:center;box-shadow:0 4px 20px rgba(253,127,84,.3);}
+  .hero h1{font-size:clamp(1.6em,4vw,2.3em);font-weight:700;margin-bottom:6px;}
+  .hero p{font-size:1.05em;opacity:.95;}
 
-  // Track outbound link clicks
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('a');
-    if (!link) return;
-    var href = link.href || '';
+  .container{max-width:1200px;margin:0 auto;padding:22px 16px;}
 
-    if (href.includes('paypal.com')) {
-      gtag('event', 'donate_click', { method: 'paypal' });
-    } else if (href.includes('venmo.com')) {
-      gtag('event', 'donate_click', { method: 'venmo' });
-    } else if (href.includes('amazon.com')) {
-      gtag('event', 'wishlist_click');
-    } else if (href.includes('forms.gle')) {
-      gtag('event', 'volunteer_apply_click');
-    } else if (href.startsWith('mailto:')) {
-      gtag('event', 'email_click');
-    }
-  });
-</script>
+  .banner{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:11px 14px;font-size:.85em;margin-bottom:18px;text-align:center;}
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Volunteer Sign Up · Quakertown Food Pantry</title>
-  <link rel="icon" type="image/x-icon" href="carrot.png">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  .monthbar{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;}
+  .monthbar h2{font-size:1.25em;font-weight:700;color:var(--ink);min-width:220px;text-align:center;}
+  .navbtn{background:#fff;border:2px solid var(--line);border-radius:10px;width:46px;height:46px;font-size:1.3em;font-weight:700;color:var(--ink);cursor:pointer;transition:all .2s;line-height:1;}
+  .navbtn:hover:not(:disabled){border-color:var(--orange);color:var(--orange);}
+  .navbtn:disabled{opacity:.35;cursor:default;}
 
-    .qfp-calendar * { box-sizing: border-box; margin: 0; padding: 0; }
+  .legend{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;font-size:.78em;color:var(--ink-soft);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block;}
+  .dot.open{background:#fff;border:2px solid var(--green);}
+  .dot.sel{background:var(--orange);}
+  .dot.full{background:#e5e7eb;}
+  .dot.grp{background:var(--blue);}
 
-    .qfp-calendar {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      padding: 20px 0;
-    }
+  .weekhead{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-bottom:8px;}
+  .weekhead div{text-align:center;font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);}
 
-    .qfp-hero {
-      background: linear-gradient(135deg, #fd7f54 0%, #f97316 100%);
-      color: white; padding: 30px 20px; text-align: center;
-      box-shadow: 0 4px 20px rgba(253,127,84,0.3);
-      margin-bottom: 20px; border-radius: 12px;
-    }
-    .qfp-hero h1 { font-size: 2.2em; font-weight: 700; margin-bottom: 8px; }
-    .qfp-hero p  { font-size: 1.1em; opacity: 0.95; }
+  .grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;}
+  .cell{background:var(--paper-2);border:2px solid var(--line);border-radius:10px;min-height:168px;padding:8px;display:flex;flex-direction:column;position:relative;}
+  .cell.blank{background:transparent;border:none;}
+  .cell.weekend{background:#fafafa;border-style:dashed;opacity:.5;}
+  .daynum{font-size:1.05em;font-weight:700;color:var(--ink);margin-bottom:3px;}
+  .cell.shift{cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s;}
+  .cell.shift:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);border-color:var(--orange);}
+  .cell.selected{border-color:var(--orange);background:#fff7f3;box-shadow:0 0 0 2px rgba(253,127,84,.25);}
+  .cell.full{cursor:default;background:#f9fafb;opacity:.72;}
+  .cell.full:hover{transform:none;box-shadow:none;border-color:var(--line);}
+  .cell.group{cursor:default;border-color:var(--blue);background:#eff6ff;}
+  .cell.group:hover{transform:none;box-shadow:none;border-color:var(--blue);}
 
-    .qfp-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+  .time{font-size:.74em;font-weight:600;color:var(--orange-deep);margin-bottom:6px;}
+  .roster{display:flex;flex-direction:column;gap:2px;}
+  .slot{font-size:.7em;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .slot.filled{color:var(--green);font-weight:600;}
+  .slot.open{color:var(--ink-soft);}
+  .slot.group{color:var(--blue);font-weight:600;white-space:normal;}
+  .avail{margin-top:4px;font-size:.72em;font-weight:700;}
+  .avail.ok{color:var(--green);}
+  .avail.low{color:#d97706;}
+  .avail.none{color:var(--ink-soft);}
+  .sup{font-size:.68em;color:var(--ink-soft);margin-top:auto;padding-top:5px;line-height:1.3;}
+  .check{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:.8em;font-weight:700;display:none;align-items:center;justify-content:center;line-height:1;}
+  .cell.selected .check{display:flex;}
+  .pill{display:inline-block;font-size:.6em;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:20px;background:#eff6ff;color:var(--blue);margin-top:4px;}
 
-    .qfp-month-nav {
-      display: flex; align-items: center; justify-content: center;
-      gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
-    }
-    .qfp-month-btn {
-      background: white; border: 2px solid #e5e7eb; border-radius: 8px;
-      padding: 8px 18px; font-size: 0.85em; font-weight: 600;
-      color: #374151; cursor: pointer; transition: all 0.2s; font-family: inherit;
-    }
-    .qfp-month-btn:hover  { border-color: #fd7f54; color: #fd7f54; }
-    .qfp-month-btn.active { background: #fd7f54; border-color: #fd7f54; color: white; }
+  .loading,.error{text-align:center;padding:60px 20px;color:var(--ink-soft);font-size:1.05em;}
+  .error{color:#dc2626;}
 
-    .qfp-week-section { margin-bottom: 36px; }
-    .qfp-week-label {
-      font-size: 1em; font-weight: 700; color: #374151;
-      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;
-    }
+  /* Signup tray */
+  .tray{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(0,0,0,.12);transform:translateY(110%);transition:transform .25s ease;z-index:900;}
+  .tray.open{transform:translateY(0);}
+  .tray-inner{max-width:1200px;margin:0 auto;padding:16px;}
+  .tray-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+  .tray-count{font-weight:700;font-size:1.05em;}
+  .tray-count span{color:var(--orange-deep);}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;max-height:72px;overflow:auto;}
+  .chip{background:#fff7f3;border:1px solid var(--orange);color:var(--orange-deep);border-radius:20px;padding:4px 10px;font-size:.76em;font-weight:600;display:inline-flex;align-items:center;gap:6px;}
+  .chip b{cursor:pointer;font-size:1.1em;line-height:1;}
+  .fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+  @media(max-width:720px){.fields{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  .fields input{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:9px;font-size:.95em;font-family:inherit;}
+  .fields input:focus{outline:none;border-color:var(--orange);}
+  .submit{width:100%;padding:14px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--green-light) 0%,var(--green) 100%);color:#fff;font-size:1.05em;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 3px 10px rgba(16,185,129,.3);transition:transform .15s;}
+  .submit:hover:not(:disabled){transform:translateY(-1px);}
+  .submit:disabled{opacity:.6;cursor:default;}
+  .formnote{font-size:.72em;color:var(--ink-soft);text-align:center;margin-top:8px;}
 
-    .qfp-shifts { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
-    @media (max-width: 1100px) { .qfp-shifts { grid-template-columns: repeat(3,1fr); } }
-    @media (max-width: 700px)  { .qfp-shifts { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 480px)  { .qfp-shifts { grid-template-columns: 1fr; } }
+  /* Success overlay */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+  .overlay.open{display:flex;}
+  .success{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:34px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .success .big{font-size:3em;margin-bottom:10px;}
+  .success h3{font-size:1.4em;color:var(--ink);margin-bottom:10px;}
+  .success p{color:var(--ink-soft);font-size:.95em;line-height:1.55;margin-bottom:20px;}
+  .success button{padding:12px 26px;border:none;border-radius:10px;background:var(--orange);color:#fff;font-weight:700;font-family:inherit;font-size:1em;cursor:pointer;}
 
-    .qfp-shift-card {
-      background: white; border-radius: 10px; padding: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 2px solid transparent;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .qfp-shift-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.11); }
-    .qfp-shift-card.full        { background: #f9fafb; opacity: 0.82; }
-    .qfp-shift-card.group-shift { border-color: #3b82f6; background: #eff6ff; }
-
-    .qfp-shift-date { font-weight: 700; color: #1f2937; font-size: 0.95em; }
-    .qfp-shift-time { color: #fd7f54; font-size: 0.8em; font-weight: 600; margin-top: 2px; margin-bottom: 10px; }
-
-    .qfp-volunteer-slot {
-      font-size: 0.75em; padding: 3px 0; color: #6b7280; border-bottom: 1px solid #f3f4f6;
-    }
-    .qfp-volunteer-slot.filled { color: #059669; font-weight: 500; }
-    .qfp-volunteer-slot.group  { color: #3b82f6; font-weight: 500; }
-
-    .qfp-action-btn {
-      display: block; width: 100%; padding: 8px 12px; border-radius: 6px;
-      text-align: center; font-weight: 600; font-size: 0.75em; font-family: inherit;
-      border: none; cursor: pointer; margin-top: 10px; transition: all 0.2s;
-    }
-    .qfp-btn-signup {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white; box-shadow: 0 3px 8px rgba(16,185,129,0.3);
-    }
-    .qfp-btn-signup:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.4); }
-    .qfp-btn-full  { background: #f3f4f6; color: #6b7280; cursor: default; }
-    .qfp-btn-group { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; cursor: default; }
-
-    .qfp-supervisor-info {
-      margin-top: 10px; padding: 8px; background: #f8fafc;
-      border-radius: 4px; border-left: 3px solid #fd7f54;
-    }
-    .qfp-supervisor-info h4 {
-      color: #374151; font-size: 0.65em; font-weight: 700;
-      text-transform: uppercase; margin-bottom: 4px;
-    }
-    .qfp-supervisor-details { color: #4b5563; font-size: 0.7em; line-height: 1.5; }
-
-    .qfp-loading { text-align: center; padding: 60px 20px; color: #6b7280; font-size: 1.1em; }
-    .qfp-error   { text-align: center; padding: 60px 20px; color: #dc2626; font-size: 1.1em; }
-
-    /* Modal */
-    .qfp-modal {
-      display: none; position: fixed; z-index: 9999;
-      left: 0; top: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.55);
-    }
-    .qfp-modal-content {
-      background: white; margin: 3% auto; border-radius: 14px;
-      width: 95%; max-width: 660px; max-height: 92vh;
-      overflow: hidden; display: flex; flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-    }
-    .qfp-modal-header {
-      background: linear-gradient(135deg, #fd7f54 0%, #f97316 100%);
-      color: white; padding: 18px 20px; border-radius: 14px 14px 0 0;
-      display: flex; justify-content: space-between; align-items: flex-start;
-      flex-shrink: 0;
-    }
-    .qfp-modal-title    { font-size: 1.15em; font-weight: 700; }
-    .qfp-modal-subtitle { font-size: 0.85em; opacity: 0.9; margin-top: 3px; }
-    .qfp-modal-date {
-      display: inline-block; margin-top: 8px;
-      background: rgba(255,255,255,0.25); border-radius: 20px;
-      padding: 3px 12px; font-size: 0.82em; font-weight: 600;
-    }
-    .qfp-close {
-      color: white; font-size: 26px; font-weight: bold;
-      cursor: pointer; line-height: 1; padding: 2px 6px;
-      transition: opacity 0.2s; border-radius: 50%; flex-shrink: 0;
-    }
-    .qfp-close:hover { opacity: 0.7; background: rgba(255,255,255,0.15); }
-
-    .qfp-form-crop-wrapper {
-      flex: 1; min-height: 520px; overflow: hidden; position: relative;
-    }
-    .qfp-form-crop-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      min-height: 520px;
-      border: none; display: block;
-    }
-
-    .qfp-modal-footer {
-      background: #f8fafc; border-top: 1px solid #e5e7eb;
-      padding: 10px 20px; text-align: center; font-size: 0.72em;
-      color: #9ca3af; border-radius: 0 0 14px 14px; flex-shrink: 0;
-    }
-
-    @media (max-width: 768px) {
-      .qfp-modal-content { margin: 2% auto; width: 98%; max-height: 96vh; border-radius: 10px; }
-      .qfp-modal-header  { border-radius: 10px 10px 0 0; padding: 14px 16px; }
-      .qfp-modal-footer  { border-radius: 0 0 10px 10px; }
-      .qfp-hero h1 { font-size: 1.8em; }
-    }
-  </style>
+  @media(max-width:640px){
+    .grid,.weekhead{gap:4px;}
+    .cell{min-height:92px;padding:5px;border-radius:7px;}
+    .sup{display:none;}
+    .daynum{font-size:.9em;}
+  }
+</style>
 </head>
 <body>
-<div class="qfp-calendar">
-  <div class="qfp-hero">
+  <div class="hero">
     <h1>&#x1F955; Quakertown Food Pantry</h1>
-    <p>Volunteer Shift Schedule &#8212; Join us in making a difference!</p>
+    <p>Volunteer Sign Up &#8212; tap the days you can help, then add your details</p>
   </div>
-  <div class="qfp-container">
-    <div class="qfp-month-nav" id="qfpMonthNav"></div>
-    <div id="qfp-calendar"><div class="qfp-loading">Loading volunteer shifts&#8230;</div></div>
+
+  <div class="container">
+    <div id="banner" class="banner" style="display:none;"></div>
+
+    <div class="monthbar">
+      <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
+      <h2 id="monthLabel">Loading&#8230;</h2>
+      <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot open"></i> Open</span>
+      <span><i class="dot sel"></i> Selected</span>
+      <span><i class="dot full"></i> Full</span>
+      <span><i class="dot grp"></i> Group day</span>
+    </div>
+
+    <div class="weekhead">
+      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
+    <div id="grid" class="grid"><div class="loading" style="grid-column:1/-1;">Loading volunteer shifts&#8230;</div></div>
   </div>
-  <div id="qfpSignupModal" class="qfp-modal">
-    <div class="qfp-modal-content">
-      <div class="qfp-modal-header">
-        <div>
-          <div class="qfp-modal-title">Volunteer Sign-Up</div>
-          <div class="qfp-modal-subtitle">Quakertown Food Pantry</div>
-          <div class="qfp-modal-date" id="qfpSelectedDate"></div>
-        </div>
-        <span class="qfp-close" id="qfpCloseBtn">&#215;</span>
+
+  <!-- Signup tray -->
+  <div class="tray" id="tray">
+    <div class="tray-inner">
+      <div class="tray-top">
+        <div class="tray-count"><span id="trayCount">0</span> shift<span id="trayPlural">s</span> selected</div>
       </div>
-      <div class="qfp-form-crop-wrapper">
-        <iframe id="qfpSignupFrame" src="about:blank"
-          frameborder="0" marginheight="0" marginwidth="0">Loading&#8230;</iframe>
+      <div class="chips" id="chips"></div>
+      <div class="fields">
+        <input type="text" id="fFirst" placeholder="First name" autocomplete="given-name">
+        <input type="text" id="fLast" placeholder="Last name" autocomplete="family-name">
+        <input type="email" id="fEmail" placeholder="Email" autocomplete="email">
+        <input type="tel" id="fPhone" placeholder="Phone" autocomplete="tel">
       </div>
-      <div class="qfp-modal-footer">Questions? Contact the Quakertown Food Pantry for help.</div>
+      <button class="submit" id="submitBtn">Sign me up</button>
+      <div class="formnote" id="formNote">You'll get a confirmation email for each shift.</div>
     </div>
   </div>
-</div>
+
+  <!-- Success overlay -->
+  <div class="overlay" id="overlay">
+    <div class="success">
+      <div class="big">&#x1F389;</div>
+      <h3>You're signed up!</h3>
+      <p id="successMsg"></p>
+      <button id="successClose">Done</button>
+    </div>
+  </div>
+
 <script>
-(function () {
+(function(){
   'use strict';
 
-  var SPREADSHEET_ID  = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
+  var SPREADSHEET_ID = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
   var SUPERVISORS_GID = '502386465';
-  var SIGNUPS_GID     = '1435555973';
-  var BASE_FORM_URL   = 'https://docs.google.com/forms/d/e/1FAIpQLSe1bebeMjCP6pak7I2EJlCQ7fbFJ6DDCYrsj8xxI9JzW2L7Lg/viewform?embedded=true';
-  var DATE_ENTRY      = 'entry.579980168';
+  var SIGNUPS_GID = '1435555973';
+  var FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSe1bebeMjCP6pak7I2EJlCQ7fbFJ6DDCYrsj8xxI9JzW2L7Lg/formResponse';
+  var E = { first:'entry.871319408', last:'entry.1622497140', email:'entry.1333360871', phone:'entry.747210424', date:'entry.579980168' };
+  var MAX_SLOTS = 5;
 
-  var supervisorsData = [];
-  var signupsData     = [];
-  var allShifts       = [];
-  var activeMonth     = -1;
+  var supervisorsData = [], signupsData = [], shiftsByKey = {}, months = [], monthIdx = 0;
+  var selected = {};
 
-  var modal    = document.getElementById('qfpSignupModal');
-  var closeBtn = document.getElementById('qfpCloseBtn');
-  var iframe   = document.getElementById('qfpSignupFrame');
+  var grid = document.getElementById('grid');
+  var monthLabel = document.getElementById('monthLabel');
+  var tray = document.getElementById('tray');
+  var overlay = document.getElementById('overlay');
 
-  function loadData() {
-    var base = 'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID + '/export?format=csv&gid=';
+  function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid; }
+
+  function loadData(){
     Promise.all([
-      fetch(base + SUPERVISORS_GID).then(function(r){ return r.text(); }),
-      fetch(base + SIGNUPS_GID).then(function(r){ return r.text(); })
-    ]).then(function(res) {
+      fetch(csvUrl(SUPERVISORS_GID)).then(function(r){ if(!r.ok) throw 0; return r.text(); }),
+      fetch(csvUrl(SIGNUPS_GID)).then(function(r){ if(!r.ok) throw 0; return r.text(); })
+    ]).then(function(res){
       supervisorsData = parseCSV(res[0]);
-      signupsData     = parseCSV(res[1]);
-      allShifts       = generateShifts();
-      buildMonthNav();
-      renderCalendar();
-    }).catch(function() {
-      document.getElementById('qfp-calendar').innerHTML =
-        '<div class="qfp-error">Error loading shifts. Please try again later.</div>';
+      signupsData = parseCSV(res[1]);
+      init();
+    }).catch(function(){
+      useSample();
+      init();
     });
   }
 
-  function parseCSV(csv) {
-    return csv.split('\n').filter(function(l){ return l.trim(); })
-      .map(function(l){ return l.split(',').map(function(c){ return c.replace(/"/g,'').trim(); }); });
-  }
-
-  function buildMonthNav() {
-    var seen = {};
-    var monthList = [];
-    allShifts.forEach(function(s) {
-      var d   = new Date(s.date);
-      var key = d.getFullYear() + '-' + d.getMonth();
-      if (!seen[key]) {
-        seen[key] = true;
-        monthList.push({ month: d.getMonth(), year: d.getFullYear(),
-          label: d.toLocaleDateString('en-US', { month:'long', year:'numeric' }) });
+  function parseCSV(text){
+    var rows=[], row=[], cur='', q=false;
+    for(var i=0;i<text.length;i++){
+      var c=text[i];
+      if(q){
+        if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; }
+        else cur+=c;
+      } else {
+        if(c==='"') q=true;
+        else if(c===','){ row.push(cur); cur=''; }
+        else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(cur); rows.push(row); row=[]; cur=''; }
+        else cur+=c;
       }
-    });
-    var nav = document.getElementById('qfpMonthNav');
-    nav.innerHTML = '';
-    var allBtn = document.createElement('button');
-    allBtn.className = 'qfp-month-btn active';
-    allBtn.textContent = 'All';
-    allBtn.onclick = function(){ setMonth(-1); };
-    nav.appendChild(allBtn);
-    monthList.forEach(function(m) {
-      var btn = document.createElement('button');
-      btn.className = 'qfp-month-btn';
-      btn.textContent = m.label;
-      btn.dataset.month = m.month;
-      btn.onclick = function(){ setMonth(m.month); };
-      nav.appendChild(btn);
-    });
-  }
-
-  function setMonth(month) {
-    activeMonth = month;
-    document.querySelectorAll('.qfp-month-btn').forEach(function(b) {
-      b.classList.remove('active');
-      if (month === -1 && b.textContent === 'All') b.classList.add('active');
-      if (month !== -1 && parseInt(b.dataset.month) === month) b.classList.add('active');
-    });
-    renderCalendar();
-  }
-
-  function renderCalendar() {
-    var shifts = activeMonth === -1 ? allShifts :
-      allShifts.filter(function(s){ return new Date(s.date).getMonth() === activeMonth; });
-
-    var cal = document.getElementById('qfp-calendar');
-    if (!shifts.length) { cal.innerHTML = '<div class="qfp-loading">No shifts found.</div>'; return; }
-
-    var html = '', currentWeek = '';
-    shifts.forEach(function(shift) {
-      var date      = new Date(shift.date);
-      var weekStart = getWeekStart(date);
-      if (weekStart !== currentWeek) {
-        if (currentWeek !== '') html += '</div></div>';
-        currentWeek = weekStart;
-        html += '<div class="qfp-week-section">';
-        html += '<div class="qfp-week-label">Week of ' + weekStart + '</div>';
-        html += '<div class="qfp-shifts">';
-      }
-      var filled  = shift.volunteers.length;
-      var isFull  = filled >= 5;
-      var isGroup = shift.groupShift;
-      var cls     = isGroup ? 'group-shift' : (isFull ? 'full' : '');
-
-      html += '<div class="qfp-shift-card ' + cls + '">';
-      html += '<div class="qfp-shift-date">' + shift.day + ' ' + formatDate(date) + '</div>';
-      html += '<div class="qfp-shift-time">' + shift.time + '</div>';
-      html += '<div class="qfp-volunteers">';
-      for (var i = 0; i < 5; i++) {
-        if (isGroup)
-          html += '<div class="qfp-volunteer-slot group">&#128101; ' + isGroup + '</div>';
-        else if (i < filled)
-          html += '<div class="qfp-volunteer-slot filled">&#128100; ' + shift.volunteers[i] + '</div>';
-        else
-          html += '<div class="qfp-volunteer-slot empty">&#9675; Available</div>';
-      }
-      html += '</div>';
-      if (isGroup)
-        html += '<div class="qfp-action-btn qfp-btn-group">Group Shift</div>';
-      else if (isFull)
-        html += '<div class="qfp-action-btn qfp-btn-full">Shift Full</div>';
-      else {
-        var fd  = formatDateForForm(date);
-        var lbl = shift.day + ' ' + formatDate(date);
-        html += '<button class="qfp-action-btn qfp-btn-signup" onclick="window.openQFPModal(\'' + lbl + '\',\'' + fd + '\')">Sign Up</button>';
-      }
-      html += '<div class="qfp-supervisor-info"><h4>Supervisor</h4>';
-      html += '<div class="qfp-supervisor-details">';
-      html += '<strong>' + shift.supervisor.name + '</strong><br>';
-      html += '&#128222; ' + shift.supervisor.phone + '<br>';
-      html += '&#9993; '  + shift.supervisor.email;
-      html += '</div></div></div>';
-    });
-    html += '</div></div>';
-    cal.innerHTML = html;
-  }
-
-  window.openQFPModal = function(label, formDate) {
-    document.getElementById('qfpSelectedDate').textContent = label;
-    iframe.src = BASE_FORM_URL + '&' + DATE_ENTRY + '=' + encodeURIComponent(formDate);
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  };
-
-  function closeModal() {
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-    iframe.src = 'about:blank';
-  }
-
-  closeBtn.onclick = closeModal;
-  window.onclick = function(e) { if (e.target === modal) closeModal(); };
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
-
-  function generateShifts() {
-    var shifts = {};
-    var today  = new Date(); today.setHours(0,0,0,0);
-    var end    = new Date(today); end.setDate(today.getDate() + 84);
-    for (var d = new Date(today); d <= end; d.setDate(d.getDate() + 1)) {
-      var day = d.getDay();
-      if (day === 0 || day === 6) continue;
-      var copy    = new Date(d);
-      var dateStr = copy.toDateString();
-      var dayName = getDayName(copy);
-      var weekNum = getWeekNumber(copy);
-      shifts[dateStr] = {
-        date: dateStr, day: dayName, time: getShiftTime(dayName),
-        supervisor: findSupervisor(dayName, weekNum),
-        groupShift: getGroupName(dayName, weekNum),
-        volunteers: []
-      };
     }
-    for (var i = 1; i < signupsData.length; i++) {
-      var row = signupsData[i];
-      if (!row[5]) continue;
-      var shiftDate = new Date(row[5]).toDateString();
-      if (row[7] === 'Cancelled') continue;
-      if (shifts[shiftDate])
-        shifts[shiftDate].volunteers.push(row[1] + ' ' + (row[2]||'').charAt(0) + '.');
-    }
-    return Object.values(shifts).sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(c){ return (c||'').trim(); }); });
   }
 
-  function getDayName(d) {
-    return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
-  }
-  function getShiftTime(day) {
-    return (day === 'Tuesday' || day === 'Thursday') ? '6PM \u2013 8PM' : '10AM \u2013 1PM';
-  }
-  function getWeekNumber(d) {
-    return (['1st','2nd','3rd','4th','5th'])[Math.ceil(d.getDate()/7)-1] || '5th';
-  }
-  function findSupervisor(dayName, weekNum) {
-    for (var i = 1; i < supervisorsData.length; i++) {
-      var row = supervisorsData[i];
-      if (row[0] === dayName || row[0] === weekNum + ' ' + dayName)
-        return { name: row[2]||'TBD', phone: row[3]||'TBD', email: row[4]||'TBD' };
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function dayName(d){ return DAYS[d.getDay()]; }
+  function shiftTime(day){ return (day==='Tuesday'||day==='Thursday')?'6:00 – 8:00 PM':'10:00 AM – 1:00 PM'; }
+  function weekNum(d){ return (['1st','2nd','3rd','4th','5th'])[Math.ceil(d.getDate()/7)-1]||'5th'; }
+  function keyOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+  function findSupervisor(day,wk){
+    for(var i=1;i<supervisorsData.length;i++){
+      var r=supervisorsData[i];
+      if(r[0]===day||r[0]===wk+' '+day) return {name:(r[2]||'TBD').trim(),phone:(r[3]||'').trim(),email:(r[4]||'').trim()};
     }
-    return { name:'TBD', phone:'TBD', email:'TBD' };
+    return {name:'TBD',phone:'',email:''};
   }
-  function getGroupName(dayName, weekNum) {
-    for (var i = 1; i < supervisorsData.length; i++) {
-      var row = supervisorsData[i];
-      if ((row[0] === dayName || row[0] === weekNum + ' ' + dayName) && row[1] && row[1] !== 'NA')
-        return row[1];
+  function groupName(day,wk){
+    for(var i=1;i<supervisorsData.length;i++){
+      var r=supervisorsData[i];
+      if((r[0]===day||r[0]===wk+' '+day)&&r[1]&&r[1].trim()&&r[1].trim()!=='NA') return r[1].trim();
     }
     return false;
   }
-  function getWeekStart(d) {
-    var copy = new Date(d);
-    var diff = copy.getDate() - copy.getDay() + (copy.getDay() === 0 ? -6 : 1);
-    copy.setDate(diff);
-    return copy.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+
+  function buildShifts(){
+    shiftsByKey={};
+    var today=new Date(); today.setHours(0,0,0,0);
+    var end=new Date(today); end.setDate(today.getDate()+84);
+    for(var d=new Date(today); d<=end; d.setDate(d.getDate()+1)){
+      var wd=d.getDay(); if(wd===0||wd===6) continue;
+      var c=new Date(d), dn=dayName(c), wk=weekNum(c);
+      shiftsByKey[keyOf(c)]={ key:keyOf(c), date:new Date(c), day:dn, time:shiftTime(dn),
+        supervisor:findSupervisor(dn,wk), group:groupName(dn,wk), volunteers:[] };
+    }
+    for(var i=1;i<signupsData.length;i++){
+      var row=signupsData[i]; if(!row[5]) continue;
+      if((row[7]||'').trim()==='Cancelled') continue;
+      var sd=new Date(row[5]); if(isNaN(sd)) continue;
+      var k=keyOf(sd);
+      if(shiftsByKey[k]) shiftsByKey[k].volunteers.push((row[1]||'')+' '+((row[2]||'').charAt(0))+'.');
+    }
   }
-  function formatDate(d) {
-    return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+
+  function buildMonths(){
+    var seen={}; months=[];
+    Object.keys(shiftsByKey).sort().forEach(function(k){
+      var d=shiftsByKey[k].date, mk=d.getFullYear()+'-'+d.getMonth();
+      if(!seen[mk]){ seen[mk]=true; months.push({y:d.getFullYear(),m:d.getMonth()}); }
+    });
+    var now=new Date();
+    monthIdx=0;
+    for(var i=0;i<months.length;i++){ if(months[i].y===now.getFullYear()&&months[i].m===now.getMonth()){ monthIdx=i; break; } }
   }
-  function formatDateForForm(d) {
-    var y  = d.getFullYear();
-    var m  = String(d.getMonth()+1).padStart(2,'0');
-    var dy = String(d.getDate()).padStart(2,'0');
-    return y + '-' + m + '-' + dy;
+
+  function render(){
+    var mo=months[monthIdx];
+    monthLabel.textContent=new Date(mo.y,mo.m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    document.getElementById('prevBtn').disabled=(monthIdx===0);
+    document.getElementById('nextBtn').disabled=(monthIdx===months.length-1);
+
+    var first=new Date(mo.y,mo.m,1), startDay=first.getDay(), daysIn=new Date(mo.y,mo.m+1,0).getDate();
+    var html='';
+    for(var b=0;b<startDay;b++) html+='<div class="cell blank"></div>';
+    var today=new Date(); today.setHours(0,0,0,0);
+    for(var dd=1;dd<=daysIn;dd++){
+      var d=new Date(mo.y,mo.m,dd), wd=d.getDay(), k=keyOf(d), shift=shiftsByKey[k];
+      if(wd===0||wd===6){ html+='<div class="cell weekend"><div class="daynum">'+dd+'</div></div>'; continue; }
+      if(!shift||d<today){ html+='<div class="cell"><div class="daynum" style="color:#cbd5e1">'+dd+'</div></div>'; continue; }
+      var filled=shift.volunteers.length, isFull=filled>=MAX_SLOTS, isGroup=!!shift.group, isSel=!!selected[k];
+      var cls='cell shift'+(isGroup?' group':'')+(isFull&&!isGroup?' full':'')+(isSel?' selected':'');
+      html+='<div class="'+cls+'" data-key="'+k+'">';
+      html+='<div class="check">&#10003;</div>';
+      html+='<div class="daynum">'+dd+'</div>';
+      html+='<div class="time">'+shift.time+'</div>';
+      if(isGroup){
+        html+='<div class="pill">Group day</div>';
+        html+='<div class="roster"><div class="slot group">&#128101; '+esc(shift.group)+'</div></div>';
+      } else {
+        html+='<div class="roster">';
+        for(var si=0;si<MAX_SLOTS;si++){
+          if(si<filled) html+='<div class="slot filled">&#128100; '+esc(shift.volunteers[si])+'</div>';
+          else html+='<div class="slot open">&#9675; Open</div>';
+        }
+        html+='</div>';
+        if(isFull) html+='<div class="avail">Full</div>';
+      }
+      if(shift.supervisor&&shift.supervisor.name&&shift.supervisor.name!=='TBD') html+='<div class="sup">Sup: '+esc(shift.supervisor.name)+'</div>';
+      html+='</div>';
+    }
+    grid.innerHTML=html;
+    Array.prototype.forEach.call(grid.querySelectorAll('.cell.shift:not(.full):not(.group)'),function(el){
+      el.addEventListener('click',function(){ toggle(el.getAttribute('data-key')); });
+    });
+  }
+
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function toggle(k){
+    if(selected[k]) delete selected[k]; else selected[k]=shiftsByKey[k];
+    render(); updateTray();
+  }
+
+  function updateTray(){
+    var keys=Object.keys(selected).sort(), n=keys.length;
+    document.getElementById('trayCount').textContent=n;
+    document.getElementById('trayPlural').textContent=(n===1?'':'s');
+    var chips=document.getElementById('chips'); chips.innerHTML='';
+    keys.forEach(function(k){
+      var s=selected[k], label=s.date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      var c=document.createElement('div'); c.className='chip';
+      c.innerHTML=esc(label)+' <b data-k="'+k+'">&#215;</b>';
+      c.querySelector('b').addEventListener('click',function(){ toggle(k); });
+      chips.appendChild(c);
+    });
+    tray.classList.toggle('open',n>0);
+  }
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function submitOne(dateObj,info){
+    var fd=new FormData();
+    fd.append(E.first,info.first);
+    fd.append(E.last,info.last);
+    fd.append(E.email,info.email);
+    fd.append(E.phone,info.phone);
+    fd.append(E.date+'_year',dateObj.getFullYear());
+    fd.append(E.date+'_month',dateObj.getMonth()+1);
+    fd.append(E.date+'_day',dateObj.getDate());
+    fd.append(E.date,dateObj.getFullYear()+'-'+pad(dateObj.getMonth()+1)+'-'+pad(dateObj.getDate()));
+    return fetch(FORM_ACTION,{method:'POST',mode:'no-cors',body:fd});
+  }
+
+  var submitBtn=document.getElementById('submitBtn');
+  submitBtn.addEventListener('click',function(){
+    var info={
+      first:document.getElementById('fFirst').value.trim(),
+      last:document.getElementById('fLast').value.trim(),
+      email:document.getElementById('fEmail').value.trim(),
+      phone:document.getElementById('fPhone').value.trim()
+    };
+    var keys=Object.keys(selected);
+    if(!keys.length){ return; }
+    if(!info.first||!info.last||!info.email||!info.phone){ flashNote('Please fill in all four fields.'); return; }
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(info.email)){ flashNote('Please enter a valid email address.'); return; }
+
+    submitBtn.disabled=true; submitBtn.textContent='Signing you up…';
+    var chain=Promise.resolve();
+    keys.forEach(function(k){ chain=chain.then(function(){ return submitOne(selected[k].date,info); }); });
+    chain.then(function(){
+      var n=keys.length;
+      document.getElementById('successMsg').innerHTML='You signed up for <b>'+n+' shift'+(n===1?'':'s')+'</b>. A confirmation email is on its way to <b>'+esc(info.email)+'</b> for each one, with your supervisor’s details and a cancellation link.';
+      overlay.classList.add('open');
+    }).catch(function(){
+      flashNote('Something went wrong. Please try again or call the pantry.');
+    }).then(function(){
+      submitBtn.disabled=false; submitBtn.textContent='Sign me up';
+    });
+  });
+
+  var noteTimer;
+  function flashNote(msg){
+    var n=document.getElementById('formNote'); n.textContent=msg; n.style.color='#dc2626';
+    clearTimeout(noteTimer);
+    noteTimer=setTimeout(function(){ n.textContent="You'll get a confirmation email for each shift."; n.style.color=''; },4000);
+  }
+
+  document.getElementById('successClose').addEventListener('click',function(){
+    overlay.classList.remove('open');
+    selected={};
+    ['fFirst','fLast','fEmail','fPhone'].forEach(function(id){ document.getElementById(id).value=''; });
+    updateTray(); render();
+  });
+
+  document.getElementById('prevBtn').addEventListener('click',function(){ if(monthIdx>0){ monthIdx--; render(); } });
+  document.getElementById('nextBtn').addEventListener('click',function(){ if(monthIdx<months.length-1){ monthIdx++; render(); } });
+
+  function init(){ buildShifts(); buildMonths(); if(!months.length){ grid.innerHTML='<div class="error" style="grid-column:1/-1;">No shifts available right now.</div>'; return; } render(); updateTray(); }
+
+  function useSample(){
+    document.getElementById('banner').style.display='block';
+    document.getElementById('banner').textContent='Preview mode: showing example shifts. On your live website, real shifts and signups load automatically.';
+    supervisorsData=[['Day','Group','Name','Phone','Email'],
+      ['Monday','','Amy Wright','215-555-0101','amy@example.org'],
+      ['Tuesday','','Melissa Neville','215-555-0102','melissa@example.org'],
+      ['Wednesday','','Amy Stank','215-555-0103','amys@example.org'],
+      ['Thursday','','Christie Gera','215-555-0104','christie@example.org'],
+      ['Friday','','Rosemarie K.','215-555-0105','rose@example.org']];
+    signupsData=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status']];
+    var sampleNames=[['Dawn','Miller'],['Robert','Hayes'],['Linda','Carter'],['James','Boyd'],['Susan','Reed']];
+    var t=new Date(); t.setHours(0,0,0,0); var cnt=0;
+    for(var i=1;i<=16 && cnt<5;i++){
+      var dd=new Date(t); dd.setDate(t.getDate()+i);
+      if(dd.getDay()===0||dd.getDay()===6) continue;
+      var iso=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
+      var fillN=(cnt%3)+1;
+      for(var j=0;j<fillN;j++){ var nm=sampleNames[(cnt+j)%sampleNames.length]; signupsData.push(['',nm[0],nm[1],'','',iso,'','']); }
+      cnt++;
+    }
   }
 
   loadData();
