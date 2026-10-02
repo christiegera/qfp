@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Volunteer Check In · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="carrot.png">
+<style>
+  :root{
+    --ink:#1A1A1A; --cream:#F5F3ED; --warm-gray:#6B6560; --light-gray:#B5B0A8;
+    --border:#E5E2DB; --orange:#E8751A; --orange-pale:#FFF0E0;
+    --green:#1B8A2A; --green-pale:#DCFADE; --blue:#2B7CB5; --blue-pale:#DBEDF9;
+    --pink:#C75B6B; --pink-pale:#FCE8EB; --red:#C0392B;
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(170deg,#FFF5EB 0%,var(--cream) 45%,var(--green-pale) 100%);
+    min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;}
+  .kiosk{max-width:860px;margin:0 auto;padding:34px 22px 80px;}
+
+  .khead{text-align:center;margin-bottom:22px;}
+  .kback{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--warm-gray);text-decoration:none;margin-bottom:14px;}
+  .kback:hover{color:var(--ink);}
+  .klogo{height:70px;width:auto;margin-bottom:10px;}
+  .khead h1{font-size:26px;font-weight:750;letter-spacing:-.6px;}
+  .khead p{font-size:15px;color:var(--warm-gray);font-weight:500;}
+
+  .shiftcard{background:#fff;border:2px solid var(--green-pale);border-radius:var(--radius);
+    padding:18px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
+  .shiftcard .day{font-size:20px;font-weight:750;letter-spacing:-.3px;}
+  .shiftcard .meta{font-size:14px;color:var(--warm-gray);}
+  .shiftcard .clock{margin-left:auto;font-size:26px;font-weight:750;color:var(--green);font-variant-numeric:tabular-nums;}
+  .shiftcard.closed{border-color:var(--border);}
+
+  .banner{background:var(--orange-pale);border:1px solid #F3CBA0;color:#8a4a12;border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:20px;text-align:center;}
+
+  .sectitle{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 12px;}
+  .sectitle h2{font-size:17px;font-weight:750;}
+  .sectitle .hint{font-size:13px;color:var(--warm-gray);}
+
+  .namegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+  .namebtn{background:#fff;border:2px solid var(--border);border-radius:14px;padding:20px;text-align:left;
+    font:inherit;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:3px;}
+  .namebtn:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.07);}
+  .namebtn:active{transform:translateY(0);}
+  .namebtn .nm{font-size:19px;font-weight:700;}
+  .namebtn .sub{font-size:13px;color:var(--warm-gray);}
+  .namebtn.done{background:#F3F8F3;border-color:var(--green-pale);cursor:default;}
+  .namebtn.done:hover{transform:none;box-shadow:none;}
+  .namebtn.done .nm{color:var(--green);}
+  .namebtn .tick{font-size:13px;font-weight:700;color:var(--green);}
+
+  .divider{display:flex;align-items:center;gap:12px;color:var(--warm-gray);font-size:14px;margin:28px 0 14px;}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border);}
+
+  .search{width:100%;padding:16px 18px;border:2px solid var(--border);border-radius:14px;font:inherit;font-size:18px;background:#fff;}
+  .search:focus{outline:none;border-color:var(--green);}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px;}
+
+  .newbtn{width:100%;margin-top:24px;background:var(--orange-pale);border:2px dashed #E8A96A;color:#8a4a12;
+    border-radius:14px;padding:20px;font:inherit;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+  .newbtn:hover{background:#FDE7CF;}
+
+  .herebar{margin-top:26px;background:#fff;border:2px solid var(--border);border-radius:14px;padding:16px 20px;}
+  .herebar h3{font-size:15px;font-weight:750;margin-bottom:8px;}
+  .herechips{display:flex;flex-wrap:wrap;gap:8px;}
+  .herechip{background:var(--green-pale);color:#0f5e1b;border-radius:100px;padding:5px 12px;font-size:13px;font-weight:600;}
+  .herebar .none{color:var(--light-gray);font-size:14px;}
+
+  /* Welcome overlay */
+  .welcome{position:fixed;inset:0;background:rgba(27,138,42,.97);display:none;align-items:center;justify-content:center;z-index:60;color:#fff;text-align:center;padding:24px;}
+  .welcome.show{display:flex;}
+  .welcome .pop{animation:pop .4s cubic-bezier(.2,.8,.3,1.2);}
+  @keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+  .welcome .big{font-size:90px;line-height:1;}
+  .welcome h2{font-size:44px;margin:12px 0 6px;}
+  .welcome p{font-size:20px;opacity:.92;}
+
+  /* Modal */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:70;align-items:center;justify-content:center;padding:20px;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .modal h3{font-size:21px;font-weight:750;margin-bottom:4px;}
+  .modal .sub{color:var(--warm-gray);font-size:14px;margin-bottom:16px;}
+  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:13px;}
+  .field label{font-size:13px;font-weight:700;}
+  .field input{font:inherit;font-size:17px;padding:12px 14px;border:2px solid var(--border);border-radius:10px;}
+  .field input:focus{outline:none;border-color:var(--green);}
+  .mactions{display:flex;gap:10px;justify-content:flex-end;margin-top:4px;}
+  .btn{border:none;border-radius:10px;font:inherit;font-weight:700;cursor:pointer;padding:12px 20px;font-size:16px;}
+  .btn.green{background:var(--green);color:#fff;}
+  .btn.ghost{background:#fff;border:1px solid var(--border);color:var(--ink);}
+
+  .foot{text-align:center;margin-top:34px;font-size:12px;color:var(--light-gray);}
+  .hidden{display:none!important;}
+
+  @media(max-width:500px){
+    .kiosk{padding:26px 14px 60px;}
+    .shiftcard .clock{margin-left:0;}
+  }
+</style>
+</head>
+<body>
+<div class="kiosk">
+  <div class="khead">
+    <a href="portal.html" class="kback">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to portal
+    </a>
+    <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="klogo" onerror="this.style.display='none'">
+    <h1>Volunteer Check-In</h1>
+    <p>Welcome! Tap your name to check in for today's shift.</p>
+  </div>
+
+  <div id="banner" class="banner" style="display:none;"></div>
+
+  <div class="shiftcard" id="shiftCard">
+    <div>
+      <div class="day" id="shiftDay">Today</div>
+      <div class="meta" id="shiftMeta"></div>
+    </div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+
+  <div id="main">
+    <div class="sectitle">
+      <h2 id="schedTitle">Scheduled today</h2>
+      <span class="hint">Tap your name</span>
+    </div>
+    <div class="namegrid" id="schedGrid"></div>
+
+    <div class="divider">don't see your name?</div>
+    <input class="search" id="search" placeholder="Search your name&hellip;" aria-label="Search your name">
+    <div class="results" id="results"></div>
+
+    <button class="newbtn" id="newBtn">&#10133; New volunteer? Sign in here</button>
+
+    <div class="herebar">
+      <h3>Here so far today</h3>
+      <div class="herechips" id="hereChips"><span class="none">No one checked in yet.</span></div>
+    </div>
+  </div>
+
+  <div class="foot">Quakertown Food Pantry &middot; 101 N. Third Street</div>
+</div>
+
+<!-- Welcome overlay -->
+<div class="welcome" id="welcome">
+  <div class="pop">
+    <div class="big">&#9989;</div>
+    <h2 id="wName">Welcome!</h2>
+    <p id="wMsg"></p>
+  </div>
+</div>
+
+<!-- New volunteer modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>New volunteer sign-in</h3>
+    <p class="sub">Welcome! Add your details once and you'll be checked in.</p>
+    <div class="field"><label for="nFirst">First name</label><input id="nFirst" autocomplete="given-name"></div>
+    <div class="field"><label for="nLast">Last name</label><input id="nLast" autocomplete="family-name"></div>
+    <div class="field"><label for="nEmail">Email</label><input id="nEmail" type="email" autocomplete="email"></div>
+    <div class="field"><label for="nPhone">Phone (optional)</label><input id="nPhone" type="tel" autocomplete="tel"></div>
+    <div class="mactions">
+      <button class="btn ghost" id="newCancel">Cancel</button>
+      <button class="btn green" id="newSubmit">Check me in</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===== CONFIG ===== */
+  var SPREADSHEET_ID = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
+  var SUPERVISORS_GID = '502386465';
+  var SIGNUPS_GID = '1435555973';
+
+  // Check-In Google Form — responses land in the Check-Ins tab of your sheet.
+  var CHECKIN_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfMDFZU7ksSAXJ3LWV93qRVRfxXLEPBOURHxCuVVXofjVkyCg/formResponse';
+  var CK = { first:'entry.164624243', last:'entry.998393206', email:'entry.1969595392',
+             phone:'entry.1477145411', date:'entry.699347849', how:'entry.1207670877' };
+
+  var PREVIEW = false;  // live: loads your real schedule from the sheet. Set true to demo with dummy data.
+
+  var supervisorsData=[], signupsData=[], checkedIn={}, newCounter=0, directory=[];
+  var now0=new Date();
+
+  function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid; }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function dayName(d){ return DAYS[d.getDay()]; }
+  function shiftTime(day){ return (day==='Tuesday'||day==='Thursday')?'6:00 – 8:00 PM':'10:00 AM – 1:00 PM'; }
+  function weekNum(d){ return (['1st','2nd','3rd','4th','5th'])[Math.ceil(d.getDate()/7)-1]||'5th'; }
+  function keyOf(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function toLocalDate(v){ if(v instanceof Date) return v; var s=String(v).trim(); var m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/); if(m) return new Date(+m[1],+m[2]-1,+m[3]); return new Date(s); }
+  function fmtT(d){ return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
+
+  function parseCSV(text){
+    var rows=[], row=[], cur='', q=false;
+    for(var i=0;i<text.length;i++){ var c=text[i];
+      if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+      else { if(c==='"') q=true;
+        else if(c===','){ row.push(cur); cur=''; }
+        else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(cur); rows.push(row); row=[]; cur=''; }
+        else cur+=c; } }
+    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(c){ return (c||'').trim(); }); });
+  }
+
+  function findSupervisor(day,wk){
+    for(var i=1;i<supervisorsData.length;i++){ var r=supervisorsData[i];
+      if(r[0]===day||r[0]===wk+' '+day) return {name:(r[2]||'TBD').trim(),group:(r[1]||'').trim()}; }
+    return {name:'TBD',group:''};
+  }
+
+  function todayScheduled(){
+    var k=keyOf(now0), out=[];
+    for(var i=1;i<signupsData.length;i++){ var r=signupsData[i]; if(!r[5]) continue;
+      if((r[7]||'').trim()==='Cancelled') continue;
+      var d=toLocalDate(r[5]); if(isNaN(d)||keyOf(d)!==k) continue;
+      out.push({ id:'s'+i, first:(r[1]||'').trim(), last:(r[2]||'').trim(), email:(r[3]||'').trim(), phone:(r[4]||'').trim(), scheduled:true }); }
+    return out;
+  }
+  function buildDirectory(){
+    var seen={}; directory=[];
+    for(var i=1;i<signupsData.length;i++){ var r=signupsData[i];
+      var first=(r[1]||'').trim(), last=(r[2]||'').trim(); if(!first&&!last) continue;
+      var key=(first+'|'+last+'|'+(r[3]||'')).toLowerCase(); if(seen[key]) continue; seen[key]=true;
+      directory.push({ id:'d'+i, first:first, last:last, email:(r[3]||'').trim(), phone:(r[4]||'').trim(), scheduled:false }); }
+  }
+
+  function uid(p){ return (p.email||(p.first+p.last)).toLowerCase(); }
+
+  /* ===== render ===== */
+  function renderHeader(){
+    var dn=dayName(now0), wk=weekNum(now0), wd=now0.getDay();
+    var card=document.getElementById('shiftCard');
+    if(wd===0||wd===6){
+      card.classList.add('closed');
+      document.getElementById('shiftDay').textContent=dn+', '+now0.toLocaleDateString('en-US',{month:'long',day:'numeric'});
+      document.getElementById('shiftMeta').textContent='No scheduled shift today';
+    } else {
+      var sup=findSupervisor(dn,wk);
+      document.getElementById('shiftDay').textContent=dn+', '+now0.toLocaleDateString('en-US',{month:'long',day:'numeric'});
+      document.getElementById('shiftMeta').textContent=shiftTime(dn)+(sup.name&&sup.name!=='TBD'?'  ·  Supervisor: '+sup.name:'')+(sup.group&&sup.group!=='NA'?'  ·  '+sup.group+' group day':'');
+    }
+  }
+  function tickClock(){ document.getElementById('clock').textContent=fmtT(new Date()); }
+
+  function renderSched(){
+    var sched=todayScheduled(), g=document.getElementById('schedGrid');
+    document.getElementById('schedTitle').textContent='Scheduled today ('+sched.length+')';
+    g.innerHTML='';
+    if(!sched.length){ g.innerHTML='<p class="hint" style="grid-column:1/-1">No one is on the schedule for today — use search or the New volunteer button.</p>'; return; }
+    sched.forEach(function(p){
+      var done=!!checkedIn[uid(p)];
+      var b=document.createElement('button'); b.className='namebtn'+(done?' done':'');
+      if(done) b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last.charAt(0)+'.')+'</div><div class="tick">&#10003; Checked in '+fmtT(checkedIn[uid(p)].time)+'</div>';
+      else { b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last.charAt(0)+'.')+'</div><div class="sub">Tap to check in</div>'; b.onclick=function(){ checkIn(p,'scheduled'); }; }
+      g.appendChild(b);
+    });
+  }
+  function renderSearch(){
+    var q=document.getElementById('search').value.trim().toLowerCase(), r=document.getElementById('results'); r.innerHTML='';
+    if(!q) return;
+    var m=directory.filter(function(p){ return (p.first+' '+p.last).toLowerCase().indexOf(q)>-1; }).slice(0,12);
+    if(!m.length){ r.innerHTML='<p class="hint" style="grid-column:1/-1">No match — if you\'re new, tap “New volunteer” below.</p>'; return; }
+    m.forEach(function(p){
+      var done=!!checkedIn[uid(p)];
+      var b=document.createElement('button'); b.className='namebtn'+(done?' done':'');
+      if(done) b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">&#10003; Checked in '+fmtT(checkedIn[uid(p)].time)+'</div>';
+      else { b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="sub">Tap to check in</div>'; b.onclick=function(){ checkIn(p,'search'); renderSearch(); }; }
+      r.appendChild(b);
+    });
+  }
+  function renderHere(){
+    var ids=Object.keys(checkedIn), c=document.getElementById('hereChips');
+    if(!ids.length){ c.innerHTML='<span class="none">No one checked in yet.</span>'; return; }
+    c.innerHTML=''; ids.map(function(k){return checkedIn[k];}).sort(function(a,b){return a.time-b.time;}).forEach(function(e){
+      var s=document.createElement('span'); s.className='herechip'; s.textContent=e.name+' · '+fmtT(e.time); c.appendChild(s);
+    });
+  }
+
+  /* ===== check in ===== */
+  function checkIn(p,how){
+    var id=uid(p); if(checkedIn[id]) return;
+    checkedIn[id]={ name:p.first+' '+(p.last?p.last.charAt(0)+'.':''), time:new Date() };
+    postCheckIn(p,how);
+    document.getElementById('wName').textContent='Welcome, '+p.first+'!';
+    document.getElementById('wMsg').textContent='Checked in at '+fmtT(checkedIn[id].time)+(how==='new'?' · thanks for joining us!':'');
+    var w=document.getElementById('welcome'); w.classList.add('show');
+    clearTimeout(window._wt); window._wt=setTimeout(function(){ w.classList.remove('show'); },2600);
+    renderSched(); renderHere();
+  }
+  function postCheckIn(p,how){
+    if(CHECKIN_FORM_ACTION.indexOf('PASTE')>-1) return; // not configured yet
+    var fd=new FormData();
+    fd.append(CK.first,p.first); fd.append(CK.last,p.last||'');
+    fd.append(CK.email,p.email||''); fd.append(CK.phone,p.phone||'');
+    var d=now0;
+    fd.append(CK.date+'_year',d.getFullYear()); fd.append(CK.date+'_month',d.getMonth()+1); fd.append(CK.date+'_day',d.getDate());
+    fd.append(CK.date,keyOf(d));
+    if(CK.how.indexOf('PASTE')===-1) fd.append(CK.how,how);
+    fetch(CHECKIN_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd}).catch(function(){});
+  }
+
+  /* ===== new volunteer ===== */
+  document.getElementById('newBtn').onclick=function(){ ['nFirst','nLast','nEmail','nPhone'].forEach(function(id){document.getElementById(id).value='';}); document.getElementById('overlay').classList.add('show'); };
+  document.getElementById('newCancel').onclick=function(){ document.getElementById('overlay').classList.remove('show'); };
+  document.getElementById('newSubmit').onclick=function(){
+    var f=document.getElementById('nFirst').value.trim(), l=document.getElementById('nLast').value.trim(),
+        e=document.getElementById('nEmail').value.trim(), ph=document.getElementById('nPhone').value.trim();
+    if(!f||!l){ alert('Please enter a first and last name.'); return; }
+    document.getElementById('overlay').classList.remove('show');
+    checkIn({first:f,last:l,email:e,phone:ph},'new');
+  };
+  document.getElementById('search').addEventListener('input',renderSearch);
+
+  /* ===== load ===== */
+  function init(){ renderHeader(); renderSched(); buildDirectory(); tickClock(); setInterval(tickClock,1000); }
+  if(PREVIEW){ useSample(); init(); }
+  else {
+    Promise.all([
+      fetch(csvUrl(SUPERVISORS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); }),
+      fetch(csvUrl(SIGNUPS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); })
+    ]).then(function(res){ supervisorsData=parseCSV(res[0]); signupsData=parseCSV(res[1]); init(); })
+     .catch(function(){ useSample(); init(); });
+  }
+
+  function useSample(){
+    document.getElementById('banner').style.display='block';
+    document.getElementById('banner').textContent='Preview mode: showing example volunteers. On your live site, today\'s real schedule loads automatically.';
+    supervisorsData=[['Day','Group','Name','Phone','Email'],
+      ['Monday','','Joanne Kater','',''],['Wednesday','','Virginia Steeb','',''],['Friday','','Kate Street','','']];
+    var iso=(now0.getMonth()+1)+'/'+now0.getDate()+'/'+now0.getFullYear();
+    signupsData=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status'],
+      ['','Linda','Carter','linda@example.org','267-555-1001',iso,'',''],
+      ['','Robert','Hayes','robert@example.org','267-555-1002',iso,'',''],
+      ['','James','Brennan','james@example.org','267-555-1003',iso,'',''],
+      ['','Susan','Reed','susan@example.org','267-555-1004',iso,'',''],
+      ['','Dawn','Miller','dawn@example.org','267-555-1005','2020-01-01','',''],
+      ['','Ken','Carr','ken@example.org','267-555-1006','2020-01-01','',''],
+      ['','Christie','Gera','christie@example.org','267-555-1007','2020-01-01','','']];
+  }
+})();
+</script>
+</body>
+</html>
