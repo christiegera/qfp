@@ -10,6 +10,7 @@
     --orange:#fd7f54; --orange-deep:#f97316; --ink:#1f2937; --ink-soft:#6b7280;
     --line:#e5e7eb; --paper:#f8f9fa; --paper-2:#ffffff;
     --green:#059669; --green-light:#10b981; --blue:#3b82f6; --blue-deep:#1d4ed8;
+    --red:#dc2626;
     --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -23,6 +24,10 @@
   .container{max-width:1200px;margin:0 auto;padding:22px 16px;}
 
   .banner{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:11px 14px;font-size:.85em;margin-bottom:18px;text-align:center;}
+
+  .staffbar{display:flex;justify-content:flex-end;margin-bottom:10px;}
+  .stafflink{background:none;border:none;color:var(--ink-soft);font-size:.82em;text-decoration:underline;cursor:pointer;font-family:inherit;}
+  .stafflink:hover{color:var(--orange-deep);}
 
   .monthbar{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;}
   .monthbar h2{font-size:1.25em;font-weight:700;color:var(--ink);min-width:220px;text-align:center;}
@@ -104,6 +109,32 @@
   .success p{color:var(--ink-soft);font-size:.95em;line-height:1.55;margin-bottom:20px;}
   .success button{padding:12px 26px;border:none;border-radius:10px;background:var(--orange);color:#fff;font-weight:700;font-family:inherit;font-size:1em;cursor:pointer;}
 
+  /* Coordinator cancel panel */
+  .cancelbox{background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:86vh;overflow:auto;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .cancelbox h3{font-size:1.35em;margin-bottom:4px;}
+  .cancelbox .muted{color:var(--ink-soft);font-size:.86em;line-height:1.5;margin-bottom:18px;}
+  .cancelbox .closex{float:right;background:none;border:none;font-size:1.4em;color:var(--ink-soft);cursor:pointer;line-height:1;}
+  .gaterow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .gaterow input{flex:1;min-width:150px;padding:12px 14px;border:2px solid var(--line);border-radius:9px;font-size:1.1em;font-family:inherit;letter-spacing:.25em;text-align:center;}
+  .gaterow input:focus{outline:none;border-color:var(--orange);}
+  .gatebtn{padding:12px 22px;border:none;border-radius:9px;background:var(--orange);color:#fff;font-weight:700;font-family:inherit;cursor:pointer;}
+  .gatehint{font-size:.76em;color:var(--ink-soft);margin-top:10px;}
+  .gateerr{color:var(--red);font-size:.85em;margin-top:8px;display:none;}
+  .csearch{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:9px;font-size:1em;font-family:inherit;margin-bottom:6px;}
+  .csearch:focus{outline:none;border-color:var(--orange);}
+  .cday{font-weight:700;margin:16px 0 2px;color:var(--ink);font-size:.95em;}
+  .cmeta{font-size:.76em;color:var(--ink-soft);margin-bottom:4px;}
+  .crow{padding:11px 0;border-top:1px solid var(--line);}
+  .crow .top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .crow .who{font-weight:600;}
+  .crow .contact{font-size:.78em;color:var(--ink-soft);}
+  .cbtn{background:var(--red);color:#fff;border:none;border-radius:8px;padding:9px 15px;font-weight:700;font-family:inherit;cursor:pointer;font-size:.84em;}
+  .cbtn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink);}
+  .reasonrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;background:#fff7f3;border:1px solid #fed7aa;border-radius:9px;padding:10px;}
+  .reasonrow select{padding:9px 10px;border:2px solid var(--line);border-radius:8px;font-family:inherit;font-size:.9em;flex:1;min-width:140px;}
+  .ctoast{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;border-radius:9px;padding:11px 14px;font-size:.86em;margin-bottom:14px;display:none;}
+  .cempty{color:var(--ink-soft);text-align:center;padding:30px;font-size:.9em;}
+
   @media(max-width:640px){
     .weekhead{display:none;}
     .grid{display:block;}
@@ -129,6 +160,10 @@
 
   <div class="container">
     <div id="banner" class="banner" style="display:none;"></div>
+
+    <div class="staffbar">
+      <button class="stafflink" id="staffBtn">Staff: cancel for a volunteer</button>
+    </div>
 
     <div class="monthbar">
       <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
@@ -177,6 +212,30 @@
     </div>
   </div>
 
+  <!-- Coordinator cancel overlay -->
+  <div class="overlay" id="cancelOverlay">
+    <div class="cancelbox">
+      <button class="closex" id="cancelClose" aria-label="Close">&#215;</button>
+      <h3>Cancel for a volunteer</h3>
+      <p class="muted">Someone call or text that they can't make it? Find their shift and cancel it here. It logs the cancellation, emails the supervisor and volunteer, and frees the slot.</p>
+
+      <div id="gatePane">
+        <div class="gaterow">
+          <input id="staffCode" inputmode="numeric" maxlength="8" placeholder="Staff code" aria-label="Staff code">
+          <button class="gatebtn" id="gateBtn">Unlock</button>
+        </div>
+        <div class="gateerr" id="gateErr">That code didn't match. Try again.</div>
+        <div class="gatehint">Ask the pantry for the staff code. (This keeps the cancel tools out of volunteers' way.)</div>
+      </div>
+
+      <div id="cancelPane" style="display:none;">
+        <div class="ctoast" id="ctoast"></div>
+        <input class="csearch" id="cancelSearch" placeholder="Search a volunteer by name&#8230;" aria-label="Search volunteer by name">
+        <div id="cancelList"></div>
+      </div>
+    </div>
+  </div>
+
 <script>
 (function(){
   'use strict';
@@ -188,8 +247,14 @@
   var E = { first:'entry.871319408', last:'entry.1622497140', email:'entry.1333360871', phone:'entry.747210424', date:'entry.579980168' };
   var MAX_SLOTS = 5;
 
+  /* ---- Coordinator cancel config ---- */
+  var CANCEL_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSd1zT7Ncpr9c6T2hUb6SEb40IMAgOSwv8m7StHgV2MDWgwCKg/formResponse';
+  var CE = { first:'entry.1622622794', last:'entry.1525182418', email:'entry.1096350806', phone:'entry.1674683080', date:'entry.989245482', reason:'entry.PASTE_REASON_ID' };
+  var STAFF_CODE = '1234';   // change to your real staff code
+
   var supervisorsData = [], signupsData = [], shiftsByKey = {}, months = [], monthIdx = 0;
   var selected = {};
+  var staffUnlocked = false;
 
   var grid = document.getElementById('grid');
   var monthLabel = document.getElementById('monthLabel');
@@ -404,6 +469,117 @@
   document.getElementById('prevBtn').addEventListener('click',function(){ if(monthIdx>0){ monthIdx--; render(); } });
   document.getElementById('nextBtn').addEventListener('click',function(){ if(monthIdx<months.length-1){ monthIdx++; render(); } });
 
+  /* ===================== COORDINATOR CANCEL ===================== */
+  var cancelOverlay=document.getElementById('cancelOverlay');
+  document.getElementById('staffBtn').addEventListener('click',function(){
+    cancelOverlay.classList.add('open');
+    document.getElementById('gatePane').style.display = staffUnlocked?'none':'block';
+    document.getElementById('cancelPane').style.display = staffUnlocked?'block':'none';
+    if(staffUnlocked) renderCancelList();
+    else { document.getElementById('staffCode').value=''; document.getElementById('staffCode').focus(); }
+  });
+  document.getElementById('cancelClose').addEventListener('click',function(){ cancelOverlay.classList.remove('open'); });
+  cancelOverlay.addEventListener('click',function(e){ if(e.target===cancelOverlay) cancelOverlay.classList.remove('open'); });
+
+  function tryStaff(){
+    if(document.getElementById('staffCode').value.trim()===STAFF_CODE){
+      staffUnlocked=true;
+      document.getElementById('gatePane').style.display='none';
+      document.getElementById('cancelPane').style.display='block';
+      document.getElementById('gateErr').style.display='none';
+      renderCancelList();
+    } else {
+      document.getElementById('gateErr').style.display='block';
+    }
+  }
+  document.getElementById('gateBtn').addEventListener('click',tryStaff);
+  document.getElementById('staffCode').addEventListener('keyup',function(e){ if(e.key==='Enter') tryStaff(); });
+  document.getElementById('cancelSearch').addEventListener('input',renderCancelList);
+
+  function cancelCandidates(){
+    var today=new Date(); today.setHours(0,0,0,0);
+    var out=[];
+    for(var i=1;i<signupsData.length;i++){
+      var r=signupsData[i]; if(!r[5]) continue;
+      if((r[7]||'').trim()==='Cancelled') continue;
+      var d=new Date(r[5]); if(isNaN(d)||d<today) continue;
+      out.push({ row:i, first:(r[1]||'').trim(), last:(r[2]||'').trim(),
+                 email:(r[3]||'').trim(), phone:(r[4]||'').trim(), date:d });
+    }
+    out.sort(function(a,b){ return a.date-b.date; });
+    return out;
+  }
+
+  function renderCancelList(){
+    var q=document.getElementById('cancelSearch').value.trim().toLowerCase();
+    var list=document.getElementById('cancelList'); list.innerHTML='';
+    var items=cancelCandidates().filter(function(it){ return !q || (it.first+' '+it.last).toLowerCase().indexOf(q)>-1; });
+    if(!items.length){ list.innerHTML='<div class="cempty">'+(q?'No upcoming shifts found for that name.':'No upcoming sign-ups to cancel.')+'</div>'; return; }
+    var curDay='';
+    items.forEach(function(it){
+      var dk=it.date.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+      if(dk!==curDay){
+        curDay=dk;
+        var h=document.createElement('div'); h.className='cday'; h.textContent=dk;
+        list.appendChild(h);
+        var sh=shiftsByKey[keyOf(it.date)];
+        if(sh){ var m=document.createElement('div'); m.className='cmeta'; m.textContent=sh.time+(sh.supervisor&&sh.supervisor.name!=='TBD'?' · Sup: '+sh.supervisor.name:''); list.appendChild(m); }
+      }
+      var row=document.createElement('div'); row.className='crow';
+      var top=document.createElement('div'); top.className='top';
+      top.innerHTML='<div><div class="who">'+esc(it.first+' '+it.last)+'</div><div class="contact">'+esc(it.email||'')+(it.phone?' · '+esc(it.phone):'')+'</div></div>';
+      var btn=document.createElement('button'); btn.className='cbtn'; btn.textContent='Cancel this spot';
+      top.appendChild(btn); row.appendChild(top);
+
+      btn.addEventListener('click',function(){
+        if(row.querySelector('.reasonrow')) return;
+        var rr=document.createElement('div'); rr.className='reasonrow';
+        var sel=document.createElement('select');
+        ['Illness','Scheduling conflict','Transportation','No longer needed','Other'].forEach(function(o){ var op=document.createElement('option'); op.textContent=o; sel.appendChild(op); });
+        var conf=document.createElement('button'); conf.className='cbtn'; conf.textContent='Confirm cancellation';
+        var back=document.createElement('button'); back.className='cbtn ghost'; back.textContent='Never mind';
+        rr.appendChild(sel); rr.appendChild(conf); rr.appendChild(back);
+        row.appendChild(rr); btn.style.display='none';
+        back.addEventListener('click',function(){ rr.remove(); btn.style.display=''; });
+        conf.addEventListener('click',function(){
+          conf.disabled=true; conf.textContent='Cancelling…';
+          postCancel(it,sel.value).then(function(){
+            signupsData[it.row][7]='Cancelled';   // reflect locally
+            buildShifts(); render();               // free the slot on the calendar
+            showToast(it.first+' '+it.last+' is cancelled for '+curDay+'. Supervisor and volunteer have been emailed.');
+            renderCancelList();
+          }).catch(function(){
+            conf.disabled=false; conf.textContent='Confirm cancellation';
+            showToast('Something went wrong. Please try again.',true);
+          });
+        });
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function postCancel(it,reason){
+    var fd=new FormData();
+    fd.append(CE.first,it.first);
+    fd.append(CE.last,it.last);
+    fd.append(CE.email,it.email);
+    fd.append(CE.phone,it.phone);
+    var d=it.date;
+    fd.append(CE.date+'_year',d.getFullYear());
+    fd.append(CE.date+'_month',d.getMonth()+1);
+    fd.append(CE.date+'_day',d.getDate());
+    fd.append(CE.date,d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()));
+    if(reason && CE.reason.indexOf('PASTE')===-1) fd.append(CE.reason,reason);
+    return fetch(CANCEL_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd});
+  }
+
+  var toastTimer;
+  function showToast(msg,isErr){
+    var t=document.getElementById('ctoast'); t.textContent=msg; t.style.display='block';
+    t.style.background=isErr?'#fef2f2':'#ecfdf5'; t.style.borderColor=isErr?'#fecaca':'#a7f3d0'; t.style.color=isErr?'#991b1b':'#065f46';
+    clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.style.display='none'; },6000);
+  }
+
   function init(){ buildShifts(); buildMonths(); if(!months.length){ grid.innerHTML='<div class="error" style="grid-column:1/-1;">No shifts available right now.</div>'; return; } render(); updateTray(); }
 
   function useSample(){
@@ -423,7 +599,7 @@
       if(dd.getDay()===0||dd.getDay()===6) continue;
       var iso=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
       var fillN=(cnt===0?5:(cnt%3)+1);
-      for(var j=0;j<fillN;j++){ var nm=sampleNames[(cnt+j)%sampleNames.length]; signupsData.push(['',nm[0],nm[1],'','',iso,'','']); }
+      for(var j=0;j<fillN;j++){ var nm=sampleNames[(cnt+j)%sampleNames.length]; signupsData.push(['',nm[0],nm[1],'sample@example.org','215-555-0000',iso,'','']); }
       cnt++;
     }
   }
