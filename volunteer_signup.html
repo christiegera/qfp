@@ -25,9 +25,11 @@
 
   .banner{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:11px 14px;font-size:.85em;margin-bottom:18px;text-align:center;}
 
-  .staffbar{display:flex;justify-content:flex-end;margin-bottom:10px;}
-  .stafflink{background:none;border:none;color:var(--ink-soft);font-size:.82em;text-decoration:underline;cursor:pointer;font-family:inherit;}
-  .stafflink:hover{color:var(--orange-deep);}
+  /* View switcher */
+  .switchwrap{display:flex;justify-content:center;margin-bottom:20px;}
+  .viewswitch{display:inline-flex;background:#fff;border:2px solid var(--line);border-radius:999px;padding:4px;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .viewswitch button{appearance:none;border:0;background:transparent;color:var(--ink-soft);font:inherit;font-size:.92em;font-weight:700;padding:10px 20px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+  .viewswitch button[aria-pressed="true"]{background:var(--orange);color:#fff;}
 
   .monthbar{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;}
   .monthbar h2{font-size:1.25em;font-weight:700;color:var(--ink);min-width:220px;text-align:center;}
@@ -104,16 +106,17 @@
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
   .overlay.open{display:flex;}
   .success{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:34px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
-  .success .big{font-size:3em;margin-bottom:10px;}
-  .success h3{font-size:1.4em;color:var(--ink);margin-bottom:10px;}
+  .success .slogo{height:62px;width:auto;margin-bottom:10px;}
+  .success .big{font-size:2.6em;margin-bottom:8px;}
+  .success h3{font-size:1.4em;color:var(--ink);margin-bottom:10px;line-height:1.25;}
   .success p{color:var(--ink-soft);font-size:.95em;line-height:1.55;margin-bottom:20px;}
   .success button{padding:12px 26px;border:none;border-radius:10px;background:var(--orange);color:#fff;font-weight:700;font-family:inherit;font-size:1em;cursor:pointer;}
 
   /* Coordinator cancel panel */
-  .cancelbox{background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:86vh;overflow:auto;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  #cancelView{display:none;justify-content:center;}
+  .cancelbox{background:#fff;border-radius:16px;max-width:640px;width:100%;padding:26px;box-shadow:0 6px 24px rgba(0,0,0,.08);border:2px solid var(--line);}
   .cancelbox h3{font-size:1.35em;margin-bottom:4px;}
   .cancelbox .muted{color:var(--ink-soft);font-size:.86em;line-height:1.5;margin-bottom:18px;}
-  .cancelbox .closex{float:right;background:none;border:none;font-size:1.4em;color:var(--ink-soft);cursor:pointer;line-height:1;}
   .gaterow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
   .gaterow input{flex:1;min-width:150px;padding:12px 14px;border:2px solid var(--line);border-radius:9px;font-size:1.1em;font-family:inherit;letter-spacing:.25em;text-align:center;}
   .gaterow input:focus{outline:none;border-color:var(--orange);}
@@ -161,27 +164,56 @@
   <div class="container">
     <div id="banner" class="banner" style="display:none;"></div>
 
-    <div class="staffbar">
-      <button class="stafflink" id="staffBtn">Staff: cancel for a volunteer</button>
+    <div class="switchwrap">
+      <div class="viewswitch" role="group" aria-label="Choose view">
+        <button id="swSignup" aria-pressed="true">Volunteer sign up</button>
+        <button id="swCancel" aria-pressed="false">Cancel for a volunteer</button>
+      </div>
     </div>
 
-    <div class="monthbar">
-      <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
-      <h2 id="monthLabel">Loading&#8230;</h2>
-      <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
+    <!-- SIGN-UP VIEW -->
+    <div id="signupView">
+      <div class="monthbar">
+        <button class="navbtn" id="prevBtn" aria-label="Previous month">&#8249;</button>
+        <h2 id="monthLabel">Loading&#8230;</h2>
+        <button class="navbtn" id="nextBtn" aria-label="Next month">&#8250;</button>
+      </div>
+
+      <div class="legend">
+        <span><i class="dot open"></i> Open</span>
+        <span><i class="dot sel"></i> Selected</span>
+        <span><i class="dot full"></i> Full</span>
+        <span><i class="dot grp"></i> Group day</span>
+      </div>
+
+      <div class="weekhead">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div id="grid" class="grid"><div class="loading" style="grid-column:1/-1;">Loading volunteer shifts&#8230;</div></div>
     </div>
 
-    <div class="legend">
-      <span><i class="dot open"></i> Open</span>
-      <span><i class="dot sel"></i> Selected</span>
-      <span><i class="dot full"></i> Full</span>
-      <span><i class="dot grp"></i> Group day</span>
-    </div>
+    <!-- CANCEL VIEW -->
+    <div id="cancelView">
+      <div class="cancelbox">
+        <h3>Cancel for a volunteer</h3>
+        <p class="muted">Someone call or text that they can't make it? Find their shift and cancel it here. It logs the cancellation, emails the supervisor and volunteer, and frees the slot.</p>
 
-    <div class="weekhead">
-      <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        <div id="gatePane">
+          <div class="gaterow">
+            <input id="staffCode" inputmode="numeric" maxlength="8" placeholder="Staff code" aria-label="Staff code">
+            <button class="gatebtn" id="gateBtn">Unlock</button>
+          </div>
+          <div class="gateerr" id="gateErr">That code didn't match. Try again.</div>
+          <div class="gatehint">Ask the pantry for the staff code. (This keeps the cancel tools out of volunteers' way.)</div>
+        </div>
+
+        <div id="cancelPane" style="display:none;">
+          <div class="ctoast" id="ctoast"></div>
+          <input class="csearch" id="cancelSearch" placeholder="Search a volunteer by name&#8230;" aria-label="Search volunteer by name">
+          <div id="cancelList"></div>
+        </div>
+      </div>
     </div>
-    <div id="grid" class="grid"><div class="loading" style="grid-column:1/-1;">Loading volunteer shifts&#8230;</div></div>
   </div>
 
   <!-- Signup tray -->
@@ -205,34 +237,11 @@
   <!-- Success overlay -->
   <div class="overlay" id="overlay">
     <div class="success">
+      <img src="qfp_trans.png" class="slogo" alt="Quakertown Food Pantry" onerror="this.style.display='none'">
       <div class="big">&#x1F389;</div>
-      <h3>You're signed up!</h3>
+      <h3>Thank you for giving your time to the Quakertown Food Pantry!</h3>
       <p id="successMsg"></p>
       <button id="successClose">Done</button>
-    </div>
-  </div>
-
-  <!-- Coordinator cancel overlay -->
-  <div class="overlay" id="cancelOverlay">
-    <div class="cancelbox">
-      <button class="closex" id="cancelClose" aria-label="Close">&#215;</button>
-      <h3>Cancel for a volunteer</h3>
-      <p class="muted">Someone call or text that they can't make it? Find their shift and cancel it here. It logs the cancellation, emails the supervisor and volunteer, and frees the slot.</p>
-
-      <div id="gatePane">
-        <div class="gaterow">
-          <input id="staffCode" inputmode="numeric" maxlength="8" placeholder="Staff code" aria-label="Staff code">
-          <button class="gatebtn" id="gateBtn">Unlock</button>
-        </div>
-        <div class="gateerr" id="gateErr">That code didn't match. Try again.</div>
-        <div class="gatehint">Ask the pantry for the staff code. (This keeps the cancel tools out of volunteers' way.)</div>
-      </div>
-
-      <div id="cancelPane" style="display:none;">
-        <div class="ctoast" id="ctoast"></div>
-        <input class="csearch" id="cancelSearch" placeholder="Search a volunteer by name&#8230;" aria-label="Search volunteer by name">
-        <div id="cancelList"></div>
-      </div>
     </div>
   </div>
 
@@ -250,7 +259,7 @@
   /* ---- Coordinator cancel config ---- */
   var CANCEL_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSd1zT7Ncpr9c6T2hUb6SEb40IMAgOSwv8m7StHgV2MDWgwCKg/formResponse';
   var CE = { first:'entry.1622622794', last:'entry.1525182418', email:'entry.1096350806', phone:'entry.1674683080', date:'entry.989245482', reason:'entry.2072131143' };
-  var STAFF_CODE = '3724';   // change to your real staff code
+  var STAFF_CODE = '1234';   // change to your real staff code
 
   var supervisorsData = [], signupsData = [], shiftsByKey = {}, months = [], monthIdx = 0;
   var selected = {};
@@ -300,6 +309,7 @@
   function shiftTime(day){ return (day==='Tuesday'||day==='Thursday')?'6:00 – 8:00 PM':'10:00 AM – 1:00 PM'; }
   function weekNum(d){ return (['1st','2nd','3rd','4th','5th'])[Math.ceil(d.getDate()/7)-1]||'5th'; }
   function keyOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function toLocalDate(v){ if(v instanceof Date) return v; var s=String(v).trim(); var m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/); if(m) return new Date(+m[1],+m[2]-1,+m[3]); return new Date(s); }
 
   function findSupervisor(day,wk){
     for(var i=1;i<supervisorsData.length;i++){
@@ -329,7 +339,7 @@
     for(var i=1;i<signupsData.length;i++){
       var row=signupsData[i]; if(!row[5]) continue;
       if((row[7]||'').trim()==='Cancelled') continue;
-      var sd=new Date(row[5]); if(isNaN(sd)) continue;
+      var sd=toLocalDate(row[5]); if(isNaN(sd)) continue;
       var k=keyOf(sd);
       if(shiftsByKey[k]) shiftsByKey[k].volunteers.push((row[1]||'')+' '+((row[2]||'').charAt(0))+'.');
     }
@@ -347,7 +357,7 @@
   }
 
   function render(){
-    var mo=months[monthIdx];
+    var mo=months[monthIdx]; if(!mo) return;
     monthLabel.textContent=new Date(mo.y,mo.m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
     document.getElementById('prevBtn').disabled=(monthIdx===0);
     document.getElementById('nextBtn').disabled=(monthIdx===months.length-1);
@@ -443,7 +453,7 @@
     keys.forEach(function(k){ chain=chain.then(function(){ return submitOne(selected[k].date,info); }); });
     chain.then(function(){
       var n=keys.length;
-      document.getElementById('successMsg').innerHTML='You signed up for <b>'+n+' shift'+(n===1?'':'s')+'</b>. A confirmation email is on its way to <b>'+esc(info.email)+'</b> for each one, with your supervisor’s details and a cancellation link.';
+      document.getElementById('successMsg').innerHTML='A confirmation email is on its way to <b>'+esc(info.email)+'</b> for your <b>'+n+' shift'+(n===1?'':'s')+'</b>, with your supervisor’s details. Need to cancel? There’s a link right in that email.';
       overlay.classList.add('open');
     }).catch(function(){
       flashNote('Something went wrong. Please try again or call the pantry.');
@@ -469,18 +479,26 @@
   document.getElementById('prevBtn').addEventListener('click',function(){ if(monthIdx>0){ monthIdx--; render(); } });
   document.getElementById('nextBtn').addEventListener('click',function(){ if(monthIdx<months.length-1){ monthIdx++; render(); } });
 
-  /* ===================== COORDINATOR CANCEL ===================== */
-  var cancelOverlay=document.getElementById('cancelOverlay');
-  document.getElementById('staffBtn').addEventListener('click',function(){
-    cancelOverlay.classList.add('open');
-    document.getElementById('gatePane').style.display = staffUnlocked?'none':'block';
-    document.getElementById('cancelPane').style.display = staffUnlocked?'block':'none';
-    if(staffUnlocked) renderCancelList();
-    else { document.getElementById('staffCode').value=''; document.getElementById('staffCode').focus(); }
-  });
-  document.getElementById('cancelClose').addEventListener('click',function(){ cancelOverlay.classList.remove('open'); });
-  cancelOverlay.addEventListener('click',function(e){ if(e.target===cancelOverlay) cancelOverlay.classList.remove('open'); });
+  /* ===================== VIEW SWITCHER ===================== */
+  function setView(v){
+    document.getElementById('swSignup').setAttribute('aria-pressed', v==='signup');
+    document.getElementById('swCancel').setAttribute('aria-pressed', v==='cancel');
+    document.getElementById('signupView').style.display = v==='signup' ? '' : 'none';
+    document.getElementById('cancelView').style.display = v==='cancel' ? 'flex' : 'none';
+    if(v==='signup'){
+      render(); updateTray();
+    } else {
+      tray.classList.remove('open');
+      document.getElementById('gatePane').style.display = staffUnlocked ? 'none' : 'block';
+      document.getElementById('cancelPane').style.display = staffUnlocked ? 'block' : 'none';
+      if(staffUnlocked){ renderCancelList(); }
+      else { document.getElementById('gateErr').style.display='none'; document.getElementById('staffCode').value=''; document.getElementById('staffCode').focus(); }
+    }
+  }
+  document.getElementById('swSignup').addEventListener('click',function(){ setView('signup'); });
+  document.getElementById('swCancel').addEventListener('click',function(){ setView('cancel'); });
 
+  /* ===================== COORDINATOR CANCEL ===================== */
   function tryStaff(){
     if(document.getElementById('staffCode').value.trim()===STAFF_CODE){
       staffUnlocked=true;
@@ -502,7 +520,7 @@
     for(var i=1;i<signupsData.length;i++){
       var r=signupsData[i]; if(!r[5]) continue;
       if((r[7]||'').trim()==='Cancelled') continue;
-      var d=new Date(r[5]); if(isNaN(d)||d<today) continue;
+      var d=toLocalDate(r[5]); if(isNaN(d)||d<today) continue;
       out.push({ row:i, first:(r[1]||'').trim(), last:(r[2]||'').trim(),
                  email:(r[3]||'').trim(), phone:(r[4]||'').trim(), date:d });
     }
@@ -544,8 +562,8 @@
         conf.addEventListener('click',function(){
           conf.disabled=true; conf.textContent='Cancelling…';
           postCancel(it,sel.value).then(function(){
-            signupsData[it.row][7]='Cancelled';   // reflect locally
-            buildShifts(); render();               // free the slot on the calendar
+            signupsData[it.row][7]='Cancelled';
+            buildShifts(); render();
             showToast(it.first+' '+it.last+' is cancelled for '+curDay+'. Supervisor and volunteer have been emailed.');
             renderCancelList();
           }).catch(function(){
@@ -597,7 +615,7 @@
     for(var i=1;i<=16 && cnt<5;i++){
       var dd=new Date(t); dd.setDate(t.getDate()+i);
       if(dd.getDay()===0||dd.getDay()===6) continue;
-      var iso=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate());
+      var iso=(dd.getMonth()+1)+'/'+dd.getDate()+'/'+dd.getFullYear();
       var fillN=(cnt===0?5:(cnt%3)+1);
       for(var j=0;j<fillN;j++){ var nm=sampleNames[(cnt+j)%sampleNames.length]; signupsData.push(['',nm[0],nm[1],'sample@example.org','215-555-0000',iso,'','']); }
       cnt++;
