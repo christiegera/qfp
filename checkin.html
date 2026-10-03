@@ -44,6 +44,9 @@
   .namebtn:active{transform:translateY(0);}
   .namebtn .nm{font-size:19px;font-weight:700;}
   .namebtn .sub{font-size:13px;color:var(--warm-gray);}
+  .namebtn.done{background:#F3F8F3;border-color:var(--green-pale);cursor:default;}
+  .namebtn.done:hover{transform:none;box-shadow:none;}
+  .namebtn.done .nm{color:var(--green);}
   .namebtn .tick{font-size:13px;font-weight:700;color:var(--green);}
   .rtag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:100px;}
   .rtag.pantry{background:var(--green-pale);color:#0f5e1b;}
@@ -166,8 +169,8 @@
   var SUPERVISORS_GID = '502386465';
   var SIGNUPS_GID = '1435555973';
   var VOLUNTEERS_GID = '346028719';
-  var BAGPACKERS_GID = '1531693386';   // ← paste your Bag Packers gid back
-  var GAH_GID = '1136888994';                  // ← paste your GAH gid back
+  var BAGPACKERS_GID = '1531693386';
+  var GAH_GID = '1136888994';
 
   var CHECKIN_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfMDFZU7ksSAXJ3LWV93qRVRfxXLEPBOURHxCuVVXofjVkyCg/formResponse';
   var CK = { first:'entry.164624243', last:'entry.998393206', email:'entry.1969595392',
@@ -317,4 +320,115 @@
         b.onclick=function(){ p.how='search'; signIn(p); };
       } else if(!rec.outTime){
         b.className='namebtn in';
-        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">&#
+        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">&#10003; Signed in '+fmtT(rec.inTime)+' &middot; tap to sign out</div>';
+        b.onclick=function(){ signOut(p); };
+      } else {
+        b.className='namebtn out';
+        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">Signed out &middot; '+durr(rec.inTime,rec.outTime)+'</div>';
+      }
+      r.appendChild(b);
+    });
+  }
+  function renderHere(){
+    var ids=Object.keys(checkedIn), c=document.getElementById('hereChips');
+    if(!ids.length){ c.innerHTML='<span class="none">No one signed in yet.</span>'; return; }
+    c.innerHTML=''; ids.map(function(k){return checkedIn[k];}).sort(function(a,b){return a.inTime-b.inTime;}).forEach(function(e){
+      var s=document.createElement('span'); s.className='herechip';
+      s.textContent=e.name+' · in '+fmtT(e.inTime)+(e.outTime?(' · out '+fmtT(e.outTime)):'');
+      c.appendChild(s);
+    });
+  }
+
+  /* ===== sign in / sign out ===== */
+  function durr(a,b){ var m=Math.max(0,Math.round((b-a)/60000)); return Math.floor(m/60)+'h '+(m%60)+'m'; }
+  function showWelcome(title,msg){
+    document.getElementById('wName').textContent=title;
+    document.getElementById('wMsg').textContent=msg;
+    var w=document.getElementById('welcome'); w.classList.add('show');
+    clearTimeout(window._wt); window._wt=setTimeout(function(){ w.classList.remove('show'); },2600);
+  }
+  function signIn(p){
+    var id=uid(p); if(checkedIn[id] && !checkedIn[id].outTime) return;
+    checkedIn[id]={ name:dispName(p), inTime:new Date(), outTime:null };
+    postSignIO(p,'In');
+    showWelcome('Welcome, '+p.first+'!', 'Signed in at '+fmtT(checkedIn[id].inTime)+((p.how==='new')?' · thanks for joining us!':''));
+    renderSched(); renderHere(); renderSearch();
+  }
+  function signOut(p){
+    var id=uid(p), rec=checkedIn[id]; if(!rec || rec.outTime) return;
+    rec.outTime=new Date();
+    postSignIO(p,'Out');
+    showWelcome('Thanks, '+p.first+'!', 'Signed out at '+fmtT(rec.outTime)+' · '+durr(rec.inTime,rec.outTime)+' today');
+    renderSched(); renderHere(); renderSearch();
+  }
+  function postSignIO(p,action){
+    if(CHECKIN_FORM_ACTION.indexOf('PASTE')>-1) return;
+    var fd=new FormData();
+    fd.append(CK.first,p.first); fd.append(CK.last,p.last||'');
+    fd.append(CK.email,p.email||''); fd.append(CK.phone,p.phone||'');
+    var d=now0;
+    fd.append(CK.date+'_year',d.getFullYear()); fd.append(CK.date+'_month',d.getMonth()+1); fd.append(CK.date+'_day',d.getDate());
+    fd.append(CK.date,keyOf(d));
+    if(CK.how && CK.how.indexOf('PASTE')===-1) fd.append(CK.how, p.how||'scheduled');
+    if(CK.action && CK.action.indexOf('PASTE')===-1) fd.append(CK.action, action);
+    fetch(CHECKIN_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd}).catch(function(){});
+  }
+
+  /* ===== new volunteer ===== */
+  document.getElementById('newBtn').onclick=function(){ ['nFirst','nLast','nEmail','nPhone'].forEach(function(id){document.getElementById(id).value='';}); document.getElementById('overlay').classList.add('show'); };
+  document.getElementById('newCancel').onclick=function(){ document.getElementById('overlay').classList.remove('show'); };
+  document.getElementById('newSubmit').onclick=function(){
+    var f=document.getElementById('nFirst').value.trim(), l=document.getElementById('nLast').value.trim(),
+        e=document.getElementById('nEmail').value.trim(), ph=document.getElementById('nPhone').value.trim();
+    if(!f||!l){ alert('Please enter a first and last name.'); return; }
+    document.getElementById('overlay').classList.remove('show');
+    signIn({first:f,last:l,email:e,phone:ph,how:'new'});
+  };
+  document.getElementById('search').addEventListener('input',renderSearch);
+
+  /* ===== load ===== */
+  function init(){ renderHeader(); renderSched(); buildDirectory(); tickClock(); setInterval(tickClock,1000); }
+  if(PREVIEW){ useSample(); init(); }
+  else {
+    function gidSet(g){ return g && g.indexOf('PASTE')===-1; }
+    var opt=[];
+    if(gidSet(VOLUNTEERS_GID)) opt.push(['vol',VOLUNTEERS_GID]);
+    if(gidSet(BAGPACKERS_GID)) opt.push(['bag',BAGPACKERS_GID]);
+    if(gidSet(GAH_GID)) opt.push(['gah',GAH_GID]);
+    var tasks=[
+      fetch(csvUrl(SUPERVISORS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); }),
+      fetch(csvUrl(SIGNUPS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); })
+    ];
+    opt.forEach(function(o){ tasks.push(fetch(csvUrl(o[1])).then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; })); });
+    Promise.all(tasks).then(function(res){
+      supervisorsData=parseCSV(res[0]); signupsData=parseCSV(res[1]);
+      opt.forEach(function(o,idx){
+        var txt=res[2+idx]||'';
+        if(o[0]==='vol') volunteersData=parseCSV(txt);
+        else if(o[0]==='bag') bagPackersData=parseCSV(txt);
+        else if(o[0]==='gah') gahData=parseCSV(txt);
+      });
+      init();
+    }).catch(function(){ useSample(); init(); });
+  }
+
+  function useSample(){
+    document.getElementById('banner').style.display='block';
+    document.getElementById('banner').textContent='Preview mode: showing example volunteers. On your live site, today\'s real schedule loads automatically.';
+    supervisorsData=[['Day','Group','Name','Phone','Email'],
+      ['Monday','','Joanne Kater','',''],['Wednesday','','Virginia Steeb','',''],['Friday','','Kate Street','','']];
+    var iso=(now0.getMonth()+1)+'/'+now0.getDate()+'/'+now0.getFullYear();
+    signupsData=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status'],
+      ['','Linda','Carter','linda@example.org','267-555-1001',iso,'',''],
+      ['','Robert','Hayes','robert@example.org','267-555-1002',iso,'',''],
+      ['','James','Brennan','james@example.org','267-555-1003',iso,'','']];
+    gahData=[['Store','Monday','Tuesday','Wednesday','Thursday','Friday'],
+      ['Giant','Jim Smith','Nicole O.','Kaitlin (as avail)','Donna & Claude',''],
+      ['Target','Todd Benner','','Butch','','Ed Angelo']];
+    bagPackersData=[['Day','Week','Packer','Phone','Email','Backup','Backup Phone','Backup Email'],
+      ['Sunday','1st',"Michele O'Donnell",'267-261-5044','cheleybelly@yahoo.com','Angela Thomas','','']];
+  }
+})();
+</script>
+</body>
+</html>
