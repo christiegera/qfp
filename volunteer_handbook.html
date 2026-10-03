@@ -926,6 +926,62 @@ gtag('config', 'AW-18452193951');
     </div>
 
     <p>For more information: FNS MARO OCR at (609) 259-5061/5123</p>
+        <!-- CIVIL RIGHTS ANNUAL ATTESTATION -->
+    <div class="card" id="cr-attest" style="border:2px solid var(--moss); margin-top:24px;">
+      <h4 style="color:var(--moss);">✍️ Annual attestation</h4>
+      <p style="font-size:14px; color:var(--warm-gray); margin-bottom:4px;">Please confirm you've reviewed this Civil Rights training. This is required once per year.</p>
+
+      <div id="crForm">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin:12px 0;">
+          <input type="text" id="crFirst" placeholder="First name" style="flex:1; min-width:140px; padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:15px;">
+          <input type="text" id="crLast" placeholder="Last name" style="flex:1; min-width:140px; padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:15px;">
+        </div>
+        <input type="email" id="crEmail" placeholder="Email" style="width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:15px; margin-bottom:14px; box-sizing:border-box;">
+        <label style="display:flex; gap:10px; align-items:flex-start; font-size:14px; color:var(--ink); cursor:pointer; line-height:1.4;">
+          <input type="checkbox" id="crCheck" style="margin-top:2px; width:18px; height:18px; flex-shrink:0;">
+          <span>I have reviewed the Civil Rights training (FNS Instruction 113) and understand my responsibilities.</span>
+        </label>
+        <button id="crSubmit" disabled onclick="submitCrAttest()" style="margin-top:16px; padding:11px 22px; background:var(--moss); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:default; opacity:0.5;">Submit attestation</button>
+        <div id="crError" style="display:none; color:var(--terracotta); font-size:13px; margin-top:8px;">Please fill in your first name, last name, and a valid email.</div>
+      </div>
+
+      <div id="crDone" style="display:none; text-align:center; padding:16px 0;">
+        <div style="font-size:40px;">✅</div>
+        <h4 style="color:var(--moss); margin-top:8px;">Thank you — your attestation is recorded.</h4>
+        <p style="font-size:14px; color:var(--warm-gray);">You're all set on Civil Rights training for this year.</p>
+      </div>
+    </div>
+    <script>
+    (function(){
+      var CR_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScHBhjl-ZTjSx-RXia21X4vKQQ7K6qt2_PQsYHrO3dUPl_Sgw/formResponse';
+      var CR = { first:'entry.141410691', last:'entry.264499932', email:'entry.1064436651', attest:'entry.1441650583' };
+      var CR_VALUE = 'I have reviewed the Civil Rights training (FNS Instruction 113) and understand my responsibilities.';
+
+      var chk = document.getElementById('crCheck'), btn = document.getElementById('crSubmit');
+      chk.addEventListener('change', function(){
+        btn.disabled = !chk.checked;
+        btn.style.opacity = chk.checked ? '1' : '0.5';
+        btn.style.cursor  = chk.checked ? 'pointer' : 'default';
+      });
+
+      window.submitCrAttest = function(){
+        var first = document.getElementById('crFirst').value.trim();
+        var last  = document.getElementById('crLast').value.trim();
+        var email = document.getElementById('crEmail').value.trim();
+        var err   = document.getElementById('crError');
+        if (!first || !last || !email || email.indexOf('@') === -1) { err.style.display='block'; return; }
+        err.style.display = 'none';
+
+        var fd = new FormData();
+        fd.append(CR.first, first); fd.append(CR.last, last);
+        fd.append(CR.email, email); fd.append(CR.attest, CR_VALUE);
+        fetch(CR_ACTION, { method:'POST', mode:'no-cors', body: fd });
+
+        document.getElementById('crForm').style.display = 'none';
+        document.getElementById('crDone').style.display = 'block';
+      };
+    })();
+    </script>
   </div>
 
   <hr class="green">
