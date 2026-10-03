@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>Volunteer Check In · Quakertown Food Pantry</title>
+  <title>Volunteer Sign In · Quakertown Food Pantry</title>
   <link rel="icon" type="image/x-icon" href="carrot.png">
   <link rel="apple-touch-icon" sizes="180x180" href="carrot.png">
 <style>
@@ -21,27 +21,22 @@
     background:linear-gradient(170deg,#FFF5EB 0%,var(--cream) 45%,var(--green-pale) 100%);
     min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;}
   .kiosk{max-width:860px;margin:0 auto;padding:34px 22px 80px;}
-
   .khead{text-align:center;margin-bottom:22px;}
   .kback{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--warm-gray);text-decoration:none;margin-bottom:14px;}
   .kback:hover{color:var(--ink);}
   .klogo{height:70px;width:auto;margin-bottom:10px;}
   .khead h1{font-size:26px;font-weight:750;letter-spacing:-.6px;}
   .khead p{font-size:15px;color:var(--warm-gray);font-weight:500;}
-
   .shiftcard{background:#fff;border:2px solid var(--green-pale);border-radius:var(--radius);
     padding:18px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
   .shiftcard .day{font-size:20px;font-weight:750;letter-spacing:-.3px;}
   .shiftcard .meta{font-size:14px;color:var(--warm-gray);}
   .shiftcard .clock{margin-left:auto;font-size:26px;font-weight:750;color:var(--green);font-variant-numeric:tabular-nums;}
   .shiftcard.closed{border-color:var(--border);}
-
   .banner{background:var(--orange-pale);border:1px solid #F3CBA0;color:#8a4a12;border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:20px;text-align:center;}
-
   .sectitle{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 12px;}
   .sectitle h2{font-size:17px;font-weight:750;}
   .sectitle .hint{font-size:13px;color:var(--warm-gray);}
-
   .namegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
   .namebtn{background:#fff;border:2px solid var(--border);border-radius:14px;padding:20px;text-align:left;
     font:inherit;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:3px;}
@@ -49,33 +44,30 @@
   .namebtn:active{transform:translateY(0);}
   .namebtn .nm{font-size:19px;font-weight:700;}
   .namebtn .sub{font-size:13px;color:var(--warm-gray);}
-  .namebtn.done{background:#F3F8F3;border-color:var(--green-pale);cursor:default;}
-  .namebtn.done:hover{transform:none;box-shadow:none;}
-  .namebtn.done .nm{color:var(--green);}
   .namebtn .tick{font-size:13px;font-weight:700;color:var(--green);}
   .rtag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:100px;}
   .rtag.pantry{background:var(--green-pale);color:#0f5e1b;}
   .rtag.gah{background:var(--blue-pale);color:#14517a;}
   .rtag.packer{background:var(--orange-pale);color:#8a4a12;}
-
+  .namebtn.in{background:#FFF8E8;border-color:#E8A96A;}
+  .namebtn.in .nm{color:#8a4a12;}
+  .namebtn.in .tick{color:#8a4a12;}
+  .namebtn.out{background:#F3F8F3;border-color:var(--green-pale);cursor:default;opacity:.8;}
+  .namebtn.out:hover{transform:none;box-shadow:none;}
+  .namebtn.out .nm{color:var(--green);}
   .divider{display:flex;align-items:center;gap:12px;color:var(--warm-gray);font-size:14px;margin:28px 0 14px;}
   .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border);}
-
   .search{width:100%;padding:16px 18px;border:2px solid var(--border);border-radius:14px;font:inherit;font-size:18px;background:#fff;}
   .search:focus{outline:none;border-color:var(--green);}
   .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px;}
-
   .newbtn{width:100%;margin-top:24px;background:var(--orange-pale);border:2px dashed #E8A96A;color:#8a4a12;
     border-radius:14px;padding:20px;font:inherit;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
   .newbtn:hover{background:#FDE7CF;}
-
   .herebar{margin-top:26px;background:#fff;border:2px solid var(--border);border-radius:14px;padding:16px 20px;}
   .herebar h3{font-size:15px;font-weight:750;margin-bottom:8px;}
   .herechips{display:flex;flex-wrap:wrap;gap:8px;}
   .herechip{background:var(--green-pale);color:#0f5e1b;border-radius:100px;padding:5px 12px;font-size:13px;font-weight:600;}
   .herebar .none{color:var(--light-gray);font-size:14px;}
-
-  /* Welcome overlay */
   .welcome{position:fixed;inset:0;background:rgba(27,138,42,.97);display:none;align-items:center;justify-content:center;z-index:60;color:#fff;text-align:center;padding:24px;}
   .welcome.show{display:flex;}
   .welcome .pop{animation:pop .4s cubic-bezier(.2,.8,.3,1.2);}
@@ -83,8 +75,6 @@
   .welcome .big{font-size:90px;line-height:1;}
   .welcome h2{font-size:44px;margin:12px 0 6px;}
   .welcome p{font-size:20px;opacity:.92;}
-
-  /* Modal */
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:70;align-items:center;justify-content:center;padding:20px;}
   .overlay.show{display:flex;}
   .modal{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
@@ -98,14 +88,8 @@
   .btn{border:none;border-radius:10px;font:inherit;font-weight:700;cursor:pointer;padding:12px 20px;font-size:16px;}
   .btn.green{background:var(--green);color:#fff;}
   .btn.ghost{background:#fff;border:1px solid var(--border);color:var(--ink);}
-
   .foot{text-align:center;margin-top:34px;font-size:12px;color:var(--light-gray);}
-  .hidden{display:none!important;}
-
-  @media(max-width:500px){
-    .kiosk{padding:26px 14px 60px;}
-    .shiftcard .clock{margin-left:0;}
-  }
+  @media(max-width:500px){ .kiosk{padding:26px 14px 60px;} .shiftcard .clock{margin-left:0;} }
 </style>
 </head>
 <body>
@@ -116,8 +100,8 @@
       Back to portal
     </a>
     <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="klogo" onerror="this.style.display='none'">
-    <h1>Volunteer Check-In</h1>
-    <p>Welcome! Tap your name to check in for today's shift.</p>
+    <h1>Volunteer Sign-In</h1>
+    <p>Welcome! Tap your name to sign in — and tap it again when you leave to sign out.</p>
   </div>
 
   <div id="banner" class="banner" style="display:none;"></div>
@@ -133,7 +117,7 @@
   <div id="main">
     <div class="sectitle">
       <h2 id="schedTitle">Scheduled today</h2>
-      <span class="hint">Tap your name</span>
+      <span class="hint">Tap to sign in &middot; tap again to sign out</span>
     </div>
     <div class="namegrid" id="schedGrid"></div>
 
@@ -145,14 +129,13 @@
 
     <div class="herebar">
       <h3>Here so far today</h3>
-      <div class="herechips" id="hereChips"><span class="none">No one checked in yet.</span></div>
+      <div class="herechips" id="hereChips"><span class="none">No one signed in yet.</span></div>
     </div>
   </div>
 
   <div class="foot">Quakertown Food Pantry &middot; 101 N. Third Street</div>
 </div>
 
-<!-- Welcome overlay -->
 <div class="welcome" id="welcome">
   <div class="pop">
     <div class="big">&#9989;</div>
@@ -161,18 +144,17 @@
   </div>
 </div>
 
-<!-- New volunteer modal -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h3>New volunteer sign-in</h3>
-    <p class="sub">Welcome! Add your details once and you'll be checked in.</p>
+    <p class="sub">Welcome! Add your details once and you'll be signed in.</p>
     <div class="field"><label for="nFirst">First name</label><input id="nFirst" autocomplete="given-name"></div>
     <div class="field"><label for="nLast">Last name</label><input id="nLast" autocomplete="family-name"></div>
     <div class="field"><label for="nEmail">Email</label><input id="nEmail" type="email" autocomplete="email"></div>
     <div class="field"><label for="nPhone">Phone (optional)</label><input id="nPhone" type="tel" autocomplete="tel"></div>
     <div class="mactions">
       <button class="btn ghost" id="newCancel">Cancel</button>
-      <button class="btn green" id="newSubmit">Check me in</button>
+      <button class="btn green" id="newSubmit">Sign me in</button>
     </div>
   </div>
 </div>
@@ -180,26 +162,21 @@
 <script>
 (function(){
   'use strict';
-
-  /* ===== CONFIG ===== */
   var SPREADSHEET_ID = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
   var SUPERVISORS_GID = '502386465';
   var SIGNUPS_GID = '1435555973';
-  // Master "Volunteers" tab (columns: First | Last | Email | Phone).
   var VOLUNTEERS_GID = '346028719';
-  // Bag Packers tab (Day | Week | Packer | Phone | Email | Backup | ...) and
-  // GAH Driver Schedule tab. Paste each tab's gid; leave as-is to skip.
-  var BAGPACKERS_GID = '1531693386';
-  var GAH_GID = '1136888994';
+  var BAGPACKERS_GID = '1531693386';   // ← paste your Bag Packers gid back
+  var GAH_GID = '1136888994';                  // ← paste your GAH gid back
 
-  // Check-In Google Form — responses land in the Check-Ins tab of your sheet.
   var CHECKIN_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfMDFZU7ksSAXJ3LWV93qRVRfxXLEPBOURHxCuVVXofjVkyCg/formResponse';
   var CK = { first:'entry.164624243', last:'entry.998393206', email:'entry.1969595392',
-             phone:'entry.1477145411', date:'entry.699347849', how:'entry.1207670877' };
+             phone:'entry.1477145411', date:'entry.699347849', how:'entry.1207670877',
+             action:'entry.1229588030' };   // In / Out
 
-  var PREVIEW = false;  // live: loads your real schedule from the sheet. Set true to demo with dummy data.
+  var PREVIEW = false;
 
-  var supervisorsData=[], signupsData=[], volunteersData=[], bagPackersData=[], gahData=[], checkedIn={}, newCounter=0, directory=[];
+  var supervisorsData=[], signupsData=[], volunteersData=[], bagPackersData=[], gahData=[], checkedIn={}, directory=[];
   var now0=new Date();
 
   function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid; }
@@ -233,29 +210,23 @@
 
   function todayScheduled(){
     var k=keyOf(now0), out=[];
-    // 1) Pantry shift sign-ups for today
     for(var i=1;i<signupsData.length;i++){ var r=signupsData[i]; if(!r[5]) continue;
       if((r[7]||'').trim()==='Cancelled') continue;
       var d=toLocalDate(r[5]); if(isNaN(d)||keyOf(d)!==k) continue;
       out.push({ id:'s'+i, first:(r[1]||'').trim(), last:(r[2]||'').trim(), email:(r[3]||'').trim(), phone:(r[4]||'').trim(), scheduled:true, role:'Pantry shift', rc:'pantry', how:'scheduled' }); }
-    // 2) GAH drivers scheduled for today's weekday
     out = out.concat(gahToday());
-    // 3) Bag packers scheduled for today (weekday + which week of the month)
     out = out.concat(packersToday());
     return out;
   }
-
-  // GAH Driver Schedule tab: a title row, then a header row (Store | Monday..Friday),
-  // then one row per store. We read the column for today's weekday.
   function gahToday(){
     var out=[], seen={}, wd=now0.getDay();
-    var col = (wd>=1&&wd<=5)?wd:0;          // Mon=1 … Fri=5 line up with the day columns
-    if(!col) return out;                     // weekend — no pickups
+    var col = (wd>=1&&wd<=5)?wd:0;
+    if(!col) return out;
     var started=false;
     for(var i=0;i<gahData.length;i++){
       var r=gahData[i];
       if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
-      var store=(r[0]||'').trim(); if(!store) break;   // end of the store block
+      var store=(r[0]||'').trim(); if(!store) break;
       var name=(r[col]||'').trim(); if(!name) continue;
       var key=name.toLowerCase();
       if(seen[key]){ seen[key].store+=', '+store; continue; }
@@ -264,13 +235,10 @@
     }
     return out;
   }
-
-  // Bag Packers tab: Day | Week | Packer | Phone | Email | Backup | Backup Phone | Backup Email
-  // Day is "Sunday" / "Monday Evening" / "Thursday Afternoon"; Week is 1st–5th.
   function packersToday(){
     var out=[], wd=now0.getDay();
     var word = wd===0?'sunday':(wd===1?'monday':(wd===4?'thursday':''));
-    if(!word) return out;                    // packing only Sun / Mon eve / Thu afternoon
+    if(!word) return out;
     var wk=weekNum(now0).toLowerCase();
     for(var i=1;i<bagPackersData.length;i++){
       var r=bagPackersData[i];
@@ -283,29 +251,20 @@
     return out;
   }
   function buildDirectory(){
-    var seen={};
-    directory=[];
+    var seen={}; directory=[];
     function add(first,last,email,phone,id){
       first=(first||'').trim(); last=(last||'').trim(); if(!first&&!last) return;
       var key=(first+'|'+last+'|'+(email||'')).toLowerCase(); if(seen[key]) return; seen[key]=true;
       directory.push({ id:id, first:first, last:last, email:(email||'').trim(), phone:(phone||'').trim(), scheduled:false });
     }
-    // Master Volunteers tab = your FULL contact sheet, pasted in as-is.
-    // Columns: A=First  B=Last  C=Home Phone  D=Phone  E=Email  (header row is skipped)
-    // We pull only First, Last, Email, Phone (cell phone, falling back to home phone).
-    for(var v=1;v<volunteersData.length;v++){
-      var m=volunteersData[v];
-      add(m[0], m[1], m[4], ((m[3]||'').trim()||(m[2]||'')), 'v'+v);
-    }
-    // Then anyone who's ever signed up online, if not already listed
+    for(var v=1;v<volunteersData.length;v++){ var m=volunteersData[v]; add(m[0], m[1], m[4], ((m[3]||'').trim()||(m[2]||'')), 'v'+v); }
     for(var i=1;i<signupsData.length;i++){ var r=signupsData[i]; add(r[1],r[2],r[3],r[4],'s'+i); }
   }
 
   function uid(p){ return (p.email||(p.first+p.last)).toLowerCase(); }
   function dispName(p){ return p.last ? (p.first+' '+p.last.charAt(0)+'.') : p.first; }
-  function roleTag(p){ return p.role ? '<span class="rtag '+(p.rc||'')+'">'+esc(p.role+(p.store?' · '+p.store:''))+'</span>' : 'Tap to check in'; }
+  function roleTag(p){ return p.role ? '<span class="rtag '+(p.rc||'')+'">'+esc(p.role+(p.store?' · '+p.store:''))+'</span>' : 'Tap to sign in'; }
 
-  /* ===== render ===== */
   function renderHeader(){
     var dn=dayName(now0), wk=weekNum(now0), wd=now0.getDay();
     var card=document.getElementById('shiftCard');
@@ -327,10 +286,20 @@
     g.innerHTML='';
     if(!sched.length){ g.innerHTML='<p class="hint" style="grid-column:1/-1">No one is on the schedule for today — use search or the New volunteer button.</p>'; return; }
     sched.forEach(function(p){
-      var done=!!checkedIn[uid(p)];
-      var b=document.createElement('button'); b.className='namebtn'+(done?' done':'');
-      if(done) b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="tick">&#10003; Checked in '+fmtT(checkedIn[uid(p)].time)+'</div>';
-      else { b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="sub">'+roleTag(p)+'</div>'; b.onclick=function(){ checkIn(p,p.how||'scheduled'); }; }
+      var rec=checkedIn[uid(p)];
+      var b=document.createElement('button');
+      if(!rec){
+        b.className='namebtn';
+        b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="sub">'+roleTag(p)+'</div>';
+        b.onclick=function(){ signIn(p); };
+      } else if(!rec.outTime){
+        b.className='namebtn in';
+        b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="tick">&#10003; Signed in '+fmtT(rec.inTime)+' &middot; tap to sign out</div>';
+        b.onclick=function(){ signOut(p); };
+      } else {
+        b.className='namebtn out';
+        b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="tick">Signed out &middot; '+durr(rec.inTime,rec.outTime)+'</div>';
+      }
       g.appendChild(b);
     });
   }
@@ -340,108 +309,12 @@
     var m=directory.filter(function(p){ return (p.first+' '+p.last).toLowerCase().indexOf(q)>-1; }).slice(0,12);
     if(!m.length){ r.innerHTML='<p class="hint" style="grid-column:1/-1">No match — if you\'re new, tap “New volunteer” below.</p>'; return; }
     m.forEach(function(p){
-      var done=!!checkedIn[uid(p)];
-      var b=document.createElement('button'); b.className='namebtn'+(done?' done':'');
-      if(done) b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">&#10003; Checked in '+fmtT(checkedIn[uid(p)].time)+'</div>';
-      else { b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="sub">Tap to check in</div>'; b.onclick=function(){ checkIn(p,'search'); renderSearch(); }; }
-      r.appendChild(b);
-    });
-  }
-  function renderHere(){
-    var ids=Object.keys(checkedIn), c=document.getElementById('hereChips');
-    if(!ids.length){ c.innerHTML='<span class="none">No one checked in yet.</span>'; return; }
-    c.innerHTML=''; ids.map(function(k){return checkedIn[k];}).sort(function(a,b){return a.time-b.time;}).forEach(function(e){
-      var s=document.createElement('span'); s.className='herechip'; s.textContent=e.name+' · '+fmtT(e.time); c.appendChild(s);
-    });
-  }
-
-  /* ===== check in ===== */
-  function checkIn(p,how){
-    var id=uid(p); if(checkedIn[id]) return;
-    checkedIn[id]={ name:p.first+' '+(p.last?p.last.charAt(0)+'.':''), time:new Date() };
-    postCheckIn(p,how);
-    document.getElementById('wName').textContent='Welcome, '+p.first+'!';
-    document.getElementById('wMsg').textContent='Checked in at '+fmtT(checkedIn[id].time)+(how==='new'?' · thanks for joining us!':'');
-    var w=document.getElementById('welcome'); w.classList.add('show');
-    clearTimeout(window._wt); window._wt=setTimeout(function(){ w.classList.remove('show'); },2600);
-    renderSched(); renderHere();
-  }
-  function postCheckIn(p,how){
-    if(CHECKIN_FORM_ACTION.indexOf('PASTE')>-1) return; // not configured yet
-    var fd=new FormData();
-    fd.append(CK.first,p.first); fd.append(CK.last,p.last||'');
-    fd.append(CK.email,p.email||''); fd.append(CK.phone,p.phone||'');
-    var d=now0;
-    fd.append(CK.date+'_year',d.getFullYear()); fd.append(CK.date+'_month',d.getMonth()+1); fd.append(CK.date+'_day',d.getDate());
-    fd.append(CK.date,keyOf(d));
-    if(CK.how.indexOf('PASTE')===-1) fd.append(CK.how,how);
-    fetch(CHECKIN_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd}).catch(function(){});
-  }
-
-  /* ===== new volunteer ===== */
-  document.getElementById('newBtn').onclick=function(){ ['nFirst','nLast','nEmail','nPhone'].forEach(function(id){document.getElementById(id).value='';}); document.getElementById('overlay').classList.add('show'); };
-  document.getElementById('newCancel').onclick=function(){ document.getElementById('overlay').classList.remove('show'); };
-  document.getElementById('newSubmit').onclick=function(){
-    var f=document.getElementById('nFirst').value.trim(), l=document.getElementById('nLast').value.trim(),
-        e=document.getElementById('nEmail').value.trim(), ph=document.getElementById('nPhone').value.trim();
-    if(!f||!l){ alert('Please enter a first and last name.'); return; }
-    document.getElementById('overlay').classList.remove('show');
-    checkIn({first:f,last:l,email:e,phone:ph},'new');
-  };
-  document.getElementById('search').addEventListener('input',renderSearch);
-
-  /* ===== load ===== */
-  function init(){ renderHeader(); renderSched(); buildDirectory(); tickClock(); setInterval(tickClock,1000); }
-  if(PREVIEW){ useSample(); init(); }
-  else {
-    function gidSet(g){ return g && g.indexOf('PASTE')===-1; }
-    var opt=[];
-    if(gidSet(VOLUNTEERS_GID)) opt.push(['vol',VOLUNTEERS_GID]);
-    if(gidSet(BAGPACKERS_GID)) opt.push(['bag',BAGPACKERS_GID]);
-    if(gidSet(GAH_GID)) opt.push(['gah',GAH_GID]);
-    var tasks=[
-      fetch(csvUrl(SUPERVISORS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); }),
-      fetch(csvUrl(SIGNUPS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); })
-    ];
-    opt.forEach(function(o){ tasks.push(fetch(csvUrl(o[1])).then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; })); });
-    Promise.all(tasks).then(function(res){
-      supervisorsData=parseCSV(res[0]); signupsData=parseCSV(res[1]);
-      opt.forEach(function(o,idx){
-        var txt=res[2+idx]||'';
-        if(o[0]==='vol') volunteersData=parseCSV(txt);
-        else if(o[0]==='bag') bagPackersData=parseCSV(txt);
-        else if(o[0]==='gah') gahData=parseCSV(txt);
-      });
-      init();
-    }).catch(function(){ useSample(); init(); });
-  }
-
-  function useSample(){
-    document.getElementById('banner').style.display='block';
-    document.getElementById('banner').textContent='Preview mode: showing example volunteers. On your live site, today\'s real schedule loads automatically.';
-    supervisorsData=[['Day','Group','Name','Phone','Email'],
-      ['Monday','','Joanne Kater','',''],['Wednesday','','Virginia Steeb','',''],['Friday','','Kate Street','','']];
-    var iso=(now0.getMonth()+1)+'/'+now0.getDate()+'/'+now0.getFullYear();
-    signupsData=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status'],
-      ['','Linda','Carter','linda@example.org','267-555-1001',iso,'',''],
-      ['','Robert','Hayes','robert@example.org','267-555-1002',iso,'',''],
-      ['','James','Brennan','james@example.org','267-555-1003',iso,'',''],
-      ['','Susan','Reed','susan@example.org','267-555-1004',iso,'',''],
-      ['','Dawn','Miller','dawn@example.org','267-555-1005','2020-01-01','',''],
-      ['','Ken','Carr','ken@example.org','267-555-1006','2020-01-01','',''],
-      ['','Christie','Gera','christie@example.org','267-555-1007','2020-01-01','','']];
-    gahData=[['Store','Monday','Tuesday','Wednesday','Thursday','Friday'],
-      ['Giant','Jim Smith','Nicole O.','Kaitlin (as avail)','Donna & Claude',''],
-      ['Giant LOWES','Jim Smith','','','Donna & Claude','Alan G'],
-      ['Target','Todd Benner','','Butch','','Ed Angelo'],
-      ['Walmart','Ed Angelo','Butch','','Clark',''],
-      ['Grocery Outlet','','Alicia D.','','','']];
-    bagPackersData=[['Day','Week','Packer','Phone','Email','Backup','Backup Phone','Backup Email'],
-      ['Sunday','1st',"Michele O'Donnell",'267-261-5044','cheleybelly@yahoo.com','Angela Thomas','',''],
-      ['Monday Evening','1st','Alicia Garner','267-424-0319','agarner311@yahoo.com','','',''],
-      ['Thursday Afternoon','1st','Samantha D','570-730-7529','','','','']];
-  }
-})();
-</script>
-</body>
-</html>
+      var rec=checkedIn[uid(p)];
+      var b=document.createElement('button');
+      if(!rec){
+        b.className='namebtn';
+        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="sub">Tap to sign in</div>';
+        b.onclick=function(){ p.how='search'; signIn(p); };
+      } else if(!rec.outTime){
+        b.className='namebtn in';
+        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">&#
