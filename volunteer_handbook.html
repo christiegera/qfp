@@ -79,25 +79,38 @@ gtag('config', 'AW-18452193951');
       border-right: 1px solid var(--border);
       padding: 28px 0;
     }
-    .sidebar-logo {
-      padding: 0 24px 20px;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--moss);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
+    .sidebar-head {
+      padding: 0 24px 16px;
       border-bottom: 1px solid var(--border);
       margin-bottom: 16px;
     }
-    .sidebar-logo-icon {
-      width: 28px; height: 28px;
-      background: var(--moss);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 13px; font-weight: 800;
+    .sidebar-brand {
+      display: flex;
+      flex-direction: column;   /* logo on top, title underneath */
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 14px;
     }
+    .sidebar-brand-logo { height: 48px; width: auto; }
+    .sidebar-brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--moss);
+      line-height: 1.2;
+    }
+    .sidebar-portal {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: var(--moss-pale);
+      color: var(--moss);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .sidebar-portal:hover { background: var(--moss); color: white; }
     .sidebar-label {
       padding: 14px 24px 6px;
       font-size: 10px;
@@ -688,10 +701,16 @@ gtag('config', 'AW-18452193951');
 
 <!-- SIDEBAR -->
 <nav class="sidebar">
-  <a href="index.html" class="sidebar-logo">
-    <img src="qfp_trans.png" alt="QFP" style="height: 36px; width: auto;">
-    Volunteer Handbook
-  </a>
+  <div class="sidebar-head">
+    <div class="sidebar-brand">
+      <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="sidebar-brand-logo">
+      <span class="sidebar-brand-title">Volunteer Handbook</span>
+    </div>
+    <a href="portal.html" class="sidebar-portal">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Volunteer Portal
+    </a>
+  </div>
 
   <div class="sidebar-label" style="color: var(--terracotta); border-left-color: var(--terracotta);">Getting Started</div>
   <a href="#welcome" onclick="closeMobile()">Welcome</a>
