@@ -53,6 +53,10 @@
   .namebtn.done:hover{transform:none;box-shadow:none;}
   .namebtn.done .nm{color:var(--green);}
   .namebtn .tick{font-size:13px;font-weight:700;color:var(--green);}
+  .rtag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:100px;}
+  .rtag.pantry{background:var(--green-pale);color:#0f5e1b;}
+  .rtag.gah{background:var(--blue-pale);color:#14517a;}
+  .rtag.packer{background:var(--orange-pale);color:#8a4a12;}
 
   .divider{display:flex;align-items:center;gap:12px;color:var(--warm-gray);font-size:14px;margin:28px 0 14px;}
   .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border);}
@@ -181,6 +185,12 @@
   var SPREADSHEET_ID = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
   var SUPERVISORS_GID = '502386465';
   var SIGNUPS_GID = '1435555973';
+  // Master "Volunteers" tab (columns: First | Last | Email | Phone).
+  var VOLUNTEERS_GID = '346028719';
+  // Bag Packers tab (Day | Week | Packer | Phone | Email | Backup | ...) and
+  // GAH Driver Schedule tab. Paste each tab's gid; leave as-is to skip.
+  var BAGPACKERS_GID = '1531693386';
+  var GAH_GID = '1136888994';
 
   // Check-In Google Form — responses land in the Check-Ins tab of your sheet.
   var CHECKIN_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfMDFZU7ksSAXJ3LWV93qRVRfxXLEPBOURHxCuVVXofjVkyCg/formResponse';
@@ -189,7 +199,7 @@
 
   var PREVIEW = false;  // live: loads your real schedule from the sheet. Set true to demo with dummy data.
 
-  var supervisorsData=[], signupsData=[], checkedIn={}, newCounter=0, directory=[];
+  var supervisorsData=[], signupsData=[], volunteersData=[], bagPackersData=[], gahData=[], checkedIn={}, newCounter=0, directory=[];
   var now0=new Date();
 
   function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid; }
@@ -223,21 +233,77 @@
 
   function todayScheduled(){
     var k=keyOf(now0), out=[];
+    // 1) Pantry shift sign-ups for today
     for(var i=1;i<signupsData.length;i++){ var r=signupsData[i]; if(!r[5]) continue;
       if((r[7]||'').trim()==='Cancelled') continue;
       var d=toLocalDate(r[5]); if(isNaN(d)||keyOf(d)!==k) continue;
-      out.push({ id:'s'+i, first:(r[1]||'').trim(), last:(r[2]||'').trim(), email:(r[3]||'').trim(), phone:(r[4]||'').trim(), scheduled:true }); }
+      out.push({ id:'s'+i, first:(r[1]||'').trim(), last:(r[2]||'').trim(), email:(r[3]||'').trim(), phone:(r[4]||'').trim(), scheduled:true, role:'Pantry shift', rc:'pantry', how:'scheduled' }); }
+    // 2) GAH drivers scheduled for today's weekday
+    out = out.concat(gahToday());
+    // 3) Bag packers scheduled for today (weekday + which week of the month)
+    out = out.concat(packersToday());
+    return out;
+  }
+
+  // GAH Driver Schedule tab: a title row, then a header row (Store | Monday..Friday),
+  // then one row per store. We read the column for today's weekday.
+  function gahToday(){
+    var out=[], seen={}, wd=now0.getDay();
+    var col = (wd>=1&&wd<=5)?wd:0;          // Mon=1 … Fri=5 line up with the day columns
+    if(!col) return out;                     // weekend — no pickups
+    var started=false;
+    for(var i=0;i<gahData.length;i++){
+      var r=gahData[i];
+      if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
+      var store=(r[0]||'').trim(); if(!store) break;   // end of the store block
+      var name=(r[col]||'').trim(); if(!name) continue;
+      var key=name.toLowerCase();
+      if(seen[key]){ seen[key].store+=', '+store; continue; }
+      var o={ id:'g'+i, first:name, last:'', email:'', phone:'', scheduled:true, role:'GAH driver', rc:'gah', store:store, how:'gah-driver' };
+      seen[key]=o; out.push(o);
+    }
+    return out;
+  }
+
+  // Bag Packers tab: Day | Week | Packer | Phone | Email | Backup | Backup Phone | Backup Email
+  // Day is "Sunday" / "Monday Evening" / "Thursday Afternoon"; Week is 1st–5th.
+  function packersToday(){
+    var out=[], wd=now0.getDay();
+    var word = wd===0?'sunday':(wd===1?'monday':(wd===4?'thursday':''));
+    if(!word) return out;                    // packing only Sun / Mon eve / Thu afternoon
+    var wk=weekNum(now0).toLowerCase();
+    for(var i=1;i<bagPackersData.length;i++){
+      var r=bagPackersData[i];
+      if((r[0]||'').trim().toLowerCase().indexOf(word)!==0) continue;
+      if((r[1]||'').trim().toLowerCase()!==wk) continue;
+      if((r[2]||'').trim()) out.push({ id:'p'+i, first:(r[2]||'').trim(), last:'', email:(r[4]||'').trim(), phone:(r[3]||'').trim(), scheduled:true, role:'Bag packer', rc:'packer', how:'bag-packer' });
+      if((r[5]||'').trim()) out.push({ id:'p'+i+'b', first:(r[5]||'').trim(), last:'', email:(r[7]||'').trim(), phone:(r[6]||'').trim(), scheduled:true, role:'Bag packer (backup)', rc:'packer', how:'bag-packer' });
+      break;
+    }
     return out;
   }
   function buildDirectory(){
-    var seen={}; directory=[];
-    for(var i=1;i<signupsData.length;i++){ var r=signupsData[i];
-      var first=(r[1]||'').trim(), last=(r[2]||'').trim(); if(!first&&!last) continue;
-      var key=(first+'|'+last+'|'+(r[3]||'')).toLowerCase(); if(seen[key]) continue; seen[key]=true;
-      directory.push({ id:'d'+i, first:first, last:last, email:(r[3]||'').trim(), phone:(r[4]||'').trim(), scheduled:false }); }
+    var seen={};
+    directory=[];
+    function add(first,last,email,phone,id){
+      first=(first||'').trim(); last=(last||'').trim(); if(!first&&!last) return;
+      var key=(first+'|'+last+'|'+(email||'')).toLowerCase(); if(seen[key]) return; seen[key]=true;
+      directory.push({ id:id, first:first, last:last, email:(email||'').trim(), phone:(phone||'').trim(), scheduled:false });
+    }
+    // Master Volunteers tab = your FULL contact sheet, pasted in as-is.
+    // Columns: A=First  B=Last  C=Home Phone  D=Phone  E=Email  (header row is skipped)
+    // We pull only First, Last, Email, Phone (cell phone, falling back to home phone).
+    for(var v=1;v<volunteersData.length;v++){
+      var m=volunteersData[v];
+      add(m[0], m[1], m[4], ((m[3]||'').trim()||(m[2]||'')), 'v'+v);
+    }
+    // Then anyone who's ever signed up online, if not already listed
+    for(var i=1;i<signupsData.length;i++){ var r=signupsData[i]; add(r[1],r[2],r[3],r[4],'s'+i); }
   }
 
   function uid(p){ return (p.email||(p.first+p.last)).toLowerCase(); }
+  function dispName(p){ return p.last ? (p.first+' '+p.last.charAt(0)+'.') : p.first; }
+  function roleTag(p){ return p.role ? '<span class="rtag '+(p.rc||'')+'">'+esc(p.role+(p.store?' · '+p.store:''))+'</span>' : 'Tap to check in'; }
 
   /* ===== render ===== */
   function renderHeader(){
@@ -263,8 +329,8 @@
     sched.forEach(function(p){
       var done=!!checkedIn[uid(p)];
       var b=document.createElement('button'); b.className='namebtn'+(done?' done':'');
-      if(done) b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last.charAt(0)+'.')+'</div><div class="tick">&#10003; Checked in '+fmtT(checkedIn[uid(p)].time)+'</div>';
-      else { b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last.charAt(0)+'.')+'</div><div class="sub">Tap to check in</div>'; b.onclick=function(){ checkIn(p,'scheduled'); }; }
+      if(done) b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="tick">&#10003; Checked in '+fmtT(checkedIn[uid(p)].time)+'</div>';
+      else { b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="sub">'+roleTag(p)+'</div>'; b.onclick=function(){ checkIn(p,p.how||'scheduled'); }; }
       g.appendChild(b);
     });
   }
@@ -328,11 +394,26 @@
   function init(){ renderHeader(); renderSched(); buildDirectory(); tickClock(); setInterval(tickClock,1000); }
   if(PREVIEW){ useSample(); init(); }
   else {
-    Promise.all([
+    function gidSet(g){ return g && g.indexOf('PASTE')===-1; }
+    var opt=[];
+    if(gidSet(VOLUNTEERS_GID)) opt.push(['vol',VOLUNTEERS_GID]);
+    if(gidSet(BAGPACKERS_GID)) opt.push(['bag',BAGPACKERS_GID]);
+    if(gidSet(GAH_GID)) opt.push(['gah',GAH_GID]);
+    var tasks=[
       fetch(csvUrl(SUPERVISORS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); }),
       fetch(csvUrl(SIGNUPS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); })
-    ]).then(function(res){ supervisorsData=parseCSV(res[0]); signupsData=parseCSV(res[1]); init(); })
-     .catch(function(){ useSample(); init(); });
+    ];
+    opt.forEach(function(o){ tasks.push(fetch(csvUrl(o[1])).then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; })); });
+    Promise.all(tasks).then(function(res){
+      supervisorsData=parseCSV(res[0]); signupsData=parseCSV(res[1]);
+      opt.forEach(function(o,idx){
+        var txt=res[2+idx]||'';
+        if(o[0]==='vol') volunteersData=parseCSV(txt);
+        else if(o[0]==='bag') bagPackersData=parseCSV(txt);
+        else if(o[0]==='gah') gahData=parseCSV(txt);
+      });
+      init();
+    }).catch(function(){ useSample(); init(); });
   }
 
   function useSample(){
@@ -349,6 +430,16 @@
       ['','Dawn','Miller','dawn@example.org','267-555-1005','2020-01-01','',''],
       ['','Ken','Carr','ken@example.org','267-555-1006','2020-01-01','',''],
       ['','Christie','Gera','christie@example.org','267-555-1007','2020-01-01','','']];
+    gahData=[['Store','Monday','Tuesday','Wednesday','Thursday','Friday'],
+      ['Giant','Jim Smith','Nicole O.','Kaitlin (as avail)','Donna & Claude',''],
+      ['Giant LOWES','Jim Smith','','','Donna & Claude','Alan G'],
+      ['Target','Todd Benner','','Butch','','Ed Angelo'],
+      ['Walmart','Ed Angelo','Butch','','Clark',''],
+      ['Grocery Outlet','','Alicia D.','','','']];
+    bagPackersData=[['Day','Week','Packer','Phone','Email','Backup','Backup Phone','Backup Email'],
+      ['Sunday','1st',"Michele O'Donnell",'267-261-5044','cheleybelly@yahoo.com','Angela Thomas','',''],
+      ['Monday Evening','1st','Alicia Garner','267-424-0319','agarner311@yahoo.com','','',''],
+      ['Thursday Afternoon','1st','Samantha D','570-730-7529','','','','']];
   }
 })();
 </script>
