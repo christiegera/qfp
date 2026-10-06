@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Volunteer Cheat Sheet · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+  <style>
+    :root{
+      --ink:#1A1A1A; --cream:#F5F3ED; --moss:#1B8A2A; --moss-light:#2DA03E; --moss-pale:#DCFADE;
+      --terracotta:#D4522A; --terracotta-light:#FDE8E0; --amber:#E09800; --amber-pale:#FFF4CC;
+      --slate:#2B7CB5; --slate-pale:#DBEDF9; --warm-gray:#6B6560; --light-gray:#B5B0A8;
+      --border:#E5E2DB; --radius:12px; --radius-lg:20px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;}
+    .doc{max-width:760px;margin:0 auto;padding:40px 32px 100px;}
+    .print-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 0;margin-bottom:8px;}
+    .doc-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--warm-gray);text-decoration:none;}
+    .doc-back:hover{color:var(--ink);}
+    .print-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--moss);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+    .print-btn:hover{background:var(--moss-light);}
+    .cover{background:linear-gradient(135deg,#E8751A 0%,#C75B39 100%);border-radius:var(--radius-lg);padding:40px 36px;text-align:center;color:#fff;margin-bottom:28px;}
+    .cover-logo{display:block;margin:0 auto 16px;height:90px;width:auto;}
+    .cover .eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:6px;}
+    .cover h1{font-size:32px;font-weight:750;letter-spacing:-1.2px;line-height:1.1;margin-bottom:8px;}
+    .cover .sub{font-size:15px;color:rgba(255,255,255,.9);}
+    .confidential{background:#fff;border-radius:var(--radius);border-left:5px solid var(--terracotta);padding:22px 26px;margin-bottom:24px;}
+    .confidential h3{font-size:17px;font-weight:750;color:var(--terracotta);margin-bottom:8px;}
+    .confidential p{font-size:14px;color:var(--warm-gray);line-height:1.6;margin-bottom:8px;}
+    .confidential p:last-child{margin-bottom:0;} .confidential strong{color:var(--ink);}
+    .card{background:#fff;border-radius:var(--radius-lg);padding:24px 26px;margin-bottom:16px;}
+    .card h3{font-size:18px;font-weight:750;letter-spacing:-.3px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+    .card .n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--moss-pale);color:var(--moss);font-size:14px;font-weight:700;flex-shrink:0;}
+    .card ul{margin:4px 0 0 20px;} .card li{font-size:15px;color:var(--warm-gray);line-height:1.6;margin-bottom:6px;}
+    .card li strong{color:var(--ink);}
+    .card p{font-size:15px;color:var(--warm-gray);line-height:1.65;margin-bottom:8px;}
+    .callout{padding:14px 18px;background:var(--amber-pale);border-radius:var(--radius);font-size:14px;font-weight:600;color:var(--amber);line-height:1.5;margin-top:12px;}
+    .handbook-link{display:block;background:var(--moss);color:#fff;border-radius:var(--radius-lg);padding:24px 26px;text-decoration:none;margin-bottom:16px;}
+    .handbook-link h3{font-size:18px;font-weight:750;margin-bottom:6px;color:#fff;}
+    .handbook-link p{font-size:14px;color:rgba(255,255,255,.9);line-height:1.55;}
+    .fill{background:var(--slate-pale);color:var(--slate);border-radius:8px;padding:3px 8px;font-size:13px;font-weight:600;}
+    .doc-footer{text-align:center;font-size:12px;color:var(--light-gray);margin-top:36px;padding-top:22px;border-top:1px solid var(--border);}
+    @media(max-width:640px){.doc{padding:20px 18px 80px;}.cover{padding:32px 22px;}.cover h1{font-size:26px;}}
+    @media print{
+      .print-bar{display:none!important;} body{background:#fff;}
+      .doc{padding:0;max-width:none;}
+      .cover,.confidential,.card,.handbook-link,.callout{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid;}
+    }
+  </style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="print-bar">
+    <a href="portal.html" class="doc-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to Portal
+    </a>
+    <button class="print-btn" onclick="window.print()">Print</button>
+  </div>
+
+  <div class="cover">
+    <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="cover-logo">
+    <div class="eyebrow">Quakertown Food Pantry</div>
+    <h1>Start Here</h1>
+    <div class="sub">Your new-volunteer cheat sheet — everything you need for day one</div>
+  </div>
+
+  <div class="confidential">
+    <h3>First, the one rule that matters most: confidentiality</h3>
+    <p>Please do not divulge, under any circumstances, the identity of any client coming to the pantry. Do not access or discuss client information with anyone.</p>
+    <p>Anyone asking for information about another client should be directed to the <strong>Shift Supervisor</strong>, who will take appropriate measures.</p>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">1</span> Your first shift</h3>
+    <ul>
+      <li><strong>Arrive a few minutes early</strong> and check in with your Shift Supervisor — they'll be expecting you.</li>
+      <li>You'll be <strong>paired with an experienced volunteer</strong> who shows you the ropes. You won't be thrown in alone.</li>
+      <li>Wear <strong>comfortable clothes and closed-toe shoes</strong> — there's standing and some light lifting.</li>
+      <li>Just bring yourself (a water bottle's a good idea). No experience needed.</li>
+    </ul>
+    <div class="callout">Where to go &amp; where to park: <span class="fill">Christie — add your door/parking detail here</span></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="n">2</span> Your Shift Supervisor &amp; calling out</h3>
+    <p>Your <strong>Shift Supervisor</strong> runs your shift and is your go-to for any question. Save their contact info — you're responsible for keeping it handy.</p>
+    <ul>
+      <li>If you can't make a shift, <strong>text or call your Shift Supervisor as soon as possible</strong>.</li>
+      <li>A <strong>minimum 2-hour notice</strong> is required so we can find coverage.</li>
+      <li>Can't reach them? Contact a Management Team or Board member (in the handbook).</li>
+    </ul>
+  </div>
+
+  <a href="volunteer_handbook.html" class="handbook-link">
+    <h3>→ Everything else lives in the Volunteer Handbook</h3>
+    <p>Mission, full policies, cleaning duties, shift &amp; GAH schedules, civil rights training, and all contact lists. The contact and schedule sections are password-protected — <strong>ask your Shift Supervisor for the password</strong>.</p>
+  </a>
+
+  <div class="doc-footer">
+    Quakertown Food Pantry · 101B N. Third Street · P.O. Box 278 · Quakertown, PA 18951 · quakertownfoodpantry@gmail.com
+  </div>
+
+</div>
+</body>
+</html>
