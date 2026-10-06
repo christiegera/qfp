@@ -153,6 +153,22 @@
     body{padding-bottom:250px;}
     .fields{grid-template-columns:1fr 1fr;}
   }
+
+  /* Bigger text for the big-screen board / kiosk */
+  @media(min-width:641px){
+    .cell{min-height:220px;padding:12px;}
+    .daynum{font-size:1.6em;margin-bottom:6px;}
+    .celldate{font-size:1.3em;}
+    .time{font-size:1.05em;margin-bottom:10px;}
+    .slot{font-size:1em;line-height:1.5;}
+    .avail{font-size:1em;}
+    .sup{font-size:.92em;padding-top:8px;}
+    .pill{font-size:.72em;}
+    .weekhead div{font-size:1em;}
+    .monthbar h2{font-size:1.7em;min-width:260px;}
+    .navbtn{width:54px;height:54px;font-size:1.5em;}
+    .legend{font-size:.95em;}
+  }
 </style>
 </head>
 <body>
