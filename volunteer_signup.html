@@ -7,32 +7,43 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2254%22 font-size=%2282%22 dominant-baseline=%22central%22 text-anchor=%22middle%22>%F0%9F%A5%95</text></svg>">
 
   <style>
-    /* ---- Poppy kiosk styling ---- */
-  body{background:linear-gradient(135deg,#fff5ec 0%,#ffe9d6 45%,#ffeef6 100%);}
-  .hero{border-radius:0 0 28px 28px;box-shadow:0 6px 24px rgba(253,127,84,.28);}
-  .hero h1{letter-spacing:-.5px;}
+    /* ---- Poppy + seasonal theming ---- */
+  :root{
+    --pop:#059669;              /* primary accent  */
+    --pop2:#dc2626;             /* secondary accent */
+    --heroA:#ea7a3c; --heroB:#c2410c;   /* hero gradient */
+    --bgA:#fff5ec; --bgB:#fdefe0;       /* page background */
+    --garland:"\1F342 \1F341 \1F33E \1F383 \1F34E";
+  }
+  body{background:linear-gradient(135deg,var(--bgA) 0%,#fdf3ea 45%,var(--bgB) 100%);}
+  .hero{background:linear-gradient(135deg,var(--heroA) 0%,var(--heroB) 100%);
+    border-radius:0 0 28px 28px;box-shadow:0 6px 24px rgba(0,0,0,.14);}
+  .hero::after{content:var(--garland);display:block;margin-top:10px;font-size:1.3em;letter-spacing:.35em;}
 
-  .cell{border-radius:16px;box-shadow:0 2px 10px rgba(253,127,84,.07);}
+  .cell{border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
   .cell.shift{transition:transform .14s,box-shadow .14s,border-color .14s;}
-  .cell.shift:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(253,127,84,.22);}
-  .cell.selected{box-shadow:0 0 0 3px rgba(253,127,84,.35),0 10px 22px rgba(253,127,84,.25);}
+  .cell.shift:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,0,0,.14);border-color:var(--pop);}
+  .cell.selected{border-color:var(--pop2)!important;box-shadow:0 0 0 3px rgba(220,38,38,.3),0 10px 22px rgba(0,0,0,.15);background:#fff;}
 
-  .daynum,.celldate{color:var(--orange-deep);}
-  .monthbar h2{color:var(--orange-deep);}
-
-  .time{display:inline-block;background:#fff1e8;color:var(--orange-deep);
+  .daynum,.celldate,.monthbar h2{color:var(--pop);}
+  .time{display:inline-block;background:#fff;border:1.5px solid var(--pop);color:var(--pop);
     padding:3px 11px;border-radius:999px;font-weight:700;}
-
   .roster{gap:5px;}
   .slot{max-width:100%;}
-  .slot.open{color:#9aa0a8;background:#f6f7f9;border:1px dashed #d7dbe0;
-    border-radius:999px;padding:3px 10px;display:inline-block;}
-  .slot.filled{background:#e8f9f0;color:#047857;border-radius:999px;
-    padding:3px 10px;display:inline-block;font-weight:700;}
+  .slot.open{color:#9aa0a8;background:#f6f7f9;border:1px dashed #d7dbe0;border-radius:999px;padding:3px 10px;display:inline-block;}
+  .slot.filled{background:#e8f9f0;color:#047857;border-radius:999px;padding:3px 10px;display:inline-block;font-weight:700;}
+  .weekhead div{color:var(--pop);background:#fff;border:1.5px solid var(--pop);border-radius:999px;padding:7px 0;}
+  .pill{background:#fff;border:1.5px solid var(--pop2);color:var(--pop2);}
+  .check{background:var(--pop2);}
+  .viewswitch button[aria-pressed="true"]{background:var(--pop);}
+  .navbtn:hover:not(:disabled){border-color:var(--pop);color:var(--pop);}
 
-  .weekhead div{color:var(--orange-deep);background:#fff1e8;
-    border-radius:999px;padding:7px 0;}
-  .pill{background:#eef2ff;color:#4f46e5;}
+  /* ===== Seasonal palettes ===== */
+  body.season-fall{--pop:#c2410c;--pop2:#b91c1c;--heroA:#ea7a3c;--heroB:#c2410c;--bgA:#fff5ec;--bgB:#fdefe0;--garland:"\1F342 \1F341 \1F33E \1F383 \1F34E";}
+  body.season-christmas{--pop:#047857;--pop2:#dc2626;--heroA:#059669;--heroB:#b91c1c;--bgA:#f0fbf4;--bgB:#fdf0f0;--garland:"\1F384 \1F381 \2744 \2603 \1F936";}
+  body.season-winter{--pop:#0e7490;--pop2:#2563eb;--heroA:#0891b2;--heroB:#1e3a8a;--bgA:#eef7fb;--bgB:#eef2fb;--garland:"\2744 \2603 \1F9E3 \2744 \2728";}
+  body.season-spring{--pop:#16a34a;--pop2:#db2777;--heroA:#34d399;--heroB:#f472b6;--bgA:#f1fbf2;--bgB:#fdf0f7;--garland:"\1F337 \1F338 \1F331 \1F423 \1F33C";}
+  body.season-summer{--pop:#059669;--pop2:#d97706;--heroA:#10b981;--heroB:#f59e0b;--bgA:#f1fbf4;--bgB:#fffaf0;--garland:"\2600 \1F33B \1F349 \1F33F \1F353";}
   :root{
     --orange:#fd7f54; --orange-deep:#f97316; --ink:#1f2937; --ink-soft:#6b7280;
     --line:#e5e7eb; --paper:#f8f9fa; --paper-2:#ffffff;
