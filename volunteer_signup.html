@@ -732,6 +732,7 @@
   document.body.appendChild(fx);
 })();
 </script>
+<script>
 /* ===== QFP board strip: Today's Crew + Impact Ticker + We Still Need You ===== */
 (function(){
   'use strict';
@@ -772,7 +773,8 @@
   strip.innerHTML=
     '<div class="qfp-zone qfp-crew"><div class="qfp-k">Today\'s crew</div><div id="qfpCrew">Loading…</div></div>'
    +'<div class="qfp-zone qfp-stat"><div class="qfp-stat-n" id="qfpStatN"></div><div class="qfp-stat-l" id="qfpStatL"></div></div>'
-   +'<div class="qfp-zone qfp-need"><div class="qfp-k">We still need you</div><div id="qfpNeed">Loading…</div></div>';
+   +'<div class="qfp-zone qfp-need"><div class="qfp-k">We still need you</div><div id="qfpNeed">Loading…</div>'
+   +'<div class="qfp-qr"><img src="qfp_signup_qr.png" alt="Scan to sign up" onerror="this.parentNode.style.display=\'none\'"><span>Scan to sign up</span></div></div>';
   var hero=document.querySelector('.hero');
   if(hero&&hero.parentNode){ hero.parentNode.insertBefore(strip,hero.nextSibling); }
   else { document.body.insertBefore(strip,document.body.firstChild); }
