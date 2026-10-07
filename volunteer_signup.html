@@ -157,7 +157,7 @@
 
   /* ---- Ambient falling particles ---- */
   .season-fx{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden;}
-  .season-fx span{position:absolute;top:-50px;opacity:.45;animation:fxfall linear infinite;will-change:transform;}
+  .season-fx span{position:absolute;top:-50px;opacity:.22;animation:fxfall linear infinite;will-change:transform;}
   @keyframes fxfall{0%{transform:translateY(-50px) rotate(0);}100%{transform:translateY(106vh) rotate(360deg);}}
 
   /* ---- Seasonal palettes ---- */
@@ -718,13 +718,13 @@
   var GLYPHS={fall:['🍂','🍁','🍃'],christmas:['❄️','🎄','⭐'],winter:['❄️','❄','✨'],
               spring:['🌸','🌷','🌼'],summer:['🌻','🍃','☀️']}[s];
   var fx=document.createElement('div'); fx.className='season-fx';
-  for(var i=0;i<14;i++){
+  for(var i=0;i<6;i++){                               // was 14
     var p=document.createElement('span');
     p.textContent=GLYPHS[i%GLYPHS.length];
     p.style.left=(Math.random()*100)+'vw';
-    p.style.animationDuration=(11+Math.random()*10)+'s';
-    p.style.animationDelay=(-Math.random()*16)+'s';
-    p.style.fontSize=(16+Math.random()*22)+'px';
+    p.style.animationDuration=(24+Math.random()*16)+'s'; // was 11+…*10 — now slow 24–40s
+    p.style.animationDelay=(-Math.random()*20)+'s';
+    p.style.fontSize=(14+Math.random()*12)+'px';         // was 16+…*22 — now smaller
     fx.appendChild(p);
   }
   document.body.appendChild(fx);
