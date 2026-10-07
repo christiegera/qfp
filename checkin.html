@@ -453,5 +453,41 @@
   }
 })();
 </script>
+  <script>
+/* Check-in confetti — fires when the green welcome screen appears */
+(function(){
+  var COLORS=['#E8751A','#1B8A2A','#2B7CB5','#C75B6B','#F4C430','#ffffff'];
+  var css='@keyframes qfpConfFall{0%{transform:translateY(-30px) rotateZ(0)}100%{transform:translateY(102vh) rotateZ(720deg)}}'
+    +'.qfp-conf{position:absolute;top:-30px;z-index:1;pointer-events:none;will-change:transform;}';
+  var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
+
+  var w=document.getElementById('welcome');
+  if(!w) return;
+  w.style.overflow='hidden';
+  var pop=w.querySelector('.pop'); if(pop){ pop.style.position='relative'; pop.style.zIndex='2'; }
+
+  function burst(){
+    for(var i=0;i<48;i++){
+      var p=document.createElement('div');
+      p.className='qfp-conf';
+      p.style.background=COLORS[Math.floor(Math.random()*COLORS.length)];
+      p.style.left=(Math.random()*100)+'%';
+      if(Math.random()<0.5) p.style.borderRadius='50%';
+      var sz=(7+Math.random()*8); p.style.width=sz+'px'; p.style.height=sz+'px';
+      var dur=1.8+Math.random()*1.4;
+      p.style.animation='qfpConfFall '+dur+'s linear forwards';
+      p.style.animationDelay=(Math.random()*0.25)+'s';
+      w.appendChild(p);
+      (function(el,ms){ setTimeout(function(){ el.remove(); }, ms); })(p,(dur+0.4)*1000);
+    }
+  }
+
+  new MutationObserver(function(muts){
+    muts.forEach(function(m){
+      if(m.attributeName==='class' && w.classList.contains('show')) burst();
+    });
+  }).observe(w,{attributes:true});
+})();
+</script>
 </body>
 </html>
