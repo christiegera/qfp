@@ -53,4 +53,125 @@
   }
   @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 14px 34px rgba(27,138,42,.32);}50%{transform:scale(1.045);box-shadow:0 18px 44px rgba(27,138,42,.45);}}
   .tap .hand{display:inline-block;animation:wiggle 2.6s ease-in-out infinite;}
-  @keyframes wiggle{0%,60%,100%{transform:rotate(0);}70%{transform:rotate(-14deg);}80%{transform:rotate
+  @keyframes wiggle{0%,60%,100%{transform:rotate(0);}70%{transform:rotate(-14deg);}80%{transform:rotate(10deg);}90%{transform:rotate(-6deg);}}
+
+  .ticker{min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    opacity:0;transform:translateY(8px);transition:opacity .7s,transform .7s;}
+  .ticker.show{opacity:1;transform:none;}
+  .ticker .n{font-size:clamp(40px,7.5vw,68px);font-weight:800;letter-spacing:-1.5px;color:var(--orange);line-height:1;}
+  .ticker .l{font-size:clamp(16px,2.5vw,22px);color:var(--warm-gray);font-weight:600;margin-top:6px;}
+  .ticker .msg{font-size:clamp(22px,3.8vw,34px);font-weight:700;color:var(--green);letter-spacing:-.5px;}
+
+  .foot{font-size:13px;color:#B5B0A8;margin-top:10px;}
+
+  /* Gentle falling seasonal emoji */
+  .fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+  .fx span{position:absolute;top:-60px;opacity:.28;animation:fall linear infinite;}
+  @keyframes fall{0%{transform:translateY(-60px) rotate(0);}100%{transform:translateY(110vh) rotate(360deg);}}
+  .stage{position:relative;z-index:1;}
+
+  @media (prefers-reduced-motion: reduce){
+    .logo-wrap,.tap,.tap .hand,.fx span{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div>
+    <div class="clock" id="clock">--:--</div>
+    <div class="date" id="date"></div>
+  </div>
+
+  <div class="middle">
+    <div class="logo-wrap">
+      <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="logo"
+           onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block';">
+      <div class="logo-fallback" id="logoFallback">&#x1F955;</div>
+    </div>
+    <div class="title">Welcome, volunteers!</div>
+    <div class="sub">Quakertown Food Pantry</div>
+    <div class="tap"><span class="hand">&#x1F446;</span> Tap anywhere to check in</div>
+  </div>
+
+  <div>
+    <div class="ticker" id="ticker"></div>
+    <div class="foot">101 N. Third Street &middot; Quakertown, PA</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- EDIT MONTHLY: impact numbers (same as the big screen) ----
+  var STATS = [
+    { n:'13,397', l:'volunteer hours in 2026' },
+    { n:'18,614', l:'neighbors served this year' },
+    { n:'6,556',  l:'household visits in 2026' },
+    { n:'2,344',  l:'neighbors served in September' }
+  ];
+  var MESSAGES = [
+    'Thank you for being here today! \uD83D\uDC9A',
+    'You make this pantry run.',
+    '100% volunteer-powered, 5 days a week',
+    'Every bag you pack feeds a neighbor.'
+  ];
+
+  // Where a tap goes
+  var DEST = 'portal.html?kiosk=1';
+  function go(){ window.location.href = DEST; }
+  document.addEventListener('click', go);
+  document.addEventListener('touchend', function(e){ e.preventDefault(); go(); }, { passive:false });
+
+  // Clock + date
+  var clock = document.getElementById('clock'), dateEl = document.getElementById('date');
+  function tick(){
+    var d = new Date();
+    clock.textContent = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+    dateEl.textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  }
+  tick(); setInterval(tick, 15000);
+
+  // Rotating ticker: alternate a stat, then a thank-you message
+  var items = [];
+  var max = Math.max(STATS.length, MESSAGES.length);
+  for (var i = 0; i < max; i++){
+    if (STATS[i]) items.push({ type:'stat', v:STATS[i] });
+    if (MESSAGES[i]) items.push({ type:'msg', v:MESSAGES[i] });
+  }
+  var t = document.getElementById('ticker'), idx = 0;
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function show(){
+    var it = items[idx % items.length]; idx++;
+    t.classList.remove('show');
+    setTimeout(function(){
+      t.innerHTML = it.type === 'stat'
+        ? '<div class="n">' + esc(it.v.n) + '</div><div class="l">' + esc(it.v.l) + '</div>'
+        : '<div class="msg">' + esc(it.v) + '</div>';
+      t.classList.add('show');
+    }, 450);
+  }
+  show(); setInterval(show, 6000);
+
+  // Seasonal falling emoji (just a few, slow)
+  var m = new Date().getMonth();
+  var G = m === 11 ? ['\u2744\uFE0F','\uD83C\uDF84','\u2B50']
+        : m <= 1  ? ['\u2744\uFE0F','\u2744','\u2728']
+        : m <= 4  ? ['\uD83C\uDF38','\uD83C\uDF37','\uD83C\uDF3C']
+        : m <= 7  ? ['\uD83C\uDF3B','\uD83C\uDF43','\u2600\uFE0F']
+        :           ['\uD83C\uDF42','\uD83C\uDF41','\uD83C\uDF43'];
+  var fx = document.createElement('div'); fx.className = 'fx';
+  for (var k = 0; k < 7; k++){
+    var s = document.createElement('span');
+    s.textContent = G[k % G.length];
+    s.style.left = (Math.random() * 100) + 'vw';
+    s.style.fontSize = (18 + Math.random() * 16) + 'px';
+    s.style.animationDuration = (22 + Math.random() * 18) + 's';
+    s.style.animationDelay = (-Math.random() * 30) + 's';
+    fx.appendChild(s);
+  }
+  document.body.appendChild(fx);
+})();
+</script>
+
+</body>
+</html>
