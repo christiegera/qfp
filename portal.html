@@ -189,9 +189,20 @@
     .kiosk .kiosk-only { display: block; }
     .kiosk .web-only { display: none; }
     .kiosk .primary { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
-    .kiosk .big-card.checkin { order: -1; }
-    .kiosk .big-card.checkin h3 { font-size: 32px; }
-    .kiosk .big-card.checkin p { font-size: 17px; }
+    .kiosk .big-card.checkin {
+      order: -1;
+      min-height: 260px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      padding: 34px 40px;
+    }
+    .kiosk .big-card.checkin .big-icon { width: 96px; height: 96px; border-radius: 26px; }
+    .kiosk .big-card.checkin .big-icon svg { width: 52px; height: 52px; }
+    .kiosk .big-card.checkin h3 { font-size: 38px; }
+    .kiosk .big-card.checkin p { font-size: 19px; }
+    .kiosk .big-card.checkin .big-go { font-size: 17px; padding: 10px 20px; margin-top: 16px; }
     .kiosk .big-card.signup {
       min-height: 0;
       flex-direction: row;
@@ -320,13 +331,14 @@
       .portal-header { margin-bottom: 20px; }
       .portal-logo { height: 70px; }
       .primary { flex: 1.25; min-height: 0; margin-bottom: 20px; }
-      .kiosk .primary { flex: 1.6; }
+      .kiosk .primary { flex: 2.4; }
       .big-card { min-height: 0; }
       .card-grid {
         flex: 2.6;
         min-height: 0;
         grid-auto-rows: minmax(0, 1fr);
       }
+      .kiosk .card-grid { flex: 2.2; }
       .portal-card { padding: 16px 20px; }
       .card-text h3 { font-size: 17px; }
       .card-text p { font-size: 14px; }
