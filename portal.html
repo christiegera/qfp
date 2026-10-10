@@ -1,291 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-2Z6B6D1YEX');
+
+  // Track outbound link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.href || '';
+
+    if (href.includes('paypal.com')) {
+      gtag('event', 'donate_click', { method: 'paypal' });
+    } else if (href.includes('venmo.com')) {
+      gtag('event', 'donate_click', { method: 'venmo' });
+    } else if (href.includes('amazon.com')) {
+      gtag('event', 'wishlist_click');
+    } else if (href.includes('forms.gle')) {
+      gtag('event', 'volunteer_apply_click');
+    } else if (href.startsWith('mailto:')) {
+      gtag('event', 'email_click');
+    }
+  });
+</script>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pantry Board · Quakertown Food Pantry</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Volunteer Portal · Quakertown Food Pantry</title>
   <link rel="icon" type="image/x-icon" href="carrot.png">
-<style>
-  :root{
-    --ink:#1A1A1A; --cream:#F5F3ED; --warm-gray:#6B6560; --light-gray:#B5B0A8;
-    --border:#E5E2DB; --orange:#E8751A; --orange-pale:#FFF0E0;
-    --green:#1B8A2A; --green-pale:#DCFADE; --blue:#2B7CB5; --blue-pale:#DBEDF9;
-    --pink:#C75B6B; --pink-pale:#FCE8EB;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{height:100%;overflow:hidden;}
-  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;
-    background:linear-gradient(170deg,#FFF5EB 0%,var(--cream) 45%,var(--green-pale) 100%);
-    color:var(--ink);-webkit-font-smoothing:antialiased;cursor:none;
-    display:flex;flex-direction:column;padding:1.6vh 1.4vw;gap:1.6vh;}
+  <link rel="apple-touch-icon" sizes="180x180" href="carrot.png">
+  <style>
+    :root {
+      --ink: #1A1A1A;
+      --cream: #F5F3ED;
+      --warm-gray: #6B6560;
+      --light-gray: #B5B0A8;
+      --border: #E5E2DB;
+      --orange: #E8751A;
+      --orange-pale: #FFF0E0;
+      --green: #1B8A2A;
+      --green-pale: #DCFADE;
+      --blue: #2B7CB5;
+      --blue-pale: #DBEDF9;
+      --pink: #C75B6B;
+      --pink-pale: #FCE8EB;
+      --purple: #7B5EA7;
+      --purple-pale: #EDE6F6;
+      --teal: #1A8A7A;
+      --teal-pale: #DCFAF5;
+      --radius: 16px;
+    }
 
-  /* Top bar */
-  .top{display:flex;align-items:center;gap:1.2vw;flex:0 0 auto;}
-  .top img{height:6.5vh;width:auto;}
-  .top h1{font-size:3.4vh;font-weight:750;letter-spacing:-.04em;}
-  .top .date{font-size:2.3vh;color:var(--warm-gray);font-weight:600;}
-  .top .clock{margin-left:auto;font-size:4.6vh;font-weight:750;color:var(--green);font-variant-numeric:tabular-nums;}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* Quadrants */
-  .quad{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.6vh 1.2vw;}
-  .q{background:#fff;border-radius:2vh;border-top:1.1vh solid var(--c);
-    box-shadow:0 .4vh 2vh rgba(0,0,0,.06);padding:2vh 1.6vw;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-  .q.ann{--c:var(--pink);--p:var(--pink-pale);}
-  .q.shift{--c:var(--green);--p:var(--green-pale);}
-  .q.gah{--c:var(--blue);--p:var(--blue-pale);}
-  .q.bag{--c:var(--orange);--p:var(--orange-pale);}
-  .qh{display:flex;align-items:baseline;gap:1vw;margin-bottom:1.4vh;flex:0 0 auto;}
-  .qh h2{font-size:3.3vh;font-weight:750;letter-spacing:-.03em;}
-  .qh .when{margin-left:auto;font-size:2vh;font-weight:700;color:var(--c);background:var(--p);padding:.5vh 1vw;border-radius:100px;white-space:nowrap;}
-  .qb{flex:1 1 auto;min-height:0;overflow:hidden;font-size:2.8vh;}   /* font-size is auto-shrunk to fit */
+    body {
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(170deg, #FFF5EB 0%, var(--cream) 40%, var(--green-pale) 100%);
+      min-height: 100vh;
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  .meta{font-size:.8em;color:var(--warm-gray);margin-bottom:.6em;}
-  .meta b{color:var(--ink);}
-  .grp{display:inline-block;background:var(--p);color:var(--c);font-weight:750;border-radius:.6em;padding:.25em .7em;margin-bottom:.6em;}
-  .names{display:grid;grid-template-columns:repeat(auto-fill,minmax(11em,1fr));gap:.35em 1.2em;}
-  .nm{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .nm::before{content:"";display:inline-block;width:.45em;height:.45em;border-radius:50%;background:var(--c);margin-right:.5em;vertical-align:middle;}
-  .nm small{font-weight:500;color:var(--warm-gray);font-size:.75em;}
-  .empty{color:var(--light-gray);font-size:.9em;}
+    .portal {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 40px 24px 50px;
+    }
 
-  /* Announcements */
-  .ann ul{list-style:none;display:flex;flex-direction:column;gap:.6em;}
-  .ann li{background:var(--p);border-radius:.6em;padding:.55em .8em;font-weight:600;line-height:1.3;}
+    /* HEADER */
+    .portal-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .portal-logo {
+      height: 80px;
+      width: auto;
+      margin-bottom: 10px;
+    }
+    .portal-header h1 {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 2px;
+    }
+    .portal-header p {
+      font-size: 16px;
+      color: var(--warm-gray);
+      font-weight: 500;
+    }
+    .greet {
+      display: inline-block;
+      margin-top: 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--warm-gray);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
 
-  /* GAH table */
-  .stores{display:flex;flex-direction:column;gap:.35em;}
-  .store{display:flex;gap:.8em;align-items:baseline;border-bottom:1px solid var(--border);padding-bottom:.35em;}
-  .store:last-child{border-bottom:0;}
-  .store .s{flex:0 0 9em;color:var(--warm-gray);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .store .d{font-weight:700;}
+    /* BIG PRIMARY ACTIONS */
+    .primary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+    .big-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 190px;
+      padding: 26px;
+      border-radius: 22px;
+      color: #fff;
+      text-decoration: none;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .big-card::after {
+      content: '';
+      position: absolute;
+      right: -50px; top: -50px;
+      width: 170px; height: 170px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.13);
+      pointer-events: none;
+    }
+    .big-card.signup {
+      --c: var(--orange);
+      background: linear-gradient(140deg, #F7A04A 0%, #E8751A 55%, #C95E0E 100%);
+      box-shadow: 0 12px 28px rgba(232,117,26,.30);
+    }
+    .big-card.checkin {
+      --c: var(--green);
+      background: linear-gradient(140deg, #34B84A 0%, #1B8A2A 55%, #146B20 100%);
+      box-shadow: 0 12px 28px rgba(27,138,42,.28);
+    }
+    .big-card:hover { transform: translateY(-3px); }
+    .big-card:active { transform: scale(.98); }
+    .big-icon {
+      width: 58px; height: 58px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.22);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .big-card h3 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      line-height: 1.15;
+    }
+    .big-card p {
+      font-size: 15px;
+      opacity: .92;
+      margin-top: 3px;
+    }
+    .big-go {
+      display: inline-flex;
+      align-self: flex-start;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      background: rgba(255,255,255,.96);
+      color: var(--c);
+      font-size: 14px;
+      font-weight: 800;
+      padding: 8px 16px;
+      border-radius: 999px;
+    }
 
-  /* Bag packers */
-  .pk{display:flex;flex-direction:column;gap:.5em;}
-  .pk .row{display:flex;gap:.8em;align-items:baseline;}
-  .pk .lbl{flex:0 0 8em;color:var(--warm-gray);font-weight:600;font-size:.85em;}
-  .pk .who{font-weight:700;}
+    /* KIOSK MODE (iPad): Check In is the hero, Sign Up points to the big screen */
+    .kiosk-only { display: none; }
+    .kiosk .kiosk-only { display: block; }
+    .kiosk .web-only { display: none; }
+    .kiosk .primary { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+    .kiosk .big-card.checkin {
+      order: -1;
+      min-height: 260px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      padding: 34px 40px;
+    }
+    .kiosk .big-card.checkin .big-icon { width: 96px; height: 96px; border-radius: 26px; }
+    .kiosk .big-card.checkin .big-icon svg { width: 52px; height: 52px; }
+    .kiosk .big-card.checkin h3 { font-size: 38px; }
+    .kiosk .big-card.checkin p { font-size: 19px; }
+    .kiosk .big-card.checkin .big-go { font-size: 17px; padding: 10px 20px; margin-top: 16px; }
+    .kiosk .big-card.signup {
+      min-height: 0;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid var(--orange-pale);
+      border-radius: var(--radius);
+      box-shadow: none;
+    }
+    .kiosk .big-card.signup::after,
+    .kiosk .big-card.signup .big-go { display: none; }
+    .kiosk .big-card.signup .big-icon { width: 46px; height: 46px; border-radius: 12px; background: var(--orange-pale); color: var(--orange); }
+    .kiosk .big-card.signup .big-icon svg { width: 22px; height: 22px; }
+    .kiosk .big-card.signup h3 { font-size: 17px; font-weight: 700; letter-spacing: -.2px; }
+    .kiosk .big-card.signup p { font-size: 14px; color: var(--warm-gray); opacity: 1; }
 
-  .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
-  .foot b{color:var(--green);}
-  .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:var(--orange-pale);padding:.3vh .7vw;border-radius:100px;display:none;}
-</style>
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--warm-gray);
+      margin: 0 0 10px 4px;
+    }
+
+    /* CARD GRID */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .portal-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--ink);
+      border: 2px solid var(--border);
+      transition: transform .15s, box-shadow .15s, border-color .15s;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .portal-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .portal-card:active { transform: scale(.98); }
+
+    /* CARD COLORS */
+    .portal-card.orange { border-color: var(--orange-pale); }
+    .portal-card.orange:hover { border-color: var(--orange); }
+    .portal-card.green { border-color: var(--green-pale); }
+    .portal-card.green:hover { border-color: var(--green); }
+    .portal-card.blue { border-color: var(--blue-pale); }
+    .portal-card.blue:hover { border-color: var(--blue); }
+    .portal-card.pink { border-color: var(--pink-pale); }
+    .portal-card.pink:hover { border-color: var(--pink); }
+    .portal-card.purple { border-color: var(--purple-pale); }
+    .portal-card.purple:hover { border-color: var(--purple); }
+    .portal-card.teal { border-color: var(--teal-pale); }
+    .portal-card.teal:hover { border-color: var(--teal); }
+
+    /* ICON */
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .card-icon.orange { background: var(--orange-pale); color: var(--orange); }
+    .card-icon.green { background: var(--green-pale); color: var(--green); }
+    .card-icon.blue { background: var(--blue-pale); color: var(--blue); }
+    .card-icon.pink { background: var(--pink-pale); color: var(--pink); }
+    .card-icon.purple { background: var(--purple-pale); color: var(--purple); }
+    .card-icon.teal { background: var(--teal-pale); color: var(--teal); }
+
+    .card-text h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      letter-spacing: -0.2px;
+    }
+    .card-text p {
+      font-size: 13px;
+      color: var(--warm-gray);
+      line-height: 1.4;
+    }
+
+    /* FOOTER */
+    .portal-footer {
+      text-align: center;
+      margin-top: 26px;
+      font-size: 12px;
+      color: var(--light-gray);
+    }
+
+    /* ===== iPad portrait: fit everything on one screen, no scrolling ===== */
+    @media (min-width: 700px) and (orientation: portrait) {
+      html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+      }
+      .portal {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 22px 32px 14px;
+      }
+      .portal-header { margin-bottom: 20px; }
+      .portal-logo { height: 70px; }
+      .primary { flex: 1.25; min-height: 0; margin-bottom: 20px; }
+      .kiosk .primary { flex: 2.4; }
+      .big-card { min-height: 0; }
+      .card-grid {
+        flex: 2.6;
+        min-height: 0;
+        grid-auto-rows: minmax(0, 1fr);
+      }
+      .kiosk .card-grid { flex: 2.2; }
+      .portal-card { padding: 16px 20px; }
+      .card-text h3 { font-size: 17px; }
+      .card-text p { font-size: 14px; }
+      .portal-footer { margin-top: 14px; }
+    }
+
+    /* PHONES */
+    @media (max-width: 500px) {
+      .portal { padding: 26px 16px 40px; }
+      .portal-header h1 { font-size: 24px; }
+      .portal-logo { height: 64px; }
+      .primary { grid-template-columns: 1fr; gap: 12px; }
+      .big-card { min-height: 0; padding: 20px; }
+      .big-card h3 { font-size: 21px; }
+      .card-grid { gap: 10px; }
+      .portal-card { padding: 16px 14px; gap: 12px; }
+      .card-icon { width: 38px; height: 38px; }
+      .card-text h3 { font-size: 15px; }
+    }
+
+    @media print {
+      body { background: white; }
+    }
+  </style>
 </head>
 <body>
-  <div class="top">
-    <img src="qfp_trans.png" alt="" onerror="this.style.display='none'">
-    <div>
-      <h1>Quakertown Food Pantry</h1>
-      <div class="date" id="today"></div>
+<script>
+  /* Kiosk mode: open portal.html?kiosk=1 once on the iPad and it remembers. portal.html?kiosk=0 turns it off. */
+  (function(){
+    try {
+      var q = location.search;
+      if (/[?&]kiosk=1/.test(q)) localStorage.setItem('qfpKiosk', '1');
+      if (/[?&]kiosk=0/.test(q)) localStorage.removeItem('qfpKiosk');
+      if (localStorage.getItem('qfpKiosk') === '1') document.body.classList.add('kiosk');
+    } catch (e) {}
+  })();
+</script>
+  <!-- QFP shared top nav — paste right after <body> on every portal page -->
+<div class="qfp-navbar">
+  <nav class="qfp-nav">
+    <a class="qfp-nav__home" href="https://www.quakertownfoodpantry.org/portal.html">&#x1F955; Volunteer Portal</a>
+    <div class="qfp-nav__links">
+      <a href="https://www.quakertownfoodpantry.org/portal.html">Portal</a>
+      <a href="https://www.quakertownfoodpantry.org/volunteer_signup.html">Sign Up</a>
+      <a href="https://www.quakertownfoodpantry.org/checkin.html">Sign In</a>
+      <a href="https://www.quakertownfoodpantry.org/apply.html">Apply</a>
+      <a href="https://www.quakertownfoodpantry.org/volunteer_handbook.html">Handbook</a>
     </div>
-    <div class="clock" id="clock">--:--</div>
+  </nav>
+</div>
+<style>
+  .qfp-navbar{position:sticky;top:0;z-index:600;background:rgba(255,255,255,.92);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid #E5E2DB;}
+  .qfp-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    max-width:1100px;margin:0 auto;padding:10px 18px;
+    font-family:-apple-system,'Segoe UI',system-ui,sans-serif;}
+  .qfp-nav__home{font-weight:800;font-size:15px;color:#1A1A1A;text-decoration:none;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+  .qfp-nav__links{display:flex;gap:4px;flex-wrap:wrap;}
+  .qfp-nav__links a{font-size:13.5px;font-weight:600;color:#6B6560;text-decoration:none;
+    padding:7px 12px;border-radius:999px;transition:background .15s,color .15s;}
+  .qfp-nav__links a:hover{background:#FFF0E0;color:#E8751A;}
+  @media(max-width:560px){.qfp-nav{justify-content:center;}.qfp-nav__home{width:100%;justify-content:center;}}
+</style>
+
+<div class="portal">
+
+  <div class="portal-header">
+    <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="portal-logo">
+    <h1>Quakertown Food Pantry</h1>
+    <p>Volunteer Portal</p>
+    <div class="greet" id="greet">&#x1F44B; Welcome!</div>
   </div>
 
-  <div class="quad">
-    <section class="q ann">
-      <div class="qh"><h2>&#128227; Announcements</h2></div>
-      <div class="qb" id="annBody"></div>
-    </section>
-    <section class="q shift">
-      <div class="qh"><h2>&#129365; Pantry Shift</h2><span class="when" id="shiftWhen"></span></div>
-      <div class="qb" id="shiftBody"></div>
-    </section>
-    <section class="q gah">
-      <div class="qh"><h2>&#128666; GAH Drivers</h2><span class="when" id="gahWhen"></span></div>
-      <div class="qb" id="gahBody"></div>
-    </section>
-    <section class="q bag">
-      <div class="qh"><h2>&#128717;&#65039; Bag Packers</h2><span class="when" id="bagWhen"></span></div>
-      <div class="qb" id="bagBody"></div>
-    </section>
+  <!-- BIG PRIMARY ACTIONS -->
+  <div class="primary">
+    <a href="volunteer_signup.html" class="big-card signup">
+      <div class="big-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+      </div>
+      <div>
+        <h3>Sign Up for Shifts</h3>
+        <p class="web-only">Pick the days you can help</p>
+        <p class="kiosk-only">Easiest on the big touch screen &#8212; or tap here</p>
+        <span class="big-go">Tap to start &#8594;</span>
+      </div>
+    </a>
+    <a href="checkin.html" class="big-card checkin">
+      <div class="big-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div>
+        <h3>Check In for Your Shift</h3>
+        <p>Tap in when you arrive</p>
+        <span class="big-go">Tap to check in &#8594;</span>
+      </div>
+    </a>
   </div>
 
-  <div class="foot">Volunteers: <b>sign in, sign out, and sign up for shifts on the iPad kiosk.</b></div>
-  <div class="banner" id="banner">Preview: example data</div>
+  <div class="section-label">Volunteer resources</div>
+
+  <div class="card-grid">
+
+    <a href="apply.html" class="portal-card orange">
+      <div class="card-icon orange">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Apply to Volunteer</h3>
+        <p>Volunteer application form</p>
+      </div>
+    </a>
+
+    <a href="volunteer_handbook.html#shifts" class="portal-card green">
+      <div class="card-icon green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Shift Schedule</h3>
+        <p>Supervisors &amp; backups</p>
+      </div>
+    </a>
+
+    <a href="volunteer_handbook.html#civil-rights" class="portal-card blue">
+      <div class="card-icon blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Civil Rights Training</h3>
+        <p>Annual requirement</p>
+      </div>
+    </a>
+
+    <a href="volunteer_handbook.html#contacts" class="portal-card pink">
+      <div class="card-icon pink">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Contact Lists</h3>
+        <p>Board, supervisors &amp; volunteers</p>
+      </div>
+    </a>
+
+    <a href="volunteer_handbook.html#duties" class="portal-card teal">
+      <div class="card-icon teal">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Duties &amp; Roles</h3>
+        <p>Who does what</p>
+      </div>
+    </a>
+
+    <a href="volunteer_handbook.html#policies" class="portal-card orange">
+      <div class="card-icon orange">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Policy Statements</h3>
+        <p>Board-approved policies</p>
+      </div>
+    </a>
+
+    <a href="volunteer_handbook.html" class="portal-card purple">
+      <div class="card-icon purple">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Volunteer Handbook</h3>
+        <p>Mission, history, cleaning &amp; more</p>
+      </div>
+    </a>
+
+    <a href="orientation.html" class="portal-card green">
+      <div class="card-icon green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <div class="card-text">
+        <h3>Orientation Cheat Sheet</h3>
+        <p>New volunteers &middot; print-friendly</p>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="portal-footer">
+    Quakertown Food Pantry &middot; 101 N. Third Street &middot; quakertownfoodpantry@gmail.com
+  </div>
+
+</div>
 
 <script>
+/* Friendly greeting + today's date, with a seasonal emoji */
 (function(){
-  'use strict';
-
-  /* ===== CONFIG ===== */
-  var SPREADSHEET_ID = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
-  var SUPERVISORS_GID = '502386465';
-  var SIGNUPS_GID = '1435555973';
-  var BAGPACKERS_GID = '1531693386';
-  var GAH_GID = '1136888994';
-  // Announcements tab: A = Announcement, B = Show from (optional date), C = Show until (optional date).
-  // Paste the tab's gid from the sheet URL. Until then, the list below is shown.
-  var ANNOUNCEMENTS_GID = 'PASTE_ANNOUNCEMENTS_GID';
-  var DEFAULT_ANNOUNCEMENTS = [
-    'Welcome, volunteers! Please sign in on the iPad kiosk when you arrive and sign out when you leave.',
-    'Want more shifts? Sign up on the iPad kiosk.'
-  ];
-  var REFRESH_MIN = 5;   // reload data from the sheet every few minutes
-
-  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var sup=[], sign=[], bag=[], gah=[], ann=[], preview=false;
-
-  function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid+'&t='+Date.now(); }
-  function pad(n){ return String(n).padStart(2,'0'); }
-  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function keyOf(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-  function weekNum(d){ return (['1st','2nd','3rd','4th','5th'])[Math.ceil(d.getDate()/7)-1]||'5th'; }
-  function shiftTime(day){ return (day==='Tuesday'||day==='Thursday')?'6:00 – 8:00 PM':'10:00 AM – 1:00 PM'; }
-  function toLocalDate(v){ var s=String(v||'').trim(); var m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/); if(m) return new Date(+m[1],+m[2]-1,+m[3]); return new Date(s); }
-  function addDays(d,n){ var x=new Date(d); x.setDate(x.getDate()+n); x.setHours(0,0,0,0); return x; }
-  function whenLabel(d){ var t=addDays(new Date(),0); var diff=Math.round((d-t)/864e5);
-    return diff===0?'Today':(diff===1?'Tomorrow':DAYS[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})); }
-
-  function parseCSV(text){
-    var rows=[], row=[], cur='', q=false;
-    for(var i=0;i<text.length;i++){ var c=text[i];
-      if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
-      else { if(c==='"') q=true;
-        else if(c===','){ row.push(cur); cur=''; }
-        else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(cur); rows.push(row); row=[]; cur=''; }
-        else cur+=c; } }
-    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
-    return rows.filter(function(r){ return r.some(function(c){ return (c||'').trim(); }); });
-  }
-
-  /* ===== data lookups ===== */
-  function findSup(d){
-    var day=DAYS[d.getDay()], wk=weekNum(d), hit=null;
-    for(var i=1;i<sup.length;i++){ var r=sup[i];
-      if(r[0]===wk+' '+day) return r;          // a "2nd Monday"-style row wins
-      if(r[0]===day && !hit) hit=r; }
-    return hit;
-  }
-  function signupsOn(d){
-    var k=keyOf(d), out=[];
-    for(var i=1;i<sign.length;i++){ var r=sign[i]; if(!r[5]) continue;
-      if((r[7]||'').trim()==='Cancelled') continue;
-      var sd=toLocalDate(r[5]); if(isNaN(sd)||keyOf(sd)!==k) continue;
-      out.push(((r[1]||'').trim()+' '+((r[2]||'').trim().charAt(0)||'')+((r[2]||'').trim()?'.':'')).trim()); }
-    return out;
-  }
-  function gahOn(d){
-    var col=d.getDay(); if(col<1||col>5) return [];
-    var out=[], started=false;
-    for(var i=0;i<gah.length;i++){ var r=gah[i];
-      if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
-      var store=(r[0]||'').trim(); if(!store) break;
-      out.push({ store:store, driver:(r[col]||'').trim() }); }
-    return out;
-  }
-  function packersOn(d){
-    var wd=d.getDay(), word=wd===0?'sunday':(wd===1?'monday':(wd===4?'thursday':''));
-    if(!word) return null;
-    var wk=weekNum(d).toLowerCase();
-    for(var i=1;i<bag.length;i++){ var r=bag[i];
-      if((r[0]||'').trim().toLowerCase().indexOf(word)!==0) continue;
-      if((r[1]||'').trim().toLowerCase()!==wk) continue;
-      return { label:(r[0]||'').trim(), packer:(r[2]||'').trim(), backup:(r[5]||'').trim() }; }
-    return { label:DAYS[wd], packer:'', backup:'' };
-  }
-  // First day from today (up to 7 days out) that passes the test.
-  function nextDay(test){ for(var n=0;n<8;n++){ var d=addDays(new Date(),n); if(test(d)) return d; } return addDays(new Date(),0); }
-
-  /* ===== render ===== */
-  function renderAnn(){
-    var t=addDays(new Date(),0), list=[];
-    if(ann.length){
-      for(var i=1;i<ann.length;i++){ var r=ann[i], msg=(r[0]||'').trim(); if(!msg) continue;
-        var from=r[1]?toLocalDate(r[1]):null, until=r[2]?toLocalDate(r[2]):null;
-        if(from&&!isNaN(from)&&t<from) continue;
-        if(until&&!isNaN(until)&&t>until) continue;
-        list.push(msg); }
-    }
-    if(!list.length) list=DEFAULT_ANNOUNCEMENTS;
-    document.getElementById('annBody').innerHTML='<ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul>';
-  }
-  function renderShift(){
-    var d=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; });
-    var day=DAYS[d.getDay()], r=findSup(d), names=signupsOn(d);
-    var supName=r?(r[2]||'').trim():'', group=r?(r[1]||'').trim():'';
-    document.getElementById('shiftWhen').textContent=whenLabel(d)+' · '+shiftTime(day);
-    var h='<div class="meta">Supervisor: <b>'+esc(supName||'TBD')+'</b></div>';
-    if(group&&group!=='NA') h+='<div class="grp">&#128101; '+esc(group)+' group day</div>';
-    h+= names.length ? '<div class="names">'+names.map(function(n){ return '<div class="nm">'+esc(n)+'</div>'; }).join('')+'</div>'
-                     : '<div class="empty">No online sign-ups yet.</div>';
-    document.getElementById('shiftBody').innerHTML=h;
-  }
-  function renderGah(){
-    var d=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; });
-    var rows=gahOn(d);
-    document.getElementById('gahWhen').textContent=whenLabel(d)+' pickups';
-    document.getElementById('gahBody').innerHTML = rows.length
-      ? '<div class="stores">'+rows.map(function(r){ return '<div class="store"><span class="s">'+esc(r.store)+'</span><span class="d">'+(r.driver?esc(r.driver):'<span class="empty">—</span>')+'</span></div>'; }).join('')+'</div>'
-      : '<div class="empty">No pickups scheduled.</div>';
-  }
-  function renderBag(){
-    var d=nextDay(function(x){ var w=x.getDay(); return w===0||w===1||w===4; });
-    var p=packersOn(d)||{label:'',packer:'',backup:''};
-    document.getElementById('bagWhen').textContent=whenLabel(d)+(p.label&&p.label.indexOf(' ')>-1?' '+p.label.split(' ').slice(1).join(' ').toLowerCase():'');
-    var h='<div class="pk">';
-    h+='<div class="row"><span class="lbl">Packer</span><span class="who">'+(p.packer?esc(p.packer):'<span class="empty">Open</span>')+'</span></div>';
-    if(p.backup) h+='<div class="row"><span class="lbl">Backup</span><span class="who">'+esc(p.backup)+'</span></div>';
-    // Then the rest of this week's packing days
-    var later=[], seen=keyOf(d);
-    for(var n=0;n<8;n++){ var x=addDays(new Date(),n); if(keyOf(x)===seen) continue;
-      var w=x.getDay(); if(!(w===0||w===1||w===4)||x<d) continue;
-      var q=packersOn(x); if(q) later.push({d:x,p:q}); if(later.length>=2) break; }
-    if(later.length){
-      h+='<div class="meta" style="margin-top:.6em">Coming up</div>';
-      later.forEach(function(l){ h+='<div class="row"><span class="lbl">'+esc(whenLabel(l.d))+'</span><span class="who">'+(l.p.packer?esc(l.p.packer):'<span class="empty">Open</span>')+'</span></div>'; });
-    }
-    document.getElementById('bagBody').innerHTML=h+'</div>';
-  }
-
-  // Shrink a quadrant's text until it fits, so long lists never get cut off.
-  function fit(el){
-    var size=window.innerHeight*0.028; el.style.fontSize=size+'px';
-    while(el.scrollHeight>el.clientHeight+1 && size>11){ size-=1; el.style.fontSize=size+'px'; }
-  }
-  function renderAll(){
-    renderAnn(); renderShift(); renderGah(); renderBag();
-    ['annBody','shiftBody','gahBody','bagBody'].forEach(function(id){ fit(document.getElementById(id)); });
-  }
-
-  function tick(){
-    var n=new Date();
-    document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    document.getElementById('today').textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  }
-
-  /* ===== load ===== */
-  function get(gid){ return fetch(csvUrl(gid)).then(function(r){ if(!r.ok) throw 0; return r.text(); }); }
-  function opt(gid){ if(!gid||gid.indexOf('PASTE')>-1) return Promise.resolve(''); return get(gid).catch(function(){ return ''; }); }
-  function load(){
-    Promise.all([get(SUPERVISORS_GID),get(SIGNUPS_GID),opt(BAGPACKERS_GID),opt(GAH_GID),opt(ANNOUNCEMENTS_GID)])
-      .then(function(res){
-        sup=parseCSV(res[0]); sign=parseCSV(res[1]); bag=parseCSV(res[2]); gah=parseCSV(res[3]); ann=parseCSV(res[4]);
-        renderAll();
-      }).catch(function(){ if(!sup.length){ useSample(); } renderAll(); });
-  }
-
-  function useSample(){
-    preview=true; document.getElementById('banner').style.display='block';
-    var t=new Date(), iso=(t.getMonth()+1)+'/'+t.getDate()+'/'+t.getFullYear();
-    var nx=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; }), nxIso=(nx.getMonth()+1)+'/'+nx.getDate()+'/'+nx.getFullYear();
-    sup=[['Day','Group','Name'],['Monday','','Joanne K.'],['Tuesday','Moms + Muscles','Cathi E.'],['Wednesday','','Virginia'],['Thursday','East Swamp','Joanne C.'],['Friday','','Kate']];
-    sign=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status'],
-      ['','Kathy','R','','',nxIso,'',''],['','Sandy','V','','',nxIso,'',''],['','Carol','M','','',nxIso,'',''],['','Mary Ann','S','','',nxIso,'',''],['','Donna','S','','',nxIso,'','']];
-    gah=[['GAH Driver Schedule'],['Store','Monday','Tuesday','Wednesday','Thursday','Friday'],
-      ['Giant','Jim Smith','Nicole O.','Kaitlin','Donna & Claude',''],['Giant LOWES','Jim Smith','','','Donna & Claude','Alan G'],
-      ['Target','Todd Benner','','Butch','','Ed Angelo'],['Walmart','Ed Angelo','Butch','','Clark',''],['Grocery Outlet','','Alicia D.','','','']];
-    bag=[['Day','Week','Packer','Phone','Email','Backup'],
-      ['Sunday','2nd','Bill Hahn','','',''],['Monday Evening','2nd','Jennie Becker','','',''],['Thursday Afternoon','3rd',"St. Paul's Church + Michelle",'','',''],
-      ['Sunday','3rd','Mary Hill','','',''],['Monday Evening','3rd','Kate Caponear','','','']];
-    ann=[];
-  }
-
-  tick(); setInterval(tick,1000);
-  load(); setInterval(load,REFRESH_MIN*60000);
-  window.addEventListener('resize',renderAll);
-  // Start fresh each morning
-  var startKey=keyOf(new Date());
-  setInterval(function(){ if(keyOf(new Date())!==startKey) location.reload(); },60000);
+  var d = new Date(), h = d.getHours(), m = d.getMonth();
+  var hi = h < 12 ? 'Good morning!' : (h < 17 ? 'Good afternoon!' : 'Good evening!');
+  var e = m === 11 ? '\uD83C\uDF84' : (m <= 1 ? '\u2744\uFE0F' : (m <= 4 ? '\uD83C\uDF37' : (m <= 7 ? '\u2600\uFE0F' : '\uD83C\uDF42')));
+  var day = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  document.getElementById('greet').textContent = e + ' ' + hi + ' \u00B7 ' + day;
 })();
 </script>
+
 </body>
 </html>
