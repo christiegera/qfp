@@ -90,6 +90,12 @@
   .sch small{color:var(--warm-gray);font-weight:600;}
   .tag{display:inline-block;font-size:.7em;font-weight:750;padding:.15em .6em;border-radius:100px;background:var(--c);color:#fff;margin-left:.5em;vertical-align:middle;}
 
+  /* Night mode + pixel shift */
+  .top,.quad,.foot{transition:transform 2s ease;}
+  .night{position:fixed;inset:0;background:#000;z-index:100;display:none;}
+  .night.show{display:block;}
+  .night .nmsg{position:absolute;color:#2a2a2a;font-size:1.6vh;font-weight:600;white-space:nowrap;}
+
   .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
   .foot b{color:var(--green);}
   .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:var(--orange-pale);padding:.3vh .7vw;border-radius:100px;display:none;}
@@ -134,6 +140,8 @@
     </div>
   </div>
 
+  <div class="night" id="night"><div class="nmsg" id="nmsg">Pantry board is resting &middot; tap to wake</div></div>
+
 <script>
 (function(){
   'use strict';
@@ -148,10 +156,21 @@
   // Paste the tab's gid from the sheet URL. Until then, the list below is shown.
   var ANNOUNCEMENTS_GID = 'PASTE_ANNOUNCEMENTS_GID';
   var DEFAULT_ANNOUNCEMENTS = [
-    'Welcome, volunteers! Please sign in and out of your shift on the iPad. Do not turn the power off.'
+    'Welcome, volunteers! Please sign in on the iPad kiosk when you arrive and sign out when you leave.',
+    'Please leave the screens on. They will go into night mode at the end of the day.'
   ];
   var REFRESH_MIN = 5;   // reload data from the sheet every few minutes
   var PAGE_RELOAD_MIN = 60;   // fully reload the page this often, so updates to board.html show up on their own
+
+  // Night mode: the screen goes black between these hours (24-hour clock). Tap to wake it briefly.
+  var NIGHT_OFF_HOUR = 21;   // 9 PM
+  var NIGHT_ON_HOUR  = 7;    // 7 AM
+  var WAKE_MIN       = 2;    // how long a tap keeps it awake at night
+  // Pixel shift: nudge the layout a few pixels now and then so nothing sits in one spot all day.
+  var SHIFT_EVERY_MIN = 10;
+  var SHIFT_PX        = 4;
+  // Announcements with no "Show until" date drop off this many days after they're posted.
+  var ANN_DEFAULT_DAYS = 14;
 
   var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var sup=[], sign=[], bag=[], gah=[], ann=[], preview=false;
@@ -218,11 +237,22 @@
   function nextDay(test){ for(var n=0;n<8;n++){ var d=addDays(new Date(),n); if(test(d)) return d; } return addDays(new Date(),0); }
 
   /* ===== render ===== */
+  // Announcements come from a tab (typically the responses tab of a "Post an announcement" form).
+  // Columns are found by header, so it works with or without a Timestamp column:
+  //   Announcement | Show from (optional) | Show until (optional) | Approved (optional)
+  // If there's an "Approved" column, only rows marked yes / x / ✓ are shown.
   function renderAnn(){
     var t=addDays(new Date(),0), list=[];
     if(ann.length){
-      for(var i=1;i<ann.length;i++){ var r=ann[i], msg=(r[0]||'').trim(); if(!msg) continue;
-        var from=r[1]?toLocalDate(r[1]):null, until=r[2]?toLocalDate(r[2]):null;
+      var h=ann[0].map(function(x){ return String(x||'').trim().toLowerCase(); });
+      function col(re,skip){ for(var i=0;i<h.length;i++){ if(i!==skip && re.test(h[i])) return i; } return -1; }
+      var cTs=col(/timestamp/), cMsg=col(/announce|message/);
+      if(cMsg<0) cMsg=(cTs===0?1:0);
+      var cFrom=col(/from|start/,cMsg), cTo=col(/until|end|expir/,cMsg), cOk=col(/approv/,cMsg);
+      for(var i=1;i<ann.length;i++){ var r=ann[i], msg=String(r[cMsg]||'').trim(); if(!msg) continue;
+        if(cOk>-1 && !/^(y|yes|true|x|✓|✔)/i.test(String(r[cOk]||'').trim())) continue;
+        var from=cFrom>-1&&r[cFrom]?toLocalDate(r[cFrom]):null, until=cTo>-1&&r[cTo]?toLocalDate(r[cTo]):null;
+        if((!until||isNaN(until)) && cTs>-1 && r[cTs]){ var ts=new Date(r[cTs]); if(!isNaN(ts)) until=addDays(ts,ANN_DEFAULT_DAYS); }
         if(from&&!isNaN(from)&&t<from) continue;
         if(until&&!isNaN(until)&&t>until) continue;
         list.push(msg); }
@@ -390,6 +420,31 @@
   sheet.addEventListener('click',function(e){ if(e.target===sheet) closeFull(); else bump(); });
   sheet.addEventListener('touchstart',bump,{passive:true});
   document.getElementById('sheetBody').addEventListener('scroll',bump);
+
+  /* ===== night mode ===== */
+  var night=document.getElementById('night'), nmsg=document.getElementById('nmsg'), wakeUntil=0;
+  function isNight(){
+    var h=new Date().getHours();
+    return NIGHT_OFF_HOUR>NIGHT_ON_HOUR ? (h>=NIGHT_OFF_HOUR||h<NIGHT_ON_HOUR) : (h>=NIGHT_OFF_HOUR&&h<NIGHT_ON_HOUR);
+  }
+  function nightCheck(){
+    var on=isNight() && Date.now()>wakeUntil;
+    if(on){
+      if(sheet.classList.contains('show')) closeFull();
+      // keep the tiny "tap to wake" note moving too
+      nmsg.style.left=(5+Math.random()*70)+'%'; nmsg.style.top=(5+Math.random()*85)+'%';
+    }
+    night.classList.toggle('show',on);
+  }
+  night.addEventListener('click',function(){ wakeUntil=Date.now()+WAKE_MIN*60000; nightCheck(); });
+  nightCheck(); setInterval(nightCheck,30000);
+
+  /* ===== pixel shift ===== */
+  function pixelShift(){
+    var x=Math.round((Math.random()*2-1)*SHIFT_PX), y=Math.round((Math.random()*2-1)*SHIFT_PX);
+    ['.top','.quad','.foot'].forEach(function(s){ document.querySelector(s).style.transform='translate('+x+'px,'+y+'px)'; });
+  }
+  setInterval(pixelShift,SHIFT_EVERY_MIN*60000);
 
   tick(); setInterval(tick,1000);
   load(); setInterval(load,REFRESH_MIN*60000);
