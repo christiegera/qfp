@@ -1,545 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-2Z6B6D1YEX');
-
-  // Track outbound link clicks
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('a');
-    if (!link) return;
-    var href = link.href || '';
-
-    if (href.includes('paypal.com')) {
-      gtag('event', 'donate_click', { method: 'paypal' });
-    } else if (href.includes('venmo.com')) {
-      gtag('event', 'donate_click', { method: 'venmo' });
-    } else if (href.includes('amazon.com')) {
-      gtag('event', 'wishlist_click');
-    } else if (href.includes('forms.gle')) {
-      gtag('event', 'volunteer_apply_click');
-    } else if (href.startsWith('mailto:')) {
-      gtag('event', 'email_click');
-    }
-  });
-</script>
-
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Volunteer Portal · Quakertown Food Pantry</title>
   <link rel="icon" type="image/x-icon" href="carrot.png">
   <link rel="apple-touch-icon" sizes="180x180" href="carrot.png">
-  <style>
-    :root {
-      --ink: #1A1A1A;
-      --cream: #F5F3ED;
-      --warm-gray: #6B6560;
-      --light-gray: #B5B0A8;
-      --border: #E5E2DB;
-      --orange: #E8751A;
-      --orange-pale: #FFF0E0;
-      --green: #1B8A2A;
-      --green-pale: #DCFADE;
-      --blue: #2B7CB5;
-      --blue-pale: #DBEDF9;
-      --pink: #C75B6B;
-      --pink-pale: #FCE8EB;
-      --purple: #7B5EA7;
-      --purple-pale: #EDE6F6;
-      --teal: #1A8A7A;
-      --teal-pale: #DCFAF5;
-      --radius: 16px;
-    }
+<style>
+  :root{
+    --ink:#1A1A1A; --cream:#F5F3ED; --warm-gray:#6B6560; --light-gray:#B5B0A8;
+    --border:#E5E2DB; --orange:#E8751A; --orange-pale:#FFF0E0;
+    --green:#1B8A2A; --green-pale:#DCFADE; --blue:#2B7CB5; --blue-pale:#DBEDF9;
+    --red:#C0392B; --red-pale:#FDECEA;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;
+    background:linear-gradient(170deg,#FFF5EB 0%,var(--cream) 45%,var(--green-pale) 100%);
+    display:flex;flex-direction:column;min-height:100vh;}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* Site menu bar (same on every volunteer page) */
+  .sitenav{display:flex;align-items:center;gap:10px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--border);flex:0 0 auto;}
+  .sitenav .brand{font-weight:800;color:var(--ink);text-decoration:none;font-size:17px;margin-right:auto;white-space:nowrap;}
+  .sitenav .links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+  .sitenav .links a{color:var(--warm-gray);text-decoration:none;font-weight:600;font-size:14px;padding:7px 12px;border-radius:999px;}
+  .sitenav .links a:hover{background:#f1f2f4;color:var(--ink);}
+  .sitenav .links a.on{background:var(--orange-pale);color:var(--orange);}
+  .sitenav .links a.sos{background:var(--red);color:#fff;}
 
-    body {
-      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(170deg, #FFF5EB 0%, var(--cream) 40%, var(--green-pale) 100%);
-      min-height: 100vh;
-      color: var(--ink);
-      -webkit-font-smoothing: antialiased;
-      -webkit-tap-highlight-color: transparent;
-    }
+  /* Landscape: two columns that fill the screen */
+  .wrap{flex:1 1 auto;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;padding:22px 24px 14px;max-width:1500px;width:100%;margin:0 auto;min-height:0;}
+  .left,.right{display:flex;flex-direction:column;gap:14px;min-height:0;}
 
-    .portal {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 40px 24px 50px;
-    }
+  .hello{display:flex;align-items:center;gap:16px;}
+  .hello img{height:64px;width:auto;}
+  .hello h1{font-size:28px;font-weight:800;letter-spacing:-.6px;line-height:1.1;}
+  .hello p{color:var(--warm-gray);font-weight:600;font-size:15px;margin-top:2px;}
+  .hello .clock{margin-left:auto;text-align:right;}
+  .hello .clock b{display:block;font-size:30px;color:var(--green);font-variant-numeric:tabular-nums;}
+  .hello .clock span{font-size:13px;color:var(--warm-gray);font-weight:600;}
 
-    /* HEADER */
-    .portal-header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .portal-logo {
-      height: 80px;
-      width: auto;
-      margin-bottom: 10px;
-    }
-    .portal-header h1 {
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 2px;
-    }
-    .portal-header p {
-      font-size: 16px;
-      color: var(--warm-gray);
-      font-weight: 500;
-    }
-    .greet {
-      display: inline-block;
-      margin-top: 12px;
-      background: #fff;
-      border: 1px solid var(--border);
-      color: var(--warm-gray);
-      font-size: 14px;
-      font-weight: 600;
-      padding: 6px 16px;
-      border-radius: 999px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.04);
-    }
+  .big{flex:1 1 0;min-height:110px;display:flex;align-items:center;gap:20px;text-decoration:none;color:var(--ink);
+    background:#fff;border:2px solid var(--border);border-left:10px solid var(--c);border-radius:18px;padding:18px 24px;
+    box-shadow:0 4px 16px rgba(0,0,0,.05);transition:transform .12s,box-shadow .12s;}
+  .big:active{transform:scale(.99);}
+  .big:hover{box-shadow:0 8px 22px rgba(0,0,0,.09);}
+  .big .ic{font-size:44px;line-height:1;flex:0 0 auto;}
+  .big h2{font-size:25px;font-weight:800;letter-spacing:-.4px;}
+  .big p{color:var(--warm-gray);font-size:15px;font-weight:500;margin-top:3px;}
+  .big .go{margin-left:auto;font-weight:800;color:var(--c);font-size:16px;white-space:nowrap;}
+  .big.signin{--c:var(--green);}
+  .big.signup{--c:var(--orange);}
+  .big.sos{--c:var(--red);background:var(--red-pale);border-color:#F3C1BB;border-left-color:var(--red);flex:0 0 auto;min-height:0;padding:14px 24px;}
+  .big.sos h2{color:var(--red);font-size:22px;}
+  .big.sos .ic{font-size:36px;}
 
-    /* BIG PRIMARY ACTIONS */
-    .primary {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 26px;
-    }
-    .big-card {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 14px;
-      min-height: 190px;
-      padding: 26px;
-      border-radius: 22px;
-      color: #fff;
-      text-decoration: none;
-      transition: transform .15s, box-shadow .15s;
-    }
-    .big-card::after {
-      content: '';
-      position: absolute;
-      right: -50px; top: -50px;
-      width: 170px; height: 170px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.13);
-      pointer-events: none;
-    }
-    .big-card.signup {
-      --c: var(--orange);
-      background: linear-gradient(140deg, #F7A04A 0%, #E8751A 55%, #C95E0E 100%);
-      box-shadow: 0 12px 28px rgba(232,117,26,.30);
-    }
-    .big-card.checkin {
-      --c: var(--green);
-      background: linear-gradient(140deg, #34B84A 0%, #1B8A2A 55%, #146B20 100%);
-      box-shadow: 0 12px 28px rgba(27,138,42,.28);
-    }
-    .big-card:hover { transform: translateY(-3px); }
-    .big-card:active { transform: scale(.98); }
-    .big-icon {
-      width: 58px; height: 58px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.22);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .big-card h3 {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -.5px;
-      line-height: 1.15;
-    }
-    .big-card p {
-      font-size: 15px;
-      opacity: .92;
-      margin-top: 3px;
-    }
-    .big-go {
-      display: inline-flex;
-      align-self: flex-start;
-      align-items: center;
-      gap: 6px;
-      margin-top: 12px;
-      background: rgba(255,255,255,.96);
-      color: var(--c);
-      font-size: 14px;
-      font-weight: 800;
-      padding: 8px 16px;
-      border-radius: 999px;
-    }
+  .rtitle{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--warm-gray);margin-top:4px;}
+  .tiles{flex:1 1 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:12px;min-height:0;}
+  .tile{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);background:#fff;border:2px solid var(--border);
+    border-radius:16px;padding:14px 16px;min-height:72px;transition:border-color .12s;}
+  .tile:hover{border-color:var(--blue);}
+  .tile .ic{font-size:28px;flex:0 0 auto;width:40px;text-align:center;}
+  .tile h3{font-size:16px;font-weight:750;}
+  .tile p{font-size:13px;color:var(--warm-gray);margin-top:2px;}
 
-    /* KIOSK MODE (iPad): Check In is the hero, Sign Up points to the big screen */
-    .kiosk-only { display: none; }
-    .kiosk .kiosk-only { display: block; }
-    .kiosk .web-only { display: none; }
-    .kiosk .primary { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
-    .kiosk .big-card.checkin {
-      order: -1;
-      min-height: 260px;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-      padding: 34px 40px;
-    }
-    .kiosk .big-card.checkin .big-icon { width: 96px; height: 96px; border-radius: 26px; }
-    .kiosk .big-card.checkin .big-icon svg { width: 52px; height: 52px; }
-    .kiosk .big-card.checkin h3 { font-size: 38px; }
-    .kiosk .big-card.checkin p { font-size: 19px; }
-    .kiosk .big-card.checkin .big-go { font-size: 17px; padding: 10px 20px; margin-top: 16px; }
-    .kiosk .big-card.signup {
-      min-height: 0;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 14px;
-      padding: 16px 20px;
-      background: #fff;
-      color: var(--ink);
-      border: 2px solid var(--orange-pale);
-      border-radius: var(--radius);
-      box-shadow: none;
-    }
-    .kiosk .big-card.signup::after,
-    .kiosk .big-card.signup .big-go { display: none; }
-    .kiosk .big-card.signup .big-icon { width: 46px; height: 46px; border-radius: 12px; background: var(--orange-pale); color: var(--orange); }
-    .kiosk .big-card.signup .big-icon svg { width: 22px; height: 22px; }
-    .kiosk .big-card.signup h3 { font-size: 17px; font-weight: 700; letter-spacing: -.2px; }
-    .kiosk .big-card.signup p { font-size: 14px; color: var(--warm-gray); opacity: 1; }
+  .foot{flex:0 0 auto;text-align:center;font-size:12px;color:var(--light-gray);padding:6px 0 12px;}
 
-    /* SECTION LABEL */
-    .section-label {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: var(--warm-gray);
-      margin: 0 0 10px 4px;
-    }
-
-    /* CARD GRID */
-    .card-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .portal-card {
-      background: white;
-      border-radius: var(--radius);
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: var(--ink);
-      border: 2px solid var(--border);
-      transition: transform .15s, box-shadow .15s, border-color .15s;
-      cursor: pointer;
-      overflow: hidden;
-    }
-    .portal-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
-    .portal-card:active { transform: scale(.98); }
-
-    /* CARD COLORS */
-    .portal-card.orange { border-color: var(--orange-pale); }
-    .portal-card.orange:hover { border-color: var(--orange); }
-    .portal-card.green { border-color: var(--green-pale); }
-    .portal-card.green:hover { border-color: var(--green); }
-    .portal-card.blue { border-color: var(--blue-pale); }
-    .portal-card.blue:hover { border-color: var(--blue); }
-    .portal-card.pink { border-color: var(--pink-pale); }
-    .portal-card.pink:hover { border-color: var(--pink); }
-    .portal-card.purple { border-color: var(--purple-pale); }
-    .portal-card.purple:hover { border-color: var(--purple); }
-    .portal-card.teal { border-color: var(--teal-pale); }
-    .portal-card.teal:hover { border-color: var(--teal); }
-
-    /* ICON */
-    .card-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .card-icon.orange { background: var(--orange-pale); color: var(--orange); }
-    .card-icon.green { background: var(--green-pale); color: var(--green); }
-    .card-icon.blue { background: var(--blue-pale); color: var(--blue); }
-    .card-icon.pink { background: var(--pink-pale); color: var(--pink); }
-    .card-icon.purple { background: var(--purple-pale); color: var(--purple); }
-    .card-icon.teal { background: var(--teal-pale); color: var(--teal); }
-
-    .card-text h3 {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 2px;
-      letter-spacing: -0.2px;
-    }
-    .card-text p {
-      font-size: 13px;
-      color: var(--warm-gray);
-      line-height: 1.4;
-    }
-
-    /* FOOTER */
-    .portal-footer {
-      text-align: center;
-      margin-top: 26px;
-      font-size: 12px;
-      color: var(--light-gray);
-    }
-
-    /* ===== iPad portrait: fit everything on one screen, no scrolling ===== */
-    @media (min-width: 700px) and (orientation: portrait) {
-      html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
-      body {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        height: 100dvh;
-      }
-      .portal {
-        flex: 1;
-        min-height: 0;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        padding: 22px 32px 14px;
-      }
-      .portal-header { margin-bottom: 20px; }
-      .portal-logo { height: 70px; }
-      .primary { flex: 1.25; min-height: 0; margin-bottom: 20px; }
-      .kiosk .primary { flex: 2.4; }
-      .big-card { min-height: 0; }
-      .card-grid {
-        flex: 2.6;
-        min-height: 0;
-        grid-auto-rows: minmax(0, 1fr);
-      }
-      .kiosk .card-grid { flex: 2.2; }
-      .portal-card { padding: 16px 20px; }
-      .card-text h3 { font-size: 17px; }
-      .card-text p { font-size: 14px; }
-      .portal-footer { margin-top: 14px; }
-    }
-
-    /* PHONES */
-    @media (max-width: 500px) {
-      .portal { padding: 26px 16px 40px; }
-      .portal-header h1 { font-size: 24px; }
-      .portal-logo { height: 64px; }
-      .primary { grid-template-columns: 1fr; gap: 12px; }
-      .big-card { min-height: 0; padding: 20px; }
-      .big-card h3 { font-size: 21px; }
-      .card-grid { gap: 10px; }
-      .portal-card { padding: 16px 14px; gap: 12px; }
-      .card-icon { width: 38px; height: 38px; }
-      .card-text h3 { font-size: 15px; }
-    }
-
-    @media print {
-      body { background: white; }
-    }
-  </style>
+  /* Portrait / phones: stack the columns */
+  @media (max-width:900px), (orientation:portrait){
+    .wrap{grid-template-columns:1fr;}
+    .big{flex:0 0 auto;}
+    .tiles{flex:0 0 auto;}
+  }
+  @media (max-width:560px){
+    .sitenav .links a{padding:6px 8px;font-size:13px;}
+    .tiles{grid-template-columns:1fr;}
+    .hello .clock{display:none;}
+  }
+</style>
 </head>
 <body>
-<script>
-  /* Kiosk mode: open portal.html?kiosk=1 once on the iPad and it remembers. portal.html?kiosk=0 turns it off. */
-  (function(){
-    try {
-      var q = location.search;
-      if (/[?&]kiosk=1/.test(q)) localStorage.setItem('qfpKiosk', '1');
-      if (/[?&]kiosk=0/.test(q)) localStorage.removeItem('qfpKiosk');
-      if (localStorage.getItem('qfpKiosk') === '1') document.body.classList.add('kiosk');
-    } catch (e) {}
-  })();
-</script>
-  <!-- QFP shared top nav — paste right after <body> on every portal page -->
-<div class="qfp-navbar">
-  <nav class="qfp-nav">
-    <a class="qfp-nav__home" href="https://www.quakertownfoodpantry.org/portal.html">&#x1F955; Volunteer Portal</a>
-    <div class="qfp-nav__links">
-      <a href="https://www.quakertownfoodpantry.org/portal.html">Portal</a>
-      <a href="https://www.quakertownfoodpantry.org/volunteer_signup.html">Sign Up</a>
-      <a href="https://www.quakertownfoodpantry.org/checkin.html">Sign In</a>
-      <a href="https://www.quakertownfoodpantry.org/apply.html">Apply</a>
-      <a href="https://www.quakertownfoodpantry.org/volunteer_handbook.html">Handbook</a>
+  <nav class="sitenav">
+    <a class="brand" href="portal.html">&#x1F955; Volunteer Portal</a>
+    <div class="links">
+      <a href="portal.html" class="on">Portal</a>
+      <a href="volunteer_signup.html">Sign Up</a>
+      <a href="checkin.html">Sign In</a>
+      <a href="apply.html">Apply</a>
+      <a href="volunteer_handbook.html">Handbook</a>
+      <a href="emergency.html" class="sos">&#9888;&#65039; Emergency</a>
     </div>
   </nav>
-</div>
-<style>
-  .qfp-navbar{position:sticky;top:0;z-index:600;background:rgba(255,255,255,.92);
-    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid #E5E2DB;}
-  .qfp-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-    max-width:1100px;margin:0 auto;padding:10px 18px;
-    font-family:-apple-system,'Segoe UI',system-ui,sans-serif;}
-  .qfp-nav__home{font-weight:800;font-size:15px;color:#1A1A1A;text-decoration:none;
-    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
-  .qfp-nav__links{display:flex;gap:4px;flex-wrap:wrap;}
-  .qfp-nav__links a{font-size:13.5px;font-weight:600;color:#6B6560;text-decoration:none;
-    padding:7px 12px;border-radius:999px;transition:background .15s,color .15s;}
-  .qfp-nav__links a:hover{background:#FFF0E0;color:#E8751A;}
-  @media(max-width:560px){.qfp-nav{justify-content:center;}.qfp-nav__home{width:100%;justify-content:center;}}
-</style>
 
-<div class="portal">
+  <main class="wrap">
+    <section class="left">
+      <div class="hello">
+        <img src="qfp_trans.png" alt="Quakertown Food Pantry" onerror="this.style.display='none'">
+        <div>
+          <h1>&#128075; Welcome, volunteers!</h1>
+          <p>Quakertown Food Pantry &middot; Volunteer Portal</p>
+        </div>
+        <div class="clock"><b id="clock">--:--</b><span id="date"></span></div>
+      </div>
 
-  <div class="portal-header">
-    <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="portal-logo">
-    <h1>Quakertown Food Pantry</h1>
-    <p>Volunteer Portal</p>
-    <div class="greet" id="greet">&#x1F44B; Welcome!</div>
-  </div>
+      <a class="big signin" href="checkin.html">
+        <span class="ic">&#9989;</span>
+        <div><h2>Sign In / Sign Out</h2><p>Tap your name when you arrive and again when you leave</p></div>
+        <span class="go">Tap &rarr;</span>
+      </a>
+      <a class="big signup" href="volunteer_signup.html">
+        <span class="ic">&#128197;</span>
+        <div><h2>Sign Up for Shifts</h2><p>Pick the days you can help</p></div>
+        <span class="go">Tap &rarr;</span>
+      </a>
+      <a class="big sos" href="emergency.html">
+        <span class="ic">&#128680;</span>
+        <div><h2>Emergency</h2><p>What to do and who to call</p></div>
+        <span class="go">Tap &rarr;</span>
+      </a>
+    </section>
 
-  <!-- BIG PRIMARY ACTIONS -->
-  <div class="primary">
-    <a href="volunteer_signup.html" class="big-card signup">
-      <div class="big-icon">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+    <section class="right">
+      <div class="rtitle">Volunteer resources</div>
+      <div class="tiles">
+        <a class="tile" href="apply.html"><span class="ic">&#128221;</span><div><h3>Apply to Volunteer</h3><p>Volunteer application form</p></div></a>
+        <a class="tile" href="volunteer_handbook.html#shifts"><span class="ic">&#128338;</span><div><h3>Shift Schedule</h3><p>Supervisors &amp; backups</p></div></a>
+        <a class="tile" href="volunteer_handbook.html#civil-rights"><span class="ic">&#9878;&#65039;</span><div><h3>Civil Rights Training</h3><p>Annual requirement</p></div></a>
+        <a class="tile" href="volunteer_handbook.html#contacts"><span class="ic">&#128222;</span><div><h3>Contact Lists</h3><p>Board, supervisors &amp; volunteers</p></div></a>
+        <a class="tile" href="volunteer_handbook.html#duties"><span class="ic">&#129529;</span><div><h3>Duties &amp; Roles</h3><p>Who does what</p></div></a>
+        <a class="tile" href="volunteer_handbook.html#policies"><span class="ic">&#128220;</span><div><h3>Policy Statements</h3><p>Board-approved policies</p></div></a>
+        <a class="tile" href="volunteer_handbook.html"><span class="ic">&#128216;</span><div><h3>Volunteer Handbook</h3><p>Mission, history, cleaning &amp; more</p></div></a>
+        <a class="tile" href="orientation.html"><span class="ic">&#127891;</span><div><h3>Orientation Cheat Sheet</h3><p>New volunteers &middot; print-friendly</p></div></a>
       </div>
-      <div>
-        <h3>Sign Up for Shifts</h3>
-        <p class="web-only">Pick the days you can help</p>
-        <p class="kiosk-only">Easiest on the big touch screen &#8212; or tap here</p>
-        <span class="big-go">Tap to start &#8594;</span>
-      </div>
-    </a>
-    <a href="checkin.html" class="big-card checkin">
-      <div class="big-icon">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      </div>
-      <div>
-        <h3>Check In for Your Shift</h3>
-        <p>Tap in when you arrive</p>
-        <span class="big-go">Tap to check in &#8594;</span>
-      </div>
-    </a>
-  </div>
+    </section>
+  </main>
 
-  <div class="section-label">Volunteer resources</div>
-
-  <div class="card-grid">
-
-    <a href="apply.html" class="portal-card orange">
-      <div class="card-icon orange">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Apply to Volunteer</h3>
-        <p>Volunteer application form</p>
-      </div>
-    </a>
-
-    <a href="volunteer_handbook.html#shifts" class="portal-card green">
-      <div class="card-icon green">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Shift Schedule</h3>
-        <p>Supervisors &amp; backups</p>
-      </div>
-    </a>
-
-    <a href="volunteer_handbook.html#civil-rights" class="portal-card blue">
-      <div class="card-icon blue">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Civil Rights Training</h3>
-        <p>Annual requirement</p>
-      </div>
-    </a>
-
-    <a href="volunteer_handbook.html#contacts" class="portal-card pink">
-      <div class="card-icon pink">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Contact Lists</h3>
-        <p>Board, supervisors &amp; volunteers</p>
-      </div>
-    </a>
-
-    <a href="volunteer_handbook.html#duties" class="portal-card teal">
-      <div class="card-icon teal">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Duties &amp; Roles</h3>
-        <p>Who does what</p>
-      </div>
-    </a>
-
-    <a href="volunteer_handbook.html#policies" class="portal-card orange">
-      <div class="card-icon orange">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Policy Statements</h3>
-        <p>Board-approved policies</p>
-      </div>
-    </a>
-
-    <a href="volunteer_handbook.html" class="portal-card purple">
-      <div class="card-icon purple">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Volunteer Handbook</h3>
-        <p>Mission, history, cleaning &amp; more</p>
-      </div>
-    </a>
-
-    <a href="orientation.html" class="portal-card green">
-      <div class="card-icon green">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-      </div>
-      <div class="card-text">
-        <h3>Orientation Cheat Sheet</h3>
-        <p>New volunteers &middot; print-friendly</p>
-      </div>
-    </a>
-
-  </div>
-
-  <div class="portal-footer">
-    Quakertown Food Pantry &middot; 101 N. Third Street &middot; quakertownfoodpantry@gmail.com
-  </div>
-
-</div>
+  <div class="foot">Quakertown Food Pantry &middot; 101 N. Third Street &middot; quakertownfoodpantry@gmail.com</div>
 
 <script>
-/* Friendly greeting + today's date, with a seasonal emoji */
-(function(){
-  var d = new Date(), h = d.getHours(), m = d.getMonth();
-  var hi = h < 12 ? 'Good morning!' : (h < 17 ? 'Good afternoon!' : 'Good evening!');
-  var e = m === 11 ? '\uD83C\uDF84' : (m <= 1 ? '\u2744\uFE0F' : (m <= 4 ? '\uD83C\uDF37' : (m <= 7 ? '\u2600\uFE0F' : '\uD83C\uDF42')));
-  var day = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  document.getElementById('greet').textContent = e + ' ' + hi + ' \u00B7 ' + day;
-})();
+  function tick(){
+    var n=new Date();
+    document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    document.getElementById('date').textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  }
+  tick(); setInterval(tick,1000);
 </script>
-
 </body>
 </html>
