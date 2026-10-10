@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Emergency · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+<style>
+  :root{
+    --ink:#1A1A1A; --cream:#F5F3ED; --warm-gray:#6B6560; --light-gray:#B5B0A8;
+    --border:#E5E2DB; --orange:#E8751A; --orange-pale:#FFF0E0;
+    --green:#1B8A2A; --green-pale:#DCFADE; --blue:#2B7CB5; --blue-pale:#DBEDF9;
+    --red:#C0392B; --red-pale:#FDECEA;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;
+    background:linear-gradient(170deg,#FFF1EF 0%,var(--cream) 55%);min-height:100vh;}
+
+  /* Site menu bar (same on every volunteer page) */
+  .sitenav{display:flex;align-items:center;gap:10px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--border);}
+  .sitenav .brand{font-weight:800;color:var(--ink);text-decoration:none;font-size:17px;margin-right:auto;white-space:nowrap;}
+  .sitenav .links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+  .sitenav .links a{color:var(--warm-gray);text-decoration:none;font-weight:600;font-size:14px;padding:7px 12px;border-radius:999px;}
+  .sitenav .links a:hover{background:#f1f2f4;color:var(--ink);}
+  .sitenav .links a.sos{background:var(--red);color:#fff;}
+
+  .wrap{max-width:1500px;margin:0 auto;padding:20px 24px 30px;}
+
+  /* Call 911 banner */
+  .call{display:flex;align-items:center;gap:24px;background:var(--red);color:#fff;border-radius:20px;padding:22px 28px;box-shadow:0 8px 26px rgba(192,57,43,.3);}
+  .call .num{font-size:76px;font-weight:900;letter-spacing:-2px;line-height:1;}
+  .call h1{font-size:28px;font-weight:800;letter-spacing:-.4px;}
+  .call p{font-size:17px;opacity:.95;margin-top:4px;line-height:1.4;}
+  .call .addr{margin-left:auto;background:#fff;color:var(--red);border-radius:14px;padding:12px 18px;text-align:center;flex:0 0 auto;}
+  .call .addr small{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;opacity:.8;}
+  .call .addr b{display:block;font-size:20px;line-height:1.25;margin-top:2px;}
+
+  /* Landscape: three columns */
+  .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px;}
+  .card{background:#fff;border:2px solid var(--border);border-top:8px solid var(--c);border-radius:18px;padding:18px 20px;}
+  .card.now{--c:var(--red);}
+  .card.after{--c:var(--orange);}
+  .card.who{--c:var(--blue);}
+  .card h2{font-size:20px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px;}
+  ol{padding-left:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px;}
+  ol li{counter-increment:s;display:flex;gap:12px;font-size:16px;line-height:1.4;}
+  ol li::before{content:counter(s);flex:0 0 30px;height:30px;border-radius:50%;background:var(--c);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .note{font-size:14px;color:var(--warm-gray);margin-top:12px;line-height:1.45;}
+  .btn{display:inline-block;margin-top:12px;background:var(--orange);color:#fff;text-decoration:none;font-weight:800;padding:10px 16px;border-radius:12px;}
+
+  .people{display:flex;flex-direction:column;gap:10px;}
+  .person{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--border);padding-bottom:9px;}
+  .person:last-child{border-bottom:0;}
+  .person .r{flex:0 0 46%;font-size:14px;color:var(--warm-gray);font-weight:600;}
+  .person .n{font-weight:750;font-size:16px;}
+  .person .n a{color:var(--blue);text-decoration:none;}
+  .person .n small{display:block;font-weight:500;color:var(--warm-gray);font-size:13px;}
+
+  .gear{margin-top:16px;background:#fff;border:2px solid var(--border);border-radius:18px;padding:16px 20px;}
+  .gear h2{font-size:18px;font-weight:800;margin-bottom:10px;}
+  .gear .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;}
+  .gear .item{background:var(--cream);border-radius:12px;padding:10px 14px;}
+  .gear .item b{display:block;font-size:15px;}
+  .gear .item span{font-size:14px;color:var(--warm-gray);}
+
+  .back{display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:800;color:var(--ink);text-decoration:none;background:#fff;border:2px solid var(--border);border-radius:999px;padding:12px 22px;font-size:16px;}
+
+  @media (max-width:980px), (orientation:portrait){
+    .cols{grid-template-columns:1fr;}
+    .call{flex-wrap:wrap;}
+    .call .addr{margin-left:0;}
+  }
+  @media (max-width:560px){
+    .sitenav .links a{padding:6px 8px;font-size:13px;}
+    .call .num{font-size:56px;}
+  }
+</style>
+</head>
+<body>
+  <nav class="sitenav">
+    <a class="brand" href="portal.html">&#x1F955; Volunteer Portal</a>
+    <div class="links">
+      <a href="portal.html">Portal</a>
+      <a href="volunteer_signup.html">Sign Up</a>
+      <a href="checkin.html">Sign In</a>
+      <a href="apply.html">Apply</a>
+      <a href="volunteer_handbook.html">Handbook</a>
+      <a href="emergency.html" class="sos">&#9888;&#65039; Emergency</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <div class="call">
+      <div class="num">911</div>
+      <div>
+        <h1>Life-threatening emergency, fire, or crime in progress?</h1>
+        <p>Call 911 first. Then tell your Shift Supervisor.</p>
+      </div>
+      <div class="addr"><small>Tell 911 you are at</small><b>101 N. Third Street<br>Quakertown, PA</b></div>
+    </div>
+
+    <div class="cols">
+      <section class="card now">
+        <h2>&#128680; Right now</h2>
+        <ol>
+          <li>Make sure everyone is safe. Move people away from danger.</li>
+          <li>Call <b>911</b> for any medical emergency, fire, or crime in progress.</li>
+          <li>Tell your <b>Shift Supervisor</b> right away.</li>
+          <li>Don't move someone who is badly hurt unless they're in danger where they are.</li>
+        </ol>
+        <p class="note">Poisoning or a chemical splash? Call <b>Poison Control: 1-800-222-1222</b>.</p>
+      </section>
+
+      <section class="card after">
+        <h2>&#128221; After everyone is safe</h2>
+        <ol>
+          <li>Fill out an <b>Incident Report Form</b> before the end of your shift.</li>
+          <li>Email <b>quakertownfoodpantry@gmail.com</b> to let the board know.</li>
+          <li>The board will contact the Borough if the building or grounds were involved.</li>
+        </ol>
+        <p class="note">An incident is any injury, accident, argument or fight, property damage, theft, or safety hazard. Keep client details private in the report.</p>
+        <a class="btn" id="incidentBtn" href="#" style="display:none">Open Incident Report Form &rarr;</a>
+      </section>
+
+      <section class="card who">
+        <h2>&#128222; Who to contact</h2>
+        <div class="people" id="people"></div>
+      </section>
+    </div>
+
+    <section class="gear" id="gear" style="display:none">
+      <h2>&#129520; Where things are</h2>
+      <div class="grid" id="gearGrid"></div>
+    </section>
+
+    <a class="back" href="portal.html">&larr; Back to portal</a>
+  </main>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===== EDIT THIS SECTION ===== */
+  // Link to the Incident Report Form. Leave blank to hide the button.
+  var INCIDENT_FORM_URL = '';
+
+  // People to contact. Add a phone number to show it. Anyone with no phone and no email is hidden.
+  // Note: this page is public, so only list numbers you're comfortable posting.
+  var CONTACTS = [
+    { role:'Shift Supervisor', name:'On today\'s board', phone:'', email:'', always:true },
+    { role:'Pantry board', name:'Quakertown Food Pantry', phone:'', email:'quakertownfoodpantry@gmail.com' },
+    { role:'Building (Quakertown Borough)', name:'Doug Propst', phone:'', email:'dpropst@quakertown.org' }
+    // { role:'Board President', name:'', phone:'', email:'' },
+    // { role:'Board Vice President', name:'', phone:'', email:'' },
+  ];
+
+  // Where safety equipment is. Fill in a location to show it; blank ones are hidden.
+  var GEAR = [
+    { what:'First aid kit', where:'' },
+    { what:'Fire extinguisher', where:'' },
+    { what:'AED (heart defibrillator)', where:'' },
+    { what:'Emergency exits', where:'' },
+    { what:'Incident Report Forms', where:'' }
+  ];
+  /* ============================= */
+
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  var ppl=document.getElementById('people');
+  CONTACTS.forEach(function(c){
+    if(!c.always && !c.phone && !c.email) return;
+    var bits=[];
+    if(c.phone) bits.push('<a href="tel:'+esc(c.phone.replace(/[^\d+]/g,''))+'">'+esc(c.phone)+'</a>');
+    if(c.email) bits.push(esc(c.email));
+    ppl.insertAdjacentHTML('beforeend','<div class="person"><span class="r">'+esc(c.role)+'</span><span class="n">'+esc(c.name)+
+      (bits.length?'<small>'+bits.join(' &middot; ')+'</small>':'')+'</span></div>');
+  });
+
+  if(INCIDENT_FORM_URL){ var b=document.getElementById('incidentBtn'); b.href=INCIDENT_FORM_URL; b.style.display='inline-block'; }
+
+  var shown=GEAR.filter(function(g){ return g.where && g.where.trim(); });
+  if(shown.length){
+    document.getElementById('gear').style.display='block';
+    document.getElementById('gearGrid').innerHTML=shown.map(function(g){ return '<div class="item"><b>'+esc(g.what)+'</b><span>'+esc(g.where)+'</span></div>'; }).join('');
+  }
+})();
+</script>
+</body>
+</html>
