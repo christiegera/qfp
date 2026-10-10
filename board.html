@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantry Board · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+<style>
+  :root{
+    --ink:#1A1A1A; --cream:#F5F3ED; --warm-gray:#6B6560; --light-gray:#B5B0A8;
+    --border:#E5E2DB; --orange:#E8751A; --orange-pale:#FFF0E0;
+    --green:#1B8A2A; --green-pale:#DCFADE; --blue:#2B7CB5; --blue-pale:#DBEDF9;
+    --pink:#C75B6B; --pink-pale:#FCE8EB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;overflow:hidden;}
+  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(170deg,#FFF5EB 0%,var(--cream) 45%,var(--green-pale) 100%);
+    color:var(--ink);-webkit-font-smoothing:antialiased;cursor:none;
+    display:flex;flex-direction:column;padding:1.6vh 1.4vw;gap:1.6vh;}
+
+  /* Top bar */
+  .top{display:flex;align-items:center;gap:1.2vw;flex:0 0 auto;}
+  .top img{height:6.5vh;width:auto;}
+  .top h1{font-size:3.4vh;font-weight:750;letter-spacing:-.04em;}
+  .top .date{font-size:2.3vh;color:var(--warm-gray);font-weight:600;}
+  .top .clock{margin-left:auto;font-size:4.6vh;font-weight:750;color:var(--green);font-variant-numeric:tabular-nums;}
+
+  /* Quadrants */
+  .quad{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.6vh 1.2vw;}
+  .q{background:#fff;border-radius:2vh;border-top:1.1vh solid var(--c);
+    box-shadow:0 .4vh 2vh rgba(0,0,0,.06);padding:2vh 1.6vw;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+  .q.ann{--c:var(--pink);--p:var(--pink-pale);}
+  .q.shift{--c:var(--green);--p:var(--green-pale);}
+  .q.gah{--c:var(--blue);--p:var(--blue-pale);}
+  .q.bag{--c:var(--orange);--p:var(--orange-pale);}
+  .qh{display:flex;align-items:baseline;gap:1vw;margin-bottom:1.4vh;flex:0 0 auto;}
+  .qh h2{font-size:3.3vh;font-weight:750;letter-spacing:-.03em;}
+  .qh .when{margin-left:auto;font-size:2vh;font-weight:700;color:var(--c);background:var(--p);padding:.5vh 1vw;border-radius:100px;white-space:nowrap;}
+  .qb{flex:1 1 auto;min-height:0;overflow:hidden;font-size:2.8vh;}   /* font-size is auto-shrunk to fit */
+
+  .meta{font-size:.8em;color:var(--warm-gray);margin-bottom:.6em;}
+  .meta b{color:var(--ink);}
+  .grp{display:inline-block;background:var(--p);color:var(--c);font-weight:750;border-radius:.6em;padding:.25em .7em;margin-bottom:.6em;}
+  .names{display:grid;grid-template-columns:repeat(auto-fill,minmax(11em,1fr));gap:.35em 1.2em;}
+  .nm{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .nm::before{content:"";display:inline-block;width:.45em;height:.45em;border-radius:50%;background:var(--c);margin-right:.5em;vertical-align:middle;}
+  .nm small{font-weight:500;color:var(--warm-gray);font-size:.75em;}
+  .empty{color:var(--light-gray);font-size:.9em;}
+
+  /* Announcements */
+  .ann ul{list-style:none;display:flex;flex-direction:column;gap:.6em;}
+  .ann li{background:var(--p);border-radius:.6em;padding:.55em .8em;font-weight:600;line-height:1.3;}
+
+  /* GAH table */
+  .stores{display:flex;flex-direction:column;gap:.35em;}
+  .store{display:flex;gap:.8em;align-items:baseline;border-bottom:1px solid var(--border);padding-bottom:.35em;}
+  .store:last-child{border-bottom:0;}
+  .store .s{flex:0 0 9em;color:var(--warm-gray);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .store .d{font-weight:700;}
+
+  /* Bag packers */
+  .pk{display:flex;flex-direction:column;gap:.5em;}
+  .pk .row{display:flex;gap:.8em;align-items:baseline;}
+  .pk .lbl{flex:0 0 8em;color:var(--warm-gray);font-weight:600;font-size:.85em;}
+  .pk .who{font-weight:700;}
+
+  /* Full schedule button + pop-up */
+  .q.shift,.q.gah,.q.bag{cursor:pointer;}
+  .full{margin-left:.8vw;font:inherit;font-size:1.9vh;font-weight:700;white-space:nowrap;
+    border:2px solid var(--c);color:var(--c);background:#fff;border-radius:100px;padding:.45vh 1vw;cursor:pointer;}
+  .c-shift{--c:var(--green);--p:var(--green-pale);}
+  .c-gah{--c:var(--blue);--p:var(--blue-pale);}
+  .c-bag{--c:var(--orange);--p:var(--orange-pale);}
+  .sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:3vh 3vw;}
+  .sheet.show{display:flex;}
+  .panel{background:#fff;border-radius:2vh;width:100%;max-width:1500px;max-height:100%;display:flex;flex-direction:column;overflow:hidden;border-top:1.1vh solid var(--c);}
+  .ph{display:flex;align-items:center;gap:1vw;padding:2vh 2vw;border-bottom:1px solid var(--border);}
+  .ph h2{font-size:3.4vh;font-weight:750;letter-spacing:-.03em;}
+  .close{margin-left:auto;font:inherit;font-size:2.4vh;font-weight:750;background:var(--ink);color:#fff;border:0;border-radius:100px;padding:1vh 2.2vw;cursor:pointer;}
+  .pb{overflow-y:auto;padding:1.5vh 2vw 3vh;font-size:2.4vh;-webkit-overflow-scrolling:touch;}
+  .pnote{font-size:.8em;color:var(--warm-gray);margin-bottom:.8em;}
+  table.sch{width:100%;border-collapse:collapse;}
+  .sch th{text-align:left;font-size:.8em;color:var(--warm-gray);padding:.5em .6em;border-bottom:2px solid var(--border);position:sticky;top:0;background:#fff;}
+  .sch td{padding:.55em .6em;border-bottom:1px solid var(--border);vertical-align:top;}
+  .sch tr.past td{color:var(--warm-gray);}
+  .sch tr.today td{background:var(--p);font-weight:700;}
+  .sch .tc{background:var(--p);font-weight:700;}
+  .sch .open{color:var(--light-gray);}
+  .sch small{color:var(--warm-gray);font-weight:600;}
+  .tag{display:inline-block;font-size:.7em;font-weight:750;padding:.15em .6em;border-radius:100px;background:var(--c);color:#fff;margin-left:.5em;vertical-align:middle;}
+
+  .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
+  .foot b{color:var(--green);}
+  .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:var(--orange-pale);padding:.3vh .7vw;border-radius:100px;display:none;}
+</style>
+</head>
+<body>
+  <div class="top">
+    <img src="qfp_trans.png" alt="" onerror="this.style.display='none'">
+    <div>
+      <h1>Quakertown Food Pantry</h1>
+      <div class="date" id="today"></div>
+    </div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+
+  <div class="quad">
+    <section class="q ann">
+      <div class="qh"><h2>&#128227; Announcements</h2></div>
+      <div class="qb" id="annBody"></div>
+    </section>
+    <section class="q shift">
+      <div class="qh"><h2>&#129365; Pantry Shift</h2><span class="when" id="shiftWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
+      <div class="qb" id="shiftBody"></div>
+    </section>
+    <section class="q gah">
+      <div class="qh"><h2>&#128666; GAH Drivers</h2><span class="when" id="gahWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
+      <div class="qb" id="gahBody"></div>
+    </section>
+    <section class="q bag">
+      <div class="qh"><h2>&#128717;&#65039; Bag Packers</h2><span class="when" id="bagWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
+      <div class="qb" id="bagBody"></div>
+    </section>
+  </div>
+
+  <div class="foot">Volunteers: <b>sign in, sign out, and sign up for shifts on the iPad kiosk.</b></div>
+  <div class="banner" id="banner">Preview: example data</div>
+
+  <div class="sheet" id="sheet">
+    <div class="panel" id="panel">
+      <div class="ph"><h2 id="sheetTitle"></h2><button class="close" id="sheetClose">&#10005; Close</button></div>
+      <div class="pb" id="sheetBody"></div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===== CONFIG ===== */
+  var SPREADSHEET_ID = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
+  var SUPERVISORS_GID = '502386465';
+  var SIGNUPS_GID = '1435555973';
+  var BAGPACKERS_GID = '1531693386';
+  var GAH_GID = '1136888994';
+  // Announcements tab: A = Announcement, B = Show from (optional date), C = Show until (optional date).
+  // Paste the tab's gid from the sheet URL. Until then, the list below is shown.
+  var ANNOUNCEMENTS_GID = 'PASTE_ANNOUNCEMENTS_GID';
+  var DEFAULT_ANNOUNCEMENTS = [
+    'Welcome, volunteers! Please sign in on the iPad kiosk when you arrive and sign out when you leave.',
+    'Want more shifts? Sign up on the iPad kiosk.'
+  ];
+  var REFRESH_MIN = 5;   // reload data from the sheet every few minutes
+  var PAGE_RELOAD_MIN = 60;   // fully reload the page this often, so updates to board.html show up on their own
+
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var sup=[], sign=[], bag=[], gah=[], ann=[], preview=false;
+
+  function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid+'&t='+Date.now(); }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function keyOf(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function weekNum(d){ return (['1st','2nd','3rd','4th','5th'])[Math.ceil(d.getDate()/7)-1]||'5th'; }
+  function shiftTime(day){ return (day==='Tuesday'||day==='Thursday')?'6:00 – 8:00 PM':'10:00 AM – 1:00 PM'; }
+  function toLocalDate(v){ var s=String(v||'').trim(); var m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/); if(m) return new Date(+m[1],+m[2]-1,+m[3]); return new Date(s); }
+  function addDays(d,n){ var x=new Date(d); x.setDate(x.getDate()+n); x.setHours(0,0,0,0); return x; }
+  function whenLabel(d){ var t=addDays(new Date(),0); var diff=Math.round((d-t)/864e5);
+    return diff===0?'Today':(diff===1?'Tomorrow':DAYS[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})); }
+
+  function parseCSV(text){
+    var rows=[], row=[], cur='', q=false;
+    for(var i=0;i<text.length;i++){ var c=text[i];
+      if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+      else { if(c==='"') q=true;
+        else if(c===','){ row.push(cur); cur=''; }
+        else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(cur); rows.push(row); row=[]; cur=''; }
+        else cur+=c; } }
+    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(c){ return (c||'').trim(); }); });
+  }
+
+  /* ===== data lookups ===== */
+  function findSup(d){
+    var day=DAYS[d.getDay()], wk=weekNum(d), hit=null;
+    for(var i=1;i<sup.length;i++){ var r=sup[i];
+      if(r[0]===wk+' '+day) return r;          // a "2nd Monday"-style row wins
+      if(r[0]===day && !hit) hit=r; }
+    return hit;
+  }
+  function signupsOn(d){
+    var k=keyOf(d), out=[];
+    for(var i=1;i<sign.length;i++){ var r=sign[i]; if(!r[5]) continue;
+      if((r[7]||'').trim()==='Cancelled') continue;
+      var sd=toLocalDate(r[5]); if(isNaN(sd)||keyOf(sd)!==k) continue;
+      out.push(((r[1]||'').trim()+' '+((r[2]||'').trim().charAt(0)||'')+((r[2]||'').trim()?'.':'')).trim()); }
+    return out;
+  }
+  function gahOn(d){
+    var col=d.getDay(); if(col<1||col>5) return [];
+    var out=[], started=false;
+    for(var i=0;i<gah.length;i++){ var r=gah[i];
+      if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
+      var store=(r[0]||'').trim(); if(!store) break;
+      out.push({ store:store, driver:(r[col]||'').trim() }); }
+    return out;
+  }
+  function packersOn(d){
+    var wd=d.getDay(), word=wd===0?'sunday':(wd===1?'monday':(wd===4?'thursday':''));
+    if(!word) return null;
+    var wk=weekNum(d).toLowerCase();
+    for(var i=1;i<bag.length;i++){ var r=bag[i];
+      if((r[0]||'').trim().toLowerCase().indexOf(word)!==0) continue;
+      if((r[1]||'').trim().toLowerCase()!==wk) continue;
+      return { label:(r[0]||'').trim(), packer:(r[2]||'').trim(), backup:(r[5]||'').trim() }; }
+    return { label:DAYS[wd], packer:'', backup:'' };
+  }
+  // First day from today (up to 7 days out) that passes the test.
+  function nextDay(test){ for(var n=0;n<8;n++){ var d=addDays(new Date(),n); if(test(d)) return d; } return addDays(new Date(),0); }
+
+  /* ===== render ===== */
+  function renderAnn(){
+    var t=addDays(new Date(),0), list=[];
+    if(ann.length){
+      for(var i=1;i<ann.length;i++){ var r=ann[i], msg=(r[0]||'').trim(); if(!msg) continue;
+        var from=r[1]?toLocalDate(r[1]):null, until=r[2]?toLocalDate(r[2]):null;
+        if(from&&!isNaN(from)&&t<from) continue;
+        if(until&&!isNaN(until)&&t>until) continue;
+        list.push(msg); }
+    }
+    if(!list.length) list=DEFAULT_ANNOUNCEMENTS;
+    document.getElementById('annBody').innerHTML='<ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul>';
+  }
+  function renderShift(){
+    var d=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; });
+    var day=DAYS[d.getDay()], r=findSup(d), names=signupsOn(d);
+    var supName=r?(r[2]||'').trim():'', group=r?(r[1]||'').trim():'';
+    document.getElementById('shiftWhen').textContent=whenLabel(d)+' · '+shiftTime(day);
+    var h='<div class="meta">Supervisor: <b>'+esc(supName||'TBD')+'</b></div>';
+    if(group&&group!=='NA') h+='<div class="grp">&#128101; '+esc(group)+' group day</div>';
+    h+= names.length ? '<div class="names">'+names.map(function(n){ return '<div class="nm">'+esc(n)+'</div>'; }).join('')+'</div>'
+                     : '<div class="empty">No online sign-ups yet.</div>';
+    document.getElementById('shiftBody').innerHTML=h;
+  }
+  function renderGah(){
+    var d=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; });
+    var rows=gahOn(d);
+    document.getElementById('gahWhen').textContent=whenLabel(d)+' pickups';
+    document.getElementById('gahBody').innerHTML = rows.length
+      ? '<div class="stores">'+rows.map(function(r){ return '<div class="store"><span class="s">'+esc(r.store)+'</span><span class="d">'+(r.driver?esc(r.driver):'<span class="empty">—</span>')+'</span></div>'; }).join('')+'</div>'
+      : '<div class="empty">No pickups scheduled.</div>';
+  }
+  function renderBag(){
+    var d=nextDay(function(x){ var w=x.getDay(); return w===0||w===1||w===4; });
+    var p=packersOn(d)||{label:'',packer:'',backup:''};
+    document.getElementById('bagWhen').textContent=whenLabel(d)+(p.label&&p.label.indexOf(' ')>-1?' '+p.label.split(' ').slice(1).join(' ').toLowerCase():'');
+    var h='<div class="pk">';
+    h+='<div class="row"><span class="lbl">Packer</span><span class="who">'+(p.packer?esc(p.packer):'<span class="empty">Open</span>')+'</span></div>';
+    if(p.backup) h+='<div class="row"><span class="lbl">Backup</span><span class="who">'+esc(p.backup)+'</span></div>';
+    // Then the rest of this week's packing days
+    var later=[], seen=keyOf(d);
+    for(var n=0;n<8;n++){ var x=addDays(new Date(),n); if(keyOf(x)===seen) continue;
+      var w=x.getDay(); if(!(w===0||w===1||w===4)||x<d) continue;
+      var q=packersOn(x); if(q) later.push({d:x,p:q}); if(later.length>=2) break; }
+    if(later.length){
+      h+='<div class="meta" style="margin-top:.6em">Coming up</div>';
+      later.forEach(function(l){ h+='<div class="row"><span class="lbl">'+esc(whenLabel(l.d))+'</span><span class="who">'+(l.p.packer?esc(l.p.packer):'<span class="empty">Open</span>')+'</span></div>'; });
+    }
+    document.getElementById('bagBody').innerHTML=h+'</div>';
+  }
+
+  // Shrink a quadrant's text until it fits, so long lists never get cut off.
+  function fit(el){
+    var size=window.innerHeight*0.028; el.style.fontSize=size+'px';
+    while(el.scrollHeight>el.clientHeight+1 && size>11){ size-=1; el.style.fontSize=size+'px'; }
+  }
+  function renderAll(){
+    renderAnn(); renderShift(); renderGah(); renderBag();
+    ['annBody','shiftBody','gahBody','bagBody'].forEach(function(id){ fit(document.getElementById(id)); });
+  }
+
+  function tick(){
+    var n=new Date();
+    document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    document.getElementById('today').textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  }
+
+  /* ===== load ===== */
+  function get(gid){ return fetch(csvUrl(gid)).then(function(r){ if(!r.ok) throw 0; return r.text(); }); }
+  function opt(gid){ if(!gid||gid.indexOf('PASTE')>-1) return Promise.resolve(''); return get(gid).catch(function(){ return ''; }); }
+  function load(){
+    Promise.all([get(SUPERVISORS_GID),get(SIGNUPS_GID),opt(BAGPACKERS_GID),opt(GAH_GID),opt(ANNOUNCEMENTS_GID)])
+      .then(function(res){
+        sup=parseCSV(res[0]); sign=parseCSV(res[1]); bag=parseCSV(res[2]); gah=parseCSV(res[3]); ann=parseCSV(res[4]);
+        renderAll();
+      }).catch(function(){ if(!sup.length){ useSample(); } renderAll(); });
+  }
+
+  function useSample(){
+    preview=true; document.getElementById('banner').style.display='block';
+    var t=new Date(), iso=(t.getMonth()+1)+'/'+t.getDate()+'/'+t.getFullYear();
+    var nx=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; }), nxIso=(nx.getMonth()+1)+'/'+nx.getDate()+'/'+nx.getFullYear();
+    sup=[['Day','Group','Name'],['Monday','','Joanne K.'],['Tuesday','Moms + Muscles','Cathi E.'],['Wednesday','','Virginia'],['Thursday','East Swamp','Joanne C.'],['Friday','','Kate']];
+    sign=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status'],
+      ['','Kathy','R','','',nxIso,'',''],['','Sandy','V','','',nxIso,'',''],['','Carol','M','','',nxIso,'',''],['','Mary Ann','S','','',nxIso,'',''],['','Donna','S','','',nxIso,'','']];
+    gah=[['GAH Driver Schedule'],['Store','Monday','Tuesday','Wednesday','Thursday','Friday'],
+      ['Giant','Jim Smith','Nicole O.','Kaitlin','Donna & Claude',''],['Giant LOWES','Jim Smith','','','Donna & Claude','Alan G'],
+      ['Target','Todd Benner','','Butch','','Ed Angelo'],['Walmart','Ed Angelo','Butch','','Clark',''],['Grocery Outlet','','Alicia D.','','','']];
+    bag=[['Day','Week','Packer','Phone','Email','Backup'],
+      ['Sunday','2nd','Bill Hahn','','',''],['Monday Evening','2nd','Jennie Becker','','',''],['Thursday Afternoon','3rd',"St. Paul's Church + Michelle",'','',''],
+      ['Sunday','3rd','Mary Hill','','',''],['Monday Evening','3rd','Kate Caponear','','','']];
+    ann=[];
+  }
+
+  /* ===== full schedule pop-up ===== */
+  var sheet=document.getElementById('sheet'), closeTimer=null;
+  function fmtD(d){ return DAYS[d.getDay()].slice(0,3)+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+  function rowCls(d){ var k=keyOf(d), t=keyOf(new Date()); return k===t?'today':(k<t?'past':''); }
+  // Label the row for today, the most recent past day ("Last"), and the next one coming up.
+  function tagsFor(rows){
+    var t=keyOf(new Date()), tags=rows.map(function(){ return ''; }), hasToday=false, last=-1, next=-1;
+    rows.forEach(function(r,i){ var k=keyOf(r.d);
+      if(k===t){ tags[i]='Today'; hasToday=true; } else if(k<t) last=i; else if(next<0) next=i; });
+    if(last>-1) tags[last]='Last';
+    if(!hasToday&&next>-1) tags[next]='Next';
+    return tags;
+  }
+  function tagHtml(t){ return t?'<span class="tag">'+t+'</span>':''; }
+  function who(s){ return s?esc(s):'<span class="open">Open</span>'; }
+
+  function fullBag(){
+    var rows=[];
+    for(var n=-14;n<=28;n++){ var d=addDays(new Date(),n), w=d.getDay(); if(w===0||w===1||w===4) rows.push({ d:d, p:packersOn(d)||{} }); }
+    var tags=tagsFor(rows);
+    var h='<p class="pnote">Last 2 weeks and the next 4 weeks. Gray rows have already happened.</p>'+
+          '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Packer</th><th>Backup</th></tr></thead><tbody>';
+    rows.forEach(function(r,i){
+      var lbl=r.p.label&&r.p.label.indexOf(' ')>-1?r.p.label.split(' ').slice(1).join(' '):'';
+      h+='<tr class="'+rowCls(r.d)+'"><td>'+fmtD(r.d)+tagHtml(tags[i])+'</td><td>'+esc(lbl)+'</td><td>'+who(r.p.packer)+'</td><td>'+esc(r.p.backup||'')+'</td></tr>';
+    });
+    return h+'</tbody></table>';
+  }
+  function fullShift(){
+    var rows=[];
+    for(var n=-7;n<=21;n++){ var d=addDays(new Date(),n), w=d.getDay(); if(w>=1&&w<=5) rows.push({ d:d }); }
+    var tags=tagsFor(rows);
+    var h='<p class="pnote">Last week and the next 3 weeks. Gray rows have already happened.</p>'+
+          '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Supervisor</th><th>Signed up online</th></tr></thead><tbody>';
+    rows.forEach(function(r,i){
+      var s=findSup(r.d), name=s?(s[2]||'').trim():'', grp=s?(s[1]||'').trim():'', names=signupsOn(r.d);
+      h+='<tr class="'+rowCls(r.d)+'"><td>'+fmtD(r.d)+tagHtml(tags[i])+'</td><td>'+shiftTime(DAYS[r.d.getDay()])+'</td>'+
+         '<td>'+who(name&&name!=='TBD'?name:'')+(grp&&grp!=='NA'?'<br><small>'+esc(grp)+' group</small>':'')+'</td>'+
+         '<td>'+(names.length?esc(names.join(', ')):'<span class="open">—</span>')+'</td></tr>';
+    });
+    return h+'</tbody></table>';
+  }
+  function fullGah(){
+    var rows=[], started=false, tc=new Date().getDay();
+    for(var i=0;i<gah.length;i++){ var r=gah[i];
+      if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
+      if(!(r[0]||'').trim()) break;
+      rows.push(r); }
+    if(!rows.length) return '<p class="pnote">No GAH schedule found.</p>';
+    var h='<p class="pnote">Weekly pickup schedule. Today\'s column is highlighted.</p><table class="sch"><thead><tr><th>Store</th>';
+    for(var c=1;c<=5;c++) h+='<th'+(c===tc?' class="tc"':'')+'>'+DAYS[c]+'</th>';
+    h+='</tr></thead><tbody>';
+    rows.forEach(function(r){
+      h+='<tr><td><b>'+esc(r[0])+'</b></td>';
+      for(var c=1;c<=5;c++) h+='<td'+(c===tc?' class="tc"':'')+'>'+(r[c]&&r[c].trim()?esc(r[c].trim()):'<span class="open">—</span>')+'</td>';
+      h+='</tr>';
+    });
+    return h+'</tbody></table>';
+  }
+
+  var FULL={ shift:['c-shift','🥕 Pantry Shift Schedule',fullShift],
+             gah:['c-gah','🚚 GAH Driver Schedule',fullGah],
+             bag:['c-bag','🛍️ Bag Packer Schedule',fullBag] };
+  function bump(){ clearTimeout(closeTimer); closeTimer=setTimeout(closeFull,90000); }   // auto-close after 90s idle
+  function closeFull(){ sheet.classList.remove('show'); clearTimeout(closeTimer); }
+  function openFull(k){
+    var f=FULL[k];
+    document.getElementById('panel').className='panel '+f[0];
+    document.getElementById('sheetTitle').textContent=f[1];
+    var b=document.getElementById('sheetBody'); b.innerHTML=f[2](); b.scrollTop=0;
+    sheet.classList.add('show'); bump();
+  }
+  ['shift','gah','bag'].forEach(function(k){
+    document.querySelector('.q.'+k).addEventListener('click',function(){ openFull(k); });
+  });
+  document.getElementById('sheetClose').addEventListener('click',function(e){ e.stopPropagation(); closeFull(); });
+  sheet.addEventListener('click',function(e){ if(e.target===sheet) closeFull(); else bump(); });
+  sheet.addEventListener('touchstart',bump,{passive:true});
+  document.getElementById('sheetBody').addEventListener('scroll',bump);
+
+  tick(); setInterval(tick,1000);
+  load(); setInterval(load,REFRESH_MIN*60000);
+  window.addEventListener('resize',renderAll);
+  // Start fresh each morning
+  var startKey=keyOf(new Date());
+  setInterval(function(){ if(keyOf(new Date())!==startKey) safeReload(); },60000);
+  // Hourly full reload. Waits if someone has a schedule open, and only reloads when the
+  // website is reachable, so a WiFi blip never leaves the board stuck on an error page.
+  var pageStart=Date.now();
+  setInterval(function(){
+    if(Date.now()-pageStart<PAGE_RELOAD_MIN*60000) return;
+    if(sheet.classList.contains('show')) return;
+    safeReload();
+  },60000);
+  function safeReload(){
+    fetch(location.href.split('#')[0]+(location.search?'&':'?')+'ping='+Date.now(),{cache:'no-store'})
+      .then(function(r){ if(r.ok) location.reload(); })
+      .catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
