@@ -65,6 +65,31 @@
   .pk .lbl{flex:0 0 8em;color:var(--warm-gray);font-weight:600;font-size:.85em;}
   .pk .who{font-weight:700;}
 
+  /* Full schedule button + pop-up */
+  .q.shift,.q.gah,.q.bag{cursor:pointer;}
+  .full{margin-left:.8vw;font:inherit;font-size:1.9vh;font-weight:700;white-space:nowrap;
+    border:2px solid var(--c);color:var(--c);background:#fff;border-radius:100px;padding:.45vh 1vw;cursor:pointer;}
+  .c-shift{--c:var(--green);--p:var(--green-pale);}
+  .c-gah{--c:var(--blue);--p:var(--blue-pale);}
+  .c-bag{--c:var(--orange);--p:var(--orange-pale);}
+  .sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:3vh 3vw;}
+  .sheet.show{display:flex;}
+  .panel{background:#fff;border-radius:2vh;width:100%;max-width:1500px;max-height:100%;display:flex;flex-direction:column;overflow:hidden;border-top:1.1vh solid var(--c);}
+  .ph{display:flex;align-items:center;gap:1vw;padding:2vh 2vw;border-bottom:1px solid var(--border);}
+  .ph h2{font-size:3.4vh;font-weight:750;letter-spacing:-.03em;}
+  .close{margin-left:auto;font:inherit;font-size:2.4vh;font-weight:750;background:var(--ink);color:#fff;border:0;border-radius:100px;padding:1vh 2.2vw;cursor:pointer;}
+  .pb{overflow-y:auto;padding:1.5vh 2vw 3vh;font-size:2.4vh;-webkit-overflow-scrolling:touch;}
+  .pnote{font-size:.8em;color:var(--warm-gray);margin-bottom:.8em;}
+  table.sch{width:100%;border-collapse:collapse;}
+  .sch th{text-align:left;font-size:.8em;color:var(--warm-gray);padding:.5em .6em;border-bottom:2px solid var(--border);position:sticky;top:0;background:#fff;}
+  .sch td{padding:.55em .6em;border-bottom:1px solid var(--border);vertical-align:top;}
+  .sch tr.past td{color:var(--warm-gray);}
+  .sch tr.today td{background:var(--p);font-weight:700;}
+  .sch .tc{background:var(--p);font-weight:700;}
+  .sch .open{color:var(--light-gray);}
+  .sch small{color:var(--warm-gray);font-weight:600;}
+  .tag{display:inline-block;font-size:.7em;font-weight:750;padding:.15em .6em;border-radius:100px;background:var(--c);color:#fff;margin-left:.5em;vertical-align:middle;}
+
   .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
   .foot b{color:var(--green);}
   .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:var(--orange-pale);padding:.3vh .7vw;border-radius:100px;display:none;}
@@ -86,21 +111,28 @@
       <div class="qb" id="annBody"></div>
     </section>
     <section class="q shift">
-      <div class="qh"><h2>&#129365; Pantry Shift</h2><span class="when" id="shiftWhen"></span></div>
+      <div class="qh"><h2>&#129365; Pantry Shift</h2><span class="when" id="shiftWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
       <div class="qb" id="shiftBody"></div>
     </section>
     <section class="q gah">
-      <div class="qh"><h2>&#128666; GAH Drivers</h2><span class="when" id="gahWhen"></span></div>
+      <div class="qh"><h2>&#128666; GAH Drivers</h2><span class="when" id="gahWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
       <div class="qb" id="gahBody"></div>
     </section>
     <section class="q bag">
-      <div class="qh"><h2>&#128717;&#65039; Bag Packers</h2><span class="when" id="bagWhen"></span></div>
+      <div class="qh"><h2>&#128717;&#65039; Bag Packers</h2><span class="when" id="bagWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
       <div class="qb" id="bagBody"></div>
     </section>
   </div>
 
   <div class="foot">Volunteers: <b>sign in, sign out, and sign up for shifts on the iPad kiosk.</b></div>
   <div class="banner" id="banner">Preview: example data</div>
+
+  <div class="sheet" id="sheet">
+    <div class="panel" id="panel">
+      <div class="ph"><h2 id="sheetTitle"></h2><button class="close" id="sheetClose">&#10005; Close</button></div>
+      <div class="pb" id="sheetBody"></div>
+    </div>
+  </div>
 
 <script>
 (function(){
@@ -278,6 +310,86 @@
       ['Sunday','3rd','Mary Hill','','',''],['Monday Evening','3rd','Kate Caponear','','','']];
     ann=[];
   }
+
+  /* ===== full schedule pop-up ===== */
+  var sheet=document.getElementById('sheet'), closeTimer=null;
+  function fmtD(d){ return DAYS[d.getDay()].slice(0,3)+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+  function rowCls(d){ var k=keyOf(d), t=keyOf(new Date()); return k===t?'today':(k<t?'past':''); }
+  // Label the row for today, the most recent past day ("Last"), and the next one coming up.
+  function tagsFor(rows){
+    var t=keyOf(new Date()), tags=rows.map(function(){ return ''; }), hasToday=false, last=-1, next=-1;
+    rows.forEach(function(r,i){ var k=keyOf(r.d);
+      if(k===t){ tags[i]='Today'; hasToday=true; } else if(k<t) last=i; else if(next<0) next=i; });
+    if(last>-1) tags[last]='Last';
+    if(!hasToday&&next>-1) tags[next]='Next';
+    return tags;
+  }
+  function tagHtml(t){ return t?'<span class="tag">'+t+'</span>':''; }
+  function who(s){ return s?esc(s):'<span class="open">Open</span>'; }
+
+  function fullBag(){
+    var rows=[];
+    for(var n=-14;n<=28;n++){ var d=addDays(new Date(),n), w=d.getDay(); if(w===0||w===1||w===4) rows.push({ d:d, p:packersOn(d)||{} }); }
+    var tags=tagsFor(rows);
+    var h='<p class="pnote">Last 2 weeks and the next 4 weeks. Gray rows have already happened.</p>'+
+          '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Packer</th><th>Backup</th></tr></thead><tbody>';
+    rows.forEach(function(r,i){
+      var lbl=r.p.label&&r.p.label.indexOf(' ')>-1?r.p.label.split(' ').slice(1).join(' '):'';
+      h+='<tr class="'+rowCls(r.d)+'"><td>'+fmtD(r.d)+tagHtml(tags[i])+'</td><td>'+esc(lbl)+'</td><td>'+who(r.p.packer)+'</td><td>'+esc(r.p.backup||'')+'</td></tr>';
+    });
+    return h+'</tbody></table>';
+  }
+  function fullShift(){
+    var rows=[];
+    for(var n=-7;n<=21;n++){ var d=addDays(new Date(),n), w=d.getDay(); if(w>=1&&w<=5) rows.push({ d:d }); }
+    var tags=tagsFor(rows);
+    var h='<p class="pnote">Last week and the next 3 weeks. Gray rows have already happened.</p>'+
+          '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Supervisor</th><th>Signed up online</th></tr></thead><tbody>';
+    rows.forEach(function(r,i){
+      var s=findSup(r.d), name=s?(s[2]||'').trim():'', grp=s?(s[1]||'').trim():'', names=signupsOn(r.d);
+      h+='<tr class="'+rowCls(r.d)+'"><td>'+fmtD(r.d)+tagHtml(tags[i])+'</td><td>'+shiftTime(DAYS[r.d.getDay()])+'</td>'+
+         '<td>'+who(name&&name!=='TBD'?name:'')+(grp&&grp!=='NA'?'<br><small>'+esc(grp)+' group</small>':'')+'</td>'+
+         '<td>'+(names.length?esc(names.join(', ')):'<span class="open">—</span>')+'</td></tr>';
+    });
+    return h+'</tbody></table>';
+  }
+  function fullGah(){
+    var rows=[], started=false, tc=new Date().getDay();
+    for(var i=0;i<gah.length;i++){ var r=gah[i];
+      if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
+      if(!(r[0]||'').trim()) break;
+      rows.push(r); }
+    if(!rows.length) return '<p class="pnote">No GAH schedule found.</p>';
+    var h='<p class="pnote">Weekly pickup schedule. Today\'s column is highlighted.</p><table class="sch"><thead><tr><th>Store</th>';
+    for(var c=1;c<=5;c++) h+='<th'+(c===tc?' class="tc"':'')+'>'+DAYS[c]+'</th>';
+    h+='</tr></thead><tbody>';
+    rows.forEach(function(r){
+      h+='<tr><td><b>'+esc(r[0])+'</b></td>';
+      for(var c=1;c<=5;c++) h+='<td'+(c===tc?' class="tc"':'')+'>'+(r[c]&&r[c].trim()?esc(r[c].trim()):'<span class="open">—</span>')+'</td>';
+      h+='</tr>';
+    });
+    return h+'</tbody></table>';
+  }
+
+  var FULL={ shift:['c-shift','🥕 Pantry Shift Schedule',fullShift],
+             gah:['c-gah','🚚 GAH Driver Schedule',fullGah],
+             bag:['c-bag','🛍️ Bag Packer Schedule',fullBag] };
+  function bump(){ clearTimeout(closeTimer); closeTimer=setTimeout(closeFull,90000); }   // auto-close after 90s idle
+  function closeFull(){ sheet.classList.remove('show'); clearTimeout(closeTimer); }
+  function openFull(k){
+    var f=FULL[k];
+    document.getElementById('panel').className='panel '+f[0];
+    document.getElementById('sheetTitle').textContent=f[1];
+    var b=document.getElementById('sheetBody'); b.innerHTML=f[2](); b.scrollTop=0;
+    sheet.classList.add('show'); bump();
+  }
+  ['shift','gah','bag'].forEach(function(k){
+    document.querySelector('.q.'+k).addEventListener('click',function(){ openFull(k); });
+  });
+  document.getElementById('sheetClose').addEventListener('click',function(e){ e.stopPropagation(); closeFull(); });
+  sheet.addEventListener('click',function(e){ if(e.target===sheet) closeFull(); else bump(); });
+  sheet.addEventListener('touchstart',bump,{passive:true});
+  document.getElementById('sheetBody').addEventListener('scroll',bump);
 
   tick(); setInterval(tick,1000);
   load(); setInterval(load,REFRESH_MIN*60000);
