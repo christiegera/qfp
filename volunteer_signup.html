@@ -152,6 +152,7 @@
     'Want more shifts? Sign up on the iPad kiosk.'
   ];
   var REFRESH_MIN = 5;   // reload data from the sheet every few minutes
+  var PAGE_RELOAD_MIN = 60;   // fully reload the page this often, so updates to board.html show up on their own
 
   var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var sup=[], sign=[], bag=[], gah=[], ann=[], preview=false;
@@ -396,7 +397,20 @@
   window.addEventListener('resize',renderAll);
   // Start fresh each morning
   var startKey=keyOf(new Date());
-  setInterval(function(){ if(keyOf(new Date())!==startKey) location.reload(); },60000);
+  setInterval(function(){ if(keyOf(new Date())!==startKey) safeReload(); },60000);
+  // Hourly full reload. Waits if someone has a schedule open, and only reloads when the
+  // website is reachable, so a WiFi blip never leaves the board stuck on an error page.
+  var pageStart=Date.now();
+  setInterval(function(){
+    if(Date.now()-pageStart<PAGE_RELOAD_MIN*60000) return;
+    if(sheet.classList.contains('show')) return;
+    safeReload();
+  },60000);
+  function safeReload(){
+    fetch(location.href.split('#')[0]+(location.search?'&':'?')+'ping='+Date.now(),{cache:'no-store'})
+      .then(function(r){ if(r.ok) location.reload(); })
+      .catch(function(){});
+  }
 })();
 </script>
 </body>
