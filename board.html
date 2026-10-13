@@ -112,11 +112,35 @@
 
   .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
 
-  /* Layout: four equal quadrants */
-  .quad{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);}
+  /* Layout: menu tall on the left; right side = announcements, pantry shift (biggest), and a short GAH + bag packers strip */
+  .quad{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:minmax(0,.85fr) minmax(0,1.25fr) minmax(0,.6fr);}
+  .q.menu{grid-column:1;grid-row:1 / span 3;}
+  .q.ann{grid-column:2;grid-row:1;}
+  .q.shift{grid-column:2;grid-row:2;}
   .q.shift .qh{flex-wrap:wrap;row-gap:.8vh;}
-  .q.gah,.q.bag{cursor:pointer;}
-  .q.gah .qh,.q.bag .qh{flex-wrap:wrap;row-gap:.8vh;}
+  .q.crew{grid-column:2;grid-row:3;--c:#9AA3AD;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.4vw;padding:1.4vh 1.2vw;}
+  .half{min-width:0;min-height:0;display:flex;flex-direction:column;cursor:pointer;}
+  .half + .half{border-left:2px solid var(--border);padding-left:1.4vw;}
+  .half.gah{--c:var(--blue);--p:var(--blue-pale);}
+  .half.bag{--c:var(--orange);--p:var(--orange-pale);}
+  .half .qh{margin-bottom:.3vh;flex-wrap:nowrap;}
+  .half .qh h2{font-size:2vh;color:var(--c);}
+  .half .full{padding:.25vh .6vw;font-size:1.4vh;margin-left:auto;}
+  .half .sub{font-size:1.5vh;font-weight:700;color:var(--warm-gray);margin-bottom:.6vh;}
+  .half .store{border-bottom:0;padding-bottom:0;}
+  .half .stores{gap:.15em;}
+  .half .store .s{flex-basis:6.5em;}
+  .half .pk{gap:.2em;}
+  .half .pk .lbl{flex-basis:5.5em;}
+
+  /* Menu */
+  .q.menu{--c:#7A3E9D;--p:#F3E8F8;}
+  .mrows{display:flex;flex-direction:column;gap:.55em;}
+  .mrow{border-left:.35em solid var(--mc);padding:.1em 0 .1em .65em;}
+  .mrow .cat{display:block;font-weight:800;color:var(--mc);text-transform:uppercase;letter-spacing:.04em;font-size:.72em;}
+  .mrow .its{font-weight:650;line-height:1.3;}
+  .mrow .nt{display:inline-block;margin-left:.5em;font-size:.7em;font-weight:800;color:#fff;background:var(--mc);border-radius:99px;padding:.1em .6em;vertical-align:middle;}
+  .mkey{margin-top:.8em;font-size:.66em;color:var(--warm-gray);}
   .foot b{color:var(--green);}
   .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:var(--orange-pale);padding:.3vh .7vw;border-radius:100px;display:none;}
 </style>
@@ -132,6 +156,10 @@
   </div>
 
   <div class="quad">
+    <section class="q menu">
+      <div class="qh"><h2>&#127869;&#65039; This Week's Menu</h2><span class="when" id="menuWhen"></span></div>
+      <div class="qb" id="menuBody"></div>
+    </section>
     <section class="q ann">
       <div class="qh"><h2>&#128227; Announcements</h2></div>
       <div class="qb" id="annBody"></div>
@@ -140,13 +168,17 @@
       <div class="qh"><h2>&#129365; Pantry Shift</h2><span class="when" id="shiftWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
       <div class="qb" id="shiftBody"></div>
     </section>
-    <section class="q gah" data-full="gah">
-      <div class="qh"><h2>&#128666; GAH Drivers</h2><span class="when" id="gahWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
-      <div class="qb" id="gahBody"></div>
-    </section>
-    <section class="q bag" data-full="bag">
-      <div class="qh"><h2>&#128717;&#65039; Bag Packers</h2><span class="when" id="bagWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
-      <div class="qb" id="bagBody"></div>
+    <section class="q crew">
+      <div class="half gah" data-full="gah">
+        <div class="qh"><h2>&#128666; GAH Drivers</h2><button class="full">All &rsaquo;</button></div>
+        <div class="sub" id="gahWhen"></div>
+        <div class="qb" id="gahBody"></div>
+      </div>
+      <div class="half bag" data-full="bag">
+        <div class="qh"><h2>&#128717;&#65039; Bag Packers</h2><button class="full">All &rsaquo;</button></div>
+        <div class="sub" id="bagWhen"></div>
+        <div class="qb" id="bagBody"></div>
+      </div>
     </section>
   </div>
 
@@ -192,7 +224,15 @@
   ];
   var ANN_ROTATE_SEC = 10;   // how long each announcement shows along the bottom
 
+  // Weekly menu: its own Google Sheet, so the management team can edit it without touching
+  // the volunteer sheet. Columns: Category | Items | Notes (optional). Share it as
+  // "Anyone with the link can view", then paste its ID and the tab's gid here.
+  var MENU_SHEET_ID = 'PASTE_MENU_SHEET_ID';
+  var MENU_GID      = '0';
+  var MENU_KEY      = '';    // optional line under the menu, e.g. 'D = donated · 1A = one per adult'
+  var MENU_COLORS   = ['#1F5FAE','#C0392B','#0E8A86','#B0247A','#6A3FA0','#D9661A','#3D3D3D','#2E7D32'];
   var REFRESH_MIN = 5;   // reload data from the sheet every few minutes
+  var MINI_TEXT = 0.017; // text size in the compact GAH / Bag Packers strip (share of screen height; main sections use 0.028)
   var PAGE_RELOAD_MIN = 60;   // fully reload the page this often, so updates to board.html show up on their own
 
   // Night mode / screensaver. Off = the board stays on all the time.
@@ -218,7 +258,7 @@
   var ANN_SCROLL_SPEED = 22;   // announcements scroll speed (pixels per second) when they don't all fit
 
   var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var sup=[], sign=[], bag=[], gah=[], ann=[], preview=false;
+  var sup=[], sign=[], bag=[], gah=[], ann=[], menu=[], preview=false;
 
   function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid+'&t='+Date.now(); }
   function pad(n){ return String(n).padStart(2,'0'); }
@@ -356,14 +396,35 @@
     document.getElementById('bagBody').innerHTML=h+'</div>';
   }
 
+  /* ===== weekly menu ===== */
+  // Reads Category | Items | Notes by header name; blank rows are skipped.
+  function renderMenu(){
+    var rows=[], h=(menu[0]||[]).map(function(x){ return String(x||'').trim().toLowerCase(); });
+    function col(re,def){ for(var i=0;i<h.length;i++){ if(re.test(h[i])) return i; } return def; }
+    var cC=col(/categ|section|type/,0), cI=col(/item|food|what/,1), cN=col(/note|limit|extra/,-1);
+    for(var i=1;i<menu.length;i++){ var r=menu[i], cat=String(r[cC]||'').trim(), its=String(r[cI]||'').trim();
+      if(!cat&&!its) continue;
+      rows.push({ cat:cat, its:its, nt:cN>-1?String(r[cN]||'').trim():'' }); }
+    var monday=addDays(nowNY(),-((nowNY().getDay()+6)%7));
+    document.getElementById('menuWhen').textContent='Week of '+monday.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    if(!rows.length){ document.getElementById('menuBody').innerHTML='<div class="empty">This week\'s menu hasn\'t been posted yet.</div>'; return; }
+    var html='<div class="mrows">'+rows.map(function(r,i){
+      return '<div class="mrow" style="--mc:'+MENU_COLORS[i%MENU_COLORS.length]+'"><span class="cat">'+esc(r.cat)+'</span>'+
+        '<span class="its">'+esc(r.its)+(r.nt?'<span class="nt">'+esc(r.nt)+'</span>':'')+'</span></div>';
+    }).join('')+'</div>';
+    if(MENU_KEY) html+='<div class="mkey">'+esc(MENU_KEY)+'</div>';
+    document.getElementById('menuBody').innerHTML=html;
+  }
+
   // Shrink a quadrant's text until it fits, so long lists never get cut off.
   function fit(el){
-    var size=window.innerHeight*0.028; el.style.fontSize=size+'px';
+    var mini=el.closest('.crew');   // the compact GAH / Bag Packers strip starts smaller
+    var size=window.innerHeight*(mini?MINI_TEXT:0.028); el.style.fontSize=size+'px';
     while(el.scrollHeight>el.clientHeight+1 && size>11){ size-=1; el.style.fontSize=size+'px'; }
   }
   function renderAll(){
-    renderAnn(); renderShift(); renderGah(); renderBag();
-    ['shiftBody','gahBody','bagBody'].forEach(function(id){ fit(document.getElementById(id)); });
+    renderAnn(); renderMenu(); renderShift(); renderGah(); renderBag();
+    ['menuBody','shiftBody','gahBody','bagBody'].forEach(function(id){ fit(document.getElementById(id)); });
   }
 
   function tick(){
@@ -376,9 +437,13 @@
   function get(gid){ return fetch(csvUrl(gid)).then(function(r){ if(!r.ok) throw 0; return r.text(); }); }
   function opt(gid){ if(!gid||gid.indexOf('PASTE')>-1) return Promise.resolve(''); return get(gid).catch(function(){ return ''; }); }
   function load(){
-    Promise.all([get(SUPERVISORS_GID),get(SIGNUPS_GID),opt(BAGPACKERS_GID),opt(GAH_GID),opt(ANNOUNCEMENTS_GID)])
+    var menuReq = (!MENU_SHEET_ID||MENU_SHEET_ID.indexOf('PASTE')>-1) ? Promise.resolve('')
+      : fetch('https://docs.google.com/spreadsheets/d/'+MENU_SHEET_ID+'/export?format=csv&gid='+MENU_GID+'&t='+Date.now())
+          .then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; });
+    Promise.all([get(SUPERVISORS_GID),get(SIGNUPS_GID),opt(BAGPACKERS_GID),opt(GAH_GID),opt(ANNOUNCEMENTS_GID),menuReq])
       .then(function(res){
         sup=parseCSV(res[0]); sign=parseCSV(res[1]); bag=parseCSV(res[2]); gah=parseCSV(res[3]); ann=parseCSV(res[4]);
+        if(res[5]) menu=parseCSV(res[5]);
         renderAll();
       }).catch(function(){ if(!sup.length){ useSample(); } renderAll(); });
   }
@@ -397,6 +462,14 @@
       ['Sunday','2nd','Bill Hahn','','',''],['Monday Evening','2nd','Jennie Becker','','',''],['Thursday Afternoon','3rd',"St. Paul's Church + Michelle",'','',''],
       ['Sunday','3rd','Mary Hill','','',''],['Monday Evening','3rd','Kate Caponear','','','']];
     ann=[];
+    menu=[['Category','Items','Notes'],
+      ['Frozen','Chicken (1A), Ground meat, Frozen lunch item (#2, 3)',''],
+      ['Canned Protein','Ham (D), Canned pasta (D)',''],
+      ['Vegetables','Fed. peas, Fed. mixed veg, Canned potatoes (D), Pasta sauce (D)',''],
+      ['Dry Goods','Rice (D), Spaghetti (D), Box of crackers, Misc dry (D)',''],
+      ['Soup','S/F vegetable, Chunky or Progresso (D)',''],
+      ['Fruit','Fed. peaches, Mandarin oranges (D)',''],
+      ['Extras','Bread & dessert, Frozen extras, Milk & eggs, Misc items (1B), Snacks','Ask']];
   }
 
   /* ===== full schedule pop-up ===== */
