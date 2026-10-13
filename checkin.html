@@ -110,6 +110,21 @@
   .foot{text-align:center;margin-top:34px;font-size:12px;color:var(--light-gray);}
   .hidden{display:none!important;}
 
+  /* Manual time entry */
+  .manbtn{width:100%;margin-top:12px;background:var(--blue-pale);border:2px dashed #8BBBE0;color:#14517a;
+    border-radius:14px;padding:18px;font:inherit;font-size:17px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+  .manbtn:hover{background:#CFE5F6;}
+  .modal.wide{max-width:560px;max-height:92vh;overflow-y:auto;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .mres{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .mres button{font:inherit;font-size:14px;font-weight:600;border:2px solid var(--border);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;}
+  .mres button:hover{border-color:var(--green);}
+  .picked{background:var(--green-pale);color:#0f5e1b;border-radius:10px;padding:8px 12px;font-weight:700;font-size:15px;margin-top:6px;}
+  .roles{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .roles button{font:inherit;font-size:15px;font-weight:700;border:2px solid var(--border);background:#fff;border-radius:12px;padding:12px;cursor:pointer;text-align:left;}
+  .roles button.on{border-color:var(--green);background:var(--green-pale);color:#0f5e1b;}
+  .merr{color:var(--red);font-size:14px;font-weight:600;min-height:18px;margin:2px 0 8px;}
+
   @media(max-width:500px){
     .kiosk{padding:26px 14px 60px;}
     .shiftcard .clock{margin-left:0;}
@@ -150,6 +165,7 @@
     <div class="results" id="results"></div>
 
     <button class="newbtn" id="newBtn">&#10133; New volunteer? Sign in here</button>
+    <button class="manbtn" id="manBtn">&#9201;&#65039; Forgot to sign in? GAH driver? Enter your time</button>
 
     <div class="herebar">
       <h3>Here so far today</h3>
@@ -185,6 +201,47 @@
   </div>
 </div>
 
+<!-- Manual time entry modal -->
+<div class="overlay" id="mOverlay">
+  <div class="modal wide">
+    <h3>Enter your time</h3>
+    <p class="sub">For GAH drivers, or anyone who forgot to sign in or out.</p>
+
+    <div class="field">
+      <label for="mSearch">Your name</label>
+      <input id="mSearch" placeholder="Start typing your name&hellip;" autocomplete="off">
+      <div class="mres" id="mRes"></div>
+      <div class="picked hidden" id="mPicked"></div>
+    </div>
+    <div class="two" id="mNameRow">
+      <div class="field"><label for="mFirst">First name</label><input id="mFirst" autocomplete="given-name"></div>
+      <div class="field"><label for="mLast">Last name</label><input id="mLast" autocomplete="family-name"></div>
+    </div>
+
+    <div class="field">
+      <label>What were you doing?</label>
+      <div class="roles" id="mRoles">
+        <button data-r="GAH driver" class="on">&#128666; GAH pickup &amp; delivery</button>
+        <button data-r="Pantry shift">&#129365; Pantry shift</button>
+        <button data-r="Bag packing">&#128717;&#65039; Bag packing</button>
+        <button data-r="Other">&#10024; Other</button>
+      </div>
+    </div>
+
+    <div class="field"><label for="mDate">Date</label><input id="mDate" type="date"></div>
+    <div class="two">
+      <div class="field"><label for="mIn">Time in (started)</label><input id="mIn" type="time"></div>
+      <div class="field"><label for="mOut">Time out (finished)</label><input id="mOut" type="time"></div>
+    </div>
+    <div class="merr" id="mErr"></div>
+
+    <div class="mactions">
+      <button class="btn ghost" id="mCancel">Cancel</button>
+      <button class="btn green" id="mSubmit">Save my time</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   'use strict';
@@ -205,7 +262,9 @@
   var CHECKIN_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfMDFZU7ksSAXJ3LWV93qRVRfxXLEPBOURHxCuVVXofjVkyCg/formResponse';
   var CK = { first:'entry.164624243', last:'entry.998393206', email:'entry.1969595392',
              phone:'entry.1477145411', date:'entry.699347849', how:'entry.1207670877',
-             action:'entry.1229588030' };   // In / Out
+             action:'entry.1229588030',     // In / Out
+             mtime:'PASTE_MANUAL_TIME_ENTRY' };  // "Manual time" question (short answer) for manual entries
+  var MANUAL_DAYS_BACK = 14;   // how far back someone can enter missed time
 
   // Check-Ins tab (where the Check-In Form responses land). Paste its gid from the
   // sheet URL so sign-ins from any device / after a refresh show up for sign-out.
@@ -459,12 +518,16 @@
         cE=col(function(x){ return x.indexOf('email')>-1; }),
         cP=col(function(x){ return x.indexOf('phone')>-1; }),
         cD=col(function(x){ return x==='date'||(x.indexOf('date')>-1&&x.indexOf('timestamp')===-1); }),
-        cA=col(function(x){ return /\bout\b/.test(x)||x.indexOf('action')>-1; });
+        cA=col(function(x){ return /\bout\b/.test(x)||x.indexOf('action')>-1; }),
+        cH=col(function(x){ return x.indexOf('method')>-1; });
     if(cF<0||cA<0) return;
     var today=keyOf(now0), evs=[];
     for(var i=1;i<rows.length;i++){ var r=rows[i];
       var ts=new Date(r[cTs]); if(isNaN(ts)) continue;
       var dk=cD>-1&&r[cD]?keyOf(toLocalDate(r[cD])):keyOf(ts); if(dk!==today) continue;
+      // Manual entries: use the real time they typed in, not when the form was submitted.
+      var mm=cH>-1?String(r[cH]||'').match(/^manual.*?(\d{1,2}):(\d{2})\s*(AM|PM)\s*$/i):null;
+      if(mm){ var hh=(+mm[1])%12+(mm[3].toUpperCase()==='PM'?12:0); ts=toLocalDate(r[cD]||keyOf(ts)); ts.setHours(hh,+mm[2],0,0); }
       var p={ first:(r[cF]||'').trim(), last:cL>-1?(r[cL]||'').trim():'', email:cE>-1?(r[cE]||'').trim():'', phone:cP>-1?(r[cP]||'').trim():'' };
       if(!p.first) continue;
       evs.push({ ts:ts, p:p, act:(r[cA]||'').trim().toLowerCase() });
@@ -487,16 +550,22 @@
       .then(function(t){ if(!t) return; applySheetCheckins(parseCSV(t)); renderSched(); renderHere(); renderSearch(); })
       .catch(function(){});
   }
-  function postSignIO(p,action){
+  // m (optional) = manual entry: { date:Date, time:'7:45 AM' } — the shift date and the real time,
+  // since the form's own Timestamp will be when they filled it in.
+  function postSignIO(p,action,m){
     if(CHECKIN_FORM_ACTION.indexOf('PASTE')>-1) return; // not configured yet
     var fd=new FormData();
     fd.append(CK.first,p.first); fd.append(CK.last,p.last||'');
     fd.append(CK.email,p.email||''); fd.append(CK.phone,p.phone||'');
-    var d=now0;
+    var d=m?m.date:now0;
     fd.append(CK.date+'_year',d.getFullYear()); fd.append(CK.date+'_month',d.getMonth()+1); fd.append(CK.date+'_day',d.getDate());
     fd.append(CK.date,keyOf(d));
-    if(CK.how && CK.how.indexOf('PASTE')===-1) fd.append(CK.how, p.how||'scheduled');
+    // Manual entries also carry the time in "Sign-in method", so it's never lost even before the
+    // Manual time question exists, e.g. "manual · GAH driver · 7:45 AM".
+    var how=m ? ('manual · '+(p.role||'')+' · '+m.time) : (p.how||'scheduled');
+    if(CK.how && CK.how.indexOf('PASTE')===-1) fd.append(CK.how, how);
     if(CK.action && CK.action.indexOf('PASTE')===-1) fd.append(CK.action, action);
+    if(m && CK.mtime && CK.mtime.indexOf('PASTE')===-1) fd.append(CK.mtime, m.time);
     fetch(CHECKIN_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd}).catch(function(){});
   }
 
@@ -511,6 +580,72 @@
     signIn({first:f,last:l,email:e,phone:ph,how:'new'});
   };
   document.getElementById('search').addEventListener('input',renderSearch);
+
+  /* ===== manual time entry ===== */
+  var mPick=null, mRole='GAH driver';
+  function $(id){ return document.getElementById(id); }
+  function fmt12(hm){ var p=hm.split(':'), h=+p[0], mi=p[1]; return ((h%12)||12)+':'+mi+' '+(h<12?'AM':'PM'); }
+  function mReset(){
+    mPick=null; mRole='GAH driver';
+    ['mSearch','mFirst','mLast','mIn','mOut'].forEach(function(id){ $(id).value=''; });
+    $('mRes').innerHTML=''; $('mPicked').classList.add('hidden'); $('mNameRow').classList.remove('hidden'); $('mErr').textContent='';
+    var t=new Date(), min=new Date(); min.setDate(t.getDate()-MANUAL_DAYS_BACK);
+    $('mDate').value=keyOf(t); $('mDate').max=keyOf(t); $('mDate').min=keyOf(min);
+    [].forEach.call($('mRoles').children,function(b){ b.classList.toggle('on',b.getAttribute('data-r')===mRole); });
+  }
+  $('manBtn').onclick=function(){ mReset(); $('mOverlay').classList.add('show'); };
+  $('mCancel').onclick=function(){ $('mOverlay').classList.remove('show'); };
+  $('mSearch').addEventListener('input',function(){
+    var q=this.value.trim().toLowerCase(), r=$('mRes'); r.innerHTML='';
+    if(q.length<2) return;
+    directory.filter(function(p){ return (p.first+' '+p.last).toLowerCase().indexOf(q)>-1; }).slice(0,8).forEach(function(p){
+      var b=document.createElement('button'); b.textContent=p.first+' '+p.last;
+      b.onclick=function(){
+        mPick=p; r.innerHTML=''; $('mSearch').value='';
+        $('mPicked').textContent='✓ '+p.first+' '+p.last; $('mPicked').classList.remove('hidden');
+        $('mNameRow').classList.add('hidden');
+      };
+      r.appendChild(b);
+    });
+  });
+  [].forEach.call($('mRoles').children,function(b){
+    b.onclick=function(){ mRole=b.getAttribute('data-r');
+      [].forEach.call($('mRoles').children,function(x){ x.classList.toggle('on',x===b); }); };
+  });
+  $('mSubmit').onclick=function(){
+    var err=$('mErr'), p;
+    if(mPick) p={ first:mPick.first, last:mPick.last, email:mPick.email, phone:mPick.phone };
+    else {
+      var f=$('mFirst').value.trim(), l=$('mLast').value.trim();
+      if(!f||!l){ err.textContent='Please pick your name or type your first and last name.'; return; }
+      p={ first:f, last:l, email:'', phone:'' };
+    }
+    p.role=mRole;
+    var dv=$('mDate').value, tin=$('mIn').value, tout=$('mOut').value;
+    if(!dv){ err.textContent='Please choose the date.'; return; }
+    if(!tin||!tout){ err.textContent='Please enter both the time you started and the time you finished.'; return; }
+    var day=toLocalDate(dv), today=new Date(); today.setHours(0,0,0,0);
+    var oldest=new Date(today); oldest.setDate(today.getDate()-MANUAL_DAYS_BACK);
+    if(day>today){ err.textContent='That date is in the future.'; return; }
+    if(day<oldest){ err.textContent='For time older than '+MANUAL_DAYS_BACK+' days, please tell the volunteer coordinator.'; return; }
+    var a=tin.split(':'), b=tout.split(':'), mins=(+b[0]*60+ +b[1])-(+a[0]*60+ +a[1]);
+    if(mins<=0){ err.textContent='The finish time needs to be after the start time.'; return; }
+    if(mins>12*60){ err.textContent='That\'s more than 12 hours — please double-check the times.'; return; }
+    var dt=new Date(day); dt.setHours(+b[0],+b[1],0,0);
+    if(dt>new Date()){ err.textContent='The finish time hasn\'t happened yet.'; return; }
+
+    postSignIO(p,'In',{ date:day, time:fmt12(tin) });
+    setTimeout(function(){ postSignIO(p,'Out',{ date:day, time:fmt12(tout) }); },1200);   // keep In before Out
+
+    // If it was for today, show them as done on the kiosk too.
+    if(keyOf(day)===keyOf(now0)){
+      var st=new Date(day); st.setHours(+a[0],+a[1],0,0);
+      checkedIn[uid(p)]={ name:dispName(p), inTime:st, outTime:dt, p:p };
+      saveLocal(); renderSched(); renderHere(); renderSearch();
+    }
+    $('mOverlay').classList.remove('show');
+    showWelcome('Thanks, '+p.first+'!', 'Saved '+fmt12(tin)+' – '+fmt12(tout)+' · '+Math.floor(mins/60)+'h '+(mins%60)+'m');
+  };
 
   /* ===== load ===== */
   function init(){
