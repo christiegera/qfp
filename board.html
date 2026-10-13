@@ -50,6 +50,10 @@
 
   /* Announcements */
   .ann ul{list-style:none;display:flex;flex-direction:column;gap:.6em;}
+  .anntrack ul{padding-bottom:.6em;}
+  .anntrack{animation:annscroll linear infinite;will-change:transform;}
+  @keyframes annscroll{from{transform:translateY(0);}to{transform:translateY(calc(-1 * var(--dist)));}}
+  .q.ann .qb.scrolling{-webkit-mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent);}
   .ann li{background:var(--p);border-radius:.6em;padding:.55em .8em;font-weight:600;line-height:1.3;}
 
   /* GAH table */
@@ -66,7 +70,7 @@
   .pk .who{font-weight:700;}
 
   /* Full schedule button + pop-up */
-  .q.shift,.q.gah,.q.bag{cursor:pointer;}
+  .q.shift{cursor:pointer;}
   .full{margin-left:.8vw;font:inherit;font-size:1.9vh;font-weight:700;white-space:nowrap;
     border:2px solid var(--c);color:var(--c);background:#fff;border-radius:100px;padding:.45vh 1vw;cursor:pointer;}
   .c-shift{--c:var(--green);--p:var(--green-pale);}
@@ -92,11 +96,27 @@
 
   /* Night mode + pixel shift */
   .top,.quad,.foot{transition:transform 2s ease;}
-  .night{position:fixed;inset:0;background:#000;z-index:100;display:none;}
+  .night{position:fixed;inset:0;z-index:100;display:none;overflow:hidden;cursor:pointer;
+    background:radial-gradient(120% 90% at 30% 20%,#1E3A22 0%,#0F2013 55%,#081209 100%);}
   .night.show{display:block;}
-  .night .nmsg{position:absolute;color:#2a2a2a;font-size:1.6vh;font-weight:600;white-space:nowrap;}
+  /* The card drifts slowly around the screen so nothing stays in one spot overnight */
+  .saver{position:absolute;left:0;top:0;width:34vw;min-width:420px;text-align:center;will-change:transform;
+    background:rgba(251,246,236,.9);border-radius:3vh;padding:3.4vh 2.6vw 3vh;box-shadow:0 2vh 6vh rgba(0,0,0,.35);}
+  .slogo img{max-width:72%;max-height:18vh;display:block;margin:0 auto 1.6vh;}
+  .slogo{font-family:Georgia,serif;font-style:italic;font-size:3.2vh;font-weight:700;color:#2C5126;}
+  .smsg{font-family:Georgia,serif;font-style:italic;font-size:3.4vh;font-weight:700;color:#2C5126;line-height:1.25;min-height:4.3vh;transition:opacity .8s;}
+  .smsg.fade{opacity:0;}
+  .snext{margin-top:1.6vh;display:inline-block;background:#E8751A;color:#fff;font-weight:800;font-size:2vh;border-radius:99px;padding:.7vh 1.4vw;}
+  .sclock{margin-top:1.4vh;font-size:2.2vh;font-weight:700;color:#6B6560;font-variant-numeric:tabular-nums;}
+  .stap{position:absolute;bottom:2.4vh;left:0;right:0;text-align:center;font-size:1.5vh;color:rgba(255,255,255,.28);font-weight:600;}
 
   .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
+
+  /* Layout: four equal quadrants */
+  .quad{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);}
+  .q.shift .qh{flex-wrap:wrap;row-gap:.8vh;}
+  .q.gah,.q.bag{cursor:pointer;}
+  .q.gah .qh,.q.bag .qh{flex-wrap:wrap;row-gap:.8vh;}
   .foot b{color:var(--green);}
   .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:var(--orange-pale);padding:.3vh .7vw;border-radius:100px;display:none;}
 </style>
@@ -116,15 +136,15 @@
       <div class="qh"><h2>&#128227; Announcements</h2></div>
       <div class="qb" id="annBody"></div>
     </section>
-    <section class="q shift">
+    <section class="q shift" data-full="shift">
       <div class="qh"><h2>&#129365; Pantry Shift</h2><span class="when" id="shiftWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
       <div class="qb" id="shiftBody"></div>
     </section>
-    <section class="q gah">
+    <section class="q gah" data-full="gah">
       <div class="qh"><h2>&#128666; GAH Drivers</h2><span class="when" id="gahWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
       <div class="qb" id="gahBody"></div>
     </section>
-    <section class="q bag">
+    <section class="q bag" data-full="bag">
       <div class="qh"><h2>&#128717;&#65039; Bag Packers</h2><span class="when" id="bagWhen"></span><button class="full">Full schedule &rsaquo;</button></div>
       <div class="qb" id="bagBody"></div>
     </section>
@@ -140,11 +160,22 @@
     </div>
   </div>
 
-  <div class="night" id="night"><div class="nmsg" id="nmsg">Pantry board is resting &middot; tap to wake</div></div>
+  <div class="night" id="night">
+    <div class="saver" id="saver">
+      <div class="slogo"><img src="qfp_trans.png" alt="Quakertown Food Pantry" onerror="this.parentNode.textContent='Quakertown Food Pantry'"></div>
+      <div class="smsg" id="smsg"></div>
+      <div class="snext" id="snext"></div>
+      <div class="sclock" id="sclock"></div>
+    </div>
+    <div class="stap">Tap anywhere to wake the board</div>
+  </div>
 
 <script>
 (function(){
   'use strict';
+  // Always use East Coast time, no matter what time zone the computer is set to
+  var TIME_ZONE='America/New_York';
+  function nowNY(){ var d=new Date(); try{ return new Date(d.toLocaleString('en-US',{timeZone:TIME_ZONE})); }catch(e){ return d; } }
 
   /* ===== CONFIG ===== */
   var SPREADSHEET_ID = '1q1S4UHYOxME7j8E0EQmKNHh_P3ldmvk3YfeAqlLmGug';
@@ -156,21 +187,35 @@
   // Paste the tab's gid from the sheet URL. Until then, the list below is shown.
   var ANNOUNCEMENTS_GID = 'PASTE_ANNOUNCEMENTS_GID';
   var DEFAULT_ANNOUNCEMENTS = [
-    'Welcome, volunteers! Please sign in on the iPad kiosk when you arrive and sign out when you leave.',
-    'Please leave the screens on. They will go into night mode at the end of the day.'
+    'Volunteers: sign in, sign out, and sign up for shifts on the iPad kiosk.',
+    'Forgot to sign in, or drove for GAH? Enter your time on the iPad kiosk.'
   ];
+  var ANN_ROTATE_SEC = 10;   // how long each announcement shows along the bottom
+
   var REFRESH_MIN = 5;   // reload data from the sheet every few minutes
   var PAGE_RELOAD_MIN = 60;   // fully reload the page this often, so updates to board.html show up on their own
 
-  // Night mode: the screen goes black between these hours (24-hour clock). Tap to wake it briefly.
+  // Night mode / screensaver. Off = the board stays on all the time.
+  var NIGHT_MODE     = false;
+  // When night mode is on, the screen shows a screensaver between these hours (24-hour clock).
   var NIGHT_OFF_HOUR = 21;   // 9 PM
   var NIGHT_ON_HOUR  = 7;    // 7 AM
   var WAKE_MIN       = 2;    // how long a tap keeps it awake at night
+  // Screensaver shown during those hours: a slowly drifting card with these rotating messages.
+  var SAVER_MESSAGES = [
+    'Thank you for all you do!',
+    'See you next shift!',
+    'Neighbors helping neighbors.',
+    'Every bag packed makes a difference.'
+  ];
+  var SAVER_MSG_SEC  = 15;   // seconds per message
+  var SAVER_SPEED    = 14;   // drift speed, pixels per second
   // Pixel shift: nudge the layout a few pixels now and then so nothing sits in one spot all day.
   var SHIFT_EVERY_MIN = 10;
   var SHIFT_PX        = 4;
   // Announcements with no "Show until" date drop off this many days after they're posted.
   var ANN_DEFAULT_DAYS = 14;
+  var ANN_SCROLL_SPEED = 22;   // announcements scroll speed (pixels per second) when they don't all fit
 
   var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var sup=[], sign=[], bag=[], gah=[], ann=[], preview=false;
@@ -183,7 +228,7 @@
   function shiftTime(day){ return (day==='Tuesday'||day==='Thursday')?'6:00 – 8:00 PM':'10:00 AM – 1:00 PM'; }
   function toLocalDate(v){ var s=String(v||'').trim(); var m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/); if(m) return new Date(+m[1],+m[2]-1,+m[3]); return new Date(s); }
   function addDays(d,n){ var x=new Date(d); x.setDate(x.getDate()+n); x.setHours(0,0,0,0); return x; }
-  function whenLabel(d){ var t=addDays(new Date(),0); var diff=Math.round((d-t)/864e5);
+  function whenLabel(d){ var t=addDays(nowNY(),0); var diff=Math.round((d-t)/864e5);
     return diff===0?'Today':(diff===1?'Tomorrow':DAYS[d.getDay()]+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'})); }
 
   function parseCSV(text){
@@ -234,7 +279,7 @@
     return { label:DAYS[wd], packer:'', backup:'' };
   }
   // First day from today (up to 7 days out) that passes the test.
-  function nextDay(test){ for(var n=0;n<8;n++){ var d=addDays(new Date(),n); if(test(d)) return d; } return addDays(new Date(),0); }
+  function nextDay(test){ for(var n=0;n<8;n++){ var d=addDays(nowNY(),n); if(test(d)) return d; } return addDays(nowNY(),0); }
 
   /* ===== render ===== */
   // Announcements come from a tab (typically the responses tab of a "Post an announcement" form).
@@ -242,7 +287,7 @@
   //   Announcement | Show from (optional) | Show until (optional) | Approved (optional)
   // If there's an "Approved" column, only rows marked yes / x / ✓ are shown.
   function renderAnn(){
-    var t=addDays(new Date(),0), list=[];
+    var t=addDays(nowNY(),0), list=[];
     if(ann.length){
       var h=ann[0].map(function(x){ return String(x||'').trim().toLowerCase(); });
       function col(re,skip){ for(var i=0;i<h.length;i++){ if(i!==skip && re.test(h[i])) return i; } return -1; }
@@ -258,7 +303,23 @@
         list.push(msg); }
     }
     if(!list.length) list=DEFAULT_ANNOUNCEMENTS;
-    document.getElementById('annBody').innerHTML='<ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul>';
+    var html='<ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul>';
+    var b=document.getElementById('annBody');
+    if(b.getAttribute('data-src')===html) return;   // unchanged: don't restart the scroll
+    b.setAttribute('data-src',html); b.innerHTML=html;
+    setupAnnScroll();
+  }
+  // If the announcements don't all fit, scroll them slowly upward in a continuous loop.
+  function setupAnnScroll(){
+    var b=document.getElementById('annBody'), ul=b.querySelector('ul');
+    b.style.fontSize=(window.innerHeight*0.028)+'px'; b.classList.remove('scrolling');
+    if(!ul || ul.offsetHeight<=b.clientHeight) return;
+    var track=document.createElement('div'); track.className='anntrack';
+    track.appendChild(ul); track.appendChild(ul.cloneNode(true));
+    b.innerHTML=''; b.appendChild(track); b.classList.add('scrolling');
+    var dist=ul.offsetHeight;
+    track.style.setProperty('--dist',dist+'px');
+    track.style.animationDuration=Math.max(10,dist/ANN_SCROLL_SPEED)+'s';
   }
   function renderShift(){
     var d=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; });
@@ -273,10 +334,10 @@
   }
   function renderGah(){
     var d=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; });
-    var rows=gahOn(d);
+    var rows=gahOn(d).filter(function(r){ return r.driver; });   // compact: only stores with a driver
     document.getElementById('gahWhen').textContent=whenLabel(d)+' pickups';
     document.getElementById('gahBody').innerHTML = rows.length
-      ? '<div class="stores">'+rows.map(function(r){ return '<div class="store"><span class="s">'+esc(r.store)+'</span><span class="d">'+(r.driver?esc(r.driver):'<span class="empty">—</span>')+'</span></div>'; }).join('')+'</div>'
+      ? '<div class="stores">'+rows.map(function(r){ return '<div class="store"><span class="s">'+esc(r.store)+'</span><span class="d">'+esc(r.driver)+'</span></div>'; }).join('')+'</div>'
       : '<div class="empty">No pickups scheduled.</div>';
   }
   function renderBag(){
@@ -286,15 +347,12 @@
     var h='<div class="pk">';
     h+='<div class="row"><span class="lbl">Packer</span><span class="who">'+(p.packer?esc(p.packer):'<span class="empty">Open</span>')+'</span></div>';
     if(p.backup) h+='<div class="row"><span class="lbl">Backup</span><span class="who">'+esc(p.backup)+'</span></div>';
-    // Then the rest of this week's packing days
-    var later=[], seen=keyOf(d);
-    for(var n=0;n<8;n++){ var x=addDays(new Date(),n); if(keyOf(x)===seen) continue;
+    // Then the next packing day
+    var seen=keyOf(d);
+    for(var n=0;n<8;n++){ var x=addDays(nowNY(),n); if(keyOf(x)===seen) continue;
       var w=x.getDay(); if(!(w===0||w===1||w===4)||x<d) continue;
-      var q=packersOn(x); if(q) later.push({d:x,p:q}); if(later.length>=2) break; }
-    if(later.length){
-      h+='<div class="meta" style="margin-top:.6em">Coming up</div>';
-      later.forEach(function(l){ h+='<div class="row"><span class="lbl">'+esc(whenLabel(l.d))+'</span><span class="who">'+(l.p.packer?esc(l.p.packer):'<span class="empty">Open</span>')+'</span></div>'; });
-    }
+      var q=packersOn(x);
+      if(q){ h+='<div class="row" style="margin-top:.4em"><span class="lbl">Next · '+esc(DAYS[x.getDay()].slice(0,3))+'</span><span class="who">'+(q.packer?esc(q.packer):'<span class="empty">Open</span>')+'</span></div>'; break; } }
     document.getElementById('bagBody').innerHTML=h+'</div>';
   }
 
@@ -305,11 +363,11 @@
   }
   function renderAll(){
     renderAnn(); renderShift(); renderGah(); renderBag();
-    ['annBody','shiftBody','gahBody','bagBody'].forEach(function(id){ fit(document.getElementById(id)); });
+    ['shiftBody','gahBody','bagBody'].forEach(function(id){ fit(document.getElementById(id)); });
   }
 
   function tick(){
-    var n=new Date();
+    var n=nowNY();
     document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
     document.getElementById('today').textContent=n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   }
@@ -327,7 +385,7 @@
 
   function useSample(){
     preview=true; document.getElementById('banner').style.display='block';
-    var t=new Date(), iso=(t.getMonth()+1)+'/'+t.getDate()+'/'+t.getFullYear();
+    var t=nowNY(), iso=(t.getMonth()+1)+'/'+t.getDate()+'/'+t.getFullYear();
     var nx=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; }), nxIso=(nx.getMonth()+1)+'/'+nx.getDate()+'/'+nx.getFullYear();
     sup=[['Day','Group','Name'],['Monday','','Joanne K.'],['Tuesday','Moms + Muscles','Cathi E.'],['Wednesday','','Virginia'],['Thursday','East Swamp','Joanne C.'],['Friday','','Kate']];
     sign=[['Timestamp','First','Last','Email','Phone','Date','Reason','Status'],
@@ -344,10 +402,10 @@
   /* ===== full schedule pop-up ===== */
   var sheet=document.getElementById('sheet'), closeTimer=null;
   function fmtD(d){ return DAYS[d.getDay()].slice(0,3)+', '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
-  function rowCls(d){ var k=keyOf(d), t=keyOf(new Date()); return k===t?'today':(k<t?'past':''); }
+  function rowCls(d){ var k=keyOf(d), t=keyOf(nowNY()); return k===t?'today':(k<t?'past':''); }
   // Label the row for today, the most recent past day ("Last"), and the next one coming up.
   function tagsFor(rows){
-    var t=keyOf(new Date()), tags=rows.map(function(){ return ''; }), hasToday=false, last=-1, next=-1;
+    var t=keyOf(nowNY()), tags=rows.map(function(){ return ''; }), hasToday=false, last=-1, next=-1;
     rows.forEach(function(r,i){ var k=keyOf(r.d);
       if(k===t){ tags[i]='Today'; hasToday=true; } else if(k<t) last=i; else if(next<0) next=i; });
     if(last>-1) tags[last]='Last';
@@ -359,7 +417,7 @@
 
   function fullBag(){
     var rows=[];
-    for(var n=-14;n<=28;n++){ var d=addDays(new Date(),n), w=d.getDay(); if(w===0||w===1||w===4) rows.push({ d:d, p:packersOn(d)||{} }); }
+    for(var n=-14;n<=28;n++){ var d=addDays(nowNY(),n), w=d.getDay(); if(w===0||w===1||w===4) rows.push({ d:d, p:packersOn(d)||{} }); }
     var tags=tagsFor(rows);
     var h='<p class="pnote">Last 2 weeks and the next 4 weeks. Gray rows have already happened.</p>'+
           '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Packer</th><th>Backup</th></tr></thead><tbody>';
@@ -371,7 +429,7 @@
   }
   function fullShift(){
     var rows=[];
-    for(var n=-7;n<=21;n++){ var d=addDays(new Date(),n), w=d.getDay(); if(w>=1&&w<=5) rows.push({ d:d }); }
+    for(var n=-7;n<=21;n++){ var d=addDays(nowNY(),n), w=d.getDay(); if(w>=1&&w<=5) rows.push({ d:d }); }
     var tags=tagsFor(rows);
     var h='<p class="pnote">Last week and the next 3 weeks. Gray rows have already happened.</p>'+
           '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Supervisor</th><th>Signed up online</th></tr></thead><tbody>';
@@ -384,7 +442,7 @@
     return h+'</tbody></table>';
   }
   function fullGah(){
-    var rows=[], started=false, tc=new Date().getDay();
+    var rows=[], started=false, tc=nowNY().getDay();
     for(var i=0;i<gah.length;i++){ var r=gah[i];
       if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
       if(!(r[0]||'').trim()) break;
@@ -414,7 +472,7 @@
     sheet.classList.add('show'); bump();
   }
   ['shift','gah','bag'].forEach(function(k){
-    document.querySelector('.q.'+k).addEventListener('click',function(){ openFull(k); });
+    document.querySelector('[data-full="'+k+'"]').addEventListener('click',function(){ openFull(k); });
   });
   document.getElementById('sheetClose').addEventListener('click',function(e){ e.stopPropagation(); closeFull(); });
   sheet.addEventListener('click',function(e){ if(e.target===sheet) closeFull(); else bump(); });
@@ -422,22 +480,62 @@
   document.getElementById('sheetBody').addEventListener('scroll',bump);
 
   /* ===== night mode ===== */
-  var night=document.getElementById('night'), nmsg=document.getElementById('nmsg'), wakeUntil=0;
+  var night=document.getElementById('night'), saver=document.getElementById('saver'), wakeUntil=0, saverOn=false;
   function isNight(){
-    var h=new Date().getHours();
+    var h=nowNY().getHours();
     return NIGHT_OFF_HOUR>NIGHT_ON_HOUR ? (h>=NIGHT_OFF_HOUR||h<NIGHT_ON_HOUR) : (h>=NIGHT_OFF_HOUR&&h<NIGHT_ON_HOUR);
   }
+  // Add ?saver to the address (board.html?saver) to preview the screensaver during the day.
+  var FORCE_SAVER=/[?&]saver\b/.test(location.search);
   function nightCheck(){
-    var on=isNight() && Date.now()>wakeUntil;
-    if(on){
-      if(sheet.classList.contains('show')) closeFull();
-      // keep the tiny "tap to wake" note moving too
-      nmsg.style.left=(5+Math.random()*70)+'%'; nmsg.style.top=(5+Math.random()*85)+'%';
-    }
+    var on=((NIGHT_MODE&&isNight())||FORCE_SAVER) && Date.now()>wakeUntil;
+    if(on && sheet.classList.contains('show')) closeFull();
     night.classList.toggle('show',on);
+    if(on && !saverOn){ saverOn=true; saverText(); requestAnimationFrame(drift); }
+    if(!on) saverOn=false;
+  }
+
+  /* ===== end-of-day screensaver ===== */
+  var sIdx=0, sx=null, sy=0, vx=SAVER_SPEED, vy=SAVER_SPEED*0.7, lastT=0;
+  // Next pantry shift: after the evening it's tomorrow; in the early morning it's today.
+  function nextShiftLine(){
+    var start=nowNY().getHours()<NIGHT_ON_HOUR?0:1;
+    for(var n=start;n<start+8;n++){ var d=addDays(nowNY(),n), w=d.getDay();
+      if(w>=1&&w<=5) return 'Next open: '+whenLabel(d)+' · '+shiftTime(DAYS[w]); }
+    return '';
+  }
+  function saverText(){
+    var m=document.getElementById('smsg');
+    m.classList.add('fade');
+    setTimeout(function(){ m.textContent=SAVER_MESSAGES[sIdx%SAVER_MESSAGES.length]; m.classList.remove('fade'); },800);
+    document.getElementById('snext').textContent=nextShiftLine();
+  }
+  setInterval(function(){ if(saverOn){ sIdx++; saverText(); } },SAVER_MSG_SEC*1000);
+  setInterval(function(){ if(saverOn) document.getElementById('sclock').textContent=nowNY().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); },1000);
+  function drift(t){
+    if(!saverOn) return;
+    var dt=lastT?Math.min(.1,(t-lastT)/1000):0; lastT=t;
+    var maxX=window.innerWidth-saver.offsetWidth, maxY=window.innerHeight-saver.offsetHeight;
+    if(sx===null){ sx=Math.random()*Math.max(0,maxX); sy=Math.random()*Math.max(0,maxY); }
+    sx+=vx*dt; sy+=vy*dt;
+    if(sx<0){ sx=0; vx=Math.abs(vx); } if(sx>maxX){ sx=Math.max(0,maxX); vx=-Math.abs(vx); }
+    if(sy<0){ sy=0; vy=Math.abs(vy); } if(sy>maxY){ sy=Math.max(0,maxY); vy=-Math.abs(vy); }
+    saver.style.transform='translate('+sx+'px,'+sy+'px)';
+    requestAnimationFrame(drift);
   }
   night.addEventListener('click',function(){ wakeUntil=Date.now()+WAKE_MIN*60000; nightCheck(); });
   nightCheck(); setInterval(nightCheck,30000);
+
+  /* ===== keep the screen awake ===== */
+  // Asks Chrome to stop Windows from turning the display off while this page is showing.
+  // The lock drops when the page is hidden, so it's re-requested whenever the board comes back.
+  var wakeLock=null;
+  function keepAwake(){
+    if(!('wakeLock' in navigator) || document.visibilityState!=='visible') return;
+    navigator.wakeLock.request('screen').then(function(l){ wakeLock=l; l.addEventListener('release',function(){ wakeLock=null; }); }).catch(function(){});
+  }
+  document.addEventListener('visibilitychange',function(){ if(!wakeLock) keepAwake(); });
+  keepAwake(); setInterval(function(){ if(!wakeLock) keepAwake(); },60000);
 
   /* ===== pixel shift ===== */
   function pixelShift(){
@@ -450,8 +548,8 @@
   load(); setInterval(load,REFRESH_MIN*60000);
   window.addEventListener('resize',renderAll);
   // Start fresh each morning
-  var startKey=keyOf(new Date());
-  setInterval(function(){ if(keyOf(new Date())!==startKey) safeReload(); },60000);
+  var startKey=keyOf(nowNY());
+  setInterval(function(){ if(keyOf(nowNY())!==startKey) safeReload(); },60000);
   // Hourly full reload. Waits if someone has a schedule open, and only reloads when the
   // website is reachable, so a WiFi blip never leaves the board stuck on an error page.
   var pageStart=Date.now();
