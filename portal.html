@@ -69,9 +69,10 @@
 
   /* Portrait / phones: stack the columns */
   @media (max-width:900px), (orientation:portrait){
-    .wrap{grid-template-columns:1fr;}
+    .wrap{grid-template-columns:1fr;flex:0 0 auto;min-height:auto;}
+    .left,.right{min-height:auto;}
     .big{flex:0 0 auto;}
-    .tiles{flex:0 0 auto;}
+    .tiles{flex:0 0 auto;grid-auto-rows:auto;}
   }
   @media (max-width:560px){
     .sitenav .links a{padding:6px 8px;font-size:13px;}
