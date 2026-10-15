@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Menu · Quakertown Food Pantry</title>
+  <link rel="icon" type="image/x-icon" href="carrot.png">
+<style>
+  :root{ --ink:#1A1A1A; --cream:#F5F3ED; --warm-gray:#6B6560; --green:#1B8A2A; --green-pale:#DCFADE; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;overflow:hidden;}
+  /* Rotated for a vertical screen on a device that can't rotate (like a Chromecast).
+     Add ?rotate=right or ?rotate=left to the address. */
+  html.rot body{position:fixed;top:0;left:0;width:100vh;height:100vw;transform-origin:top left;}
+  html.rot-right body{transform:rotate(90deg) translateY(-100%);}
+  html.rot-left body{transform:rotate(-90deg) translateX(-100%);}
+  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(170deg,#FFF5EB 0%,var(--cream) 45%,var(--green-pale) 100%);
+    color:var(--ink);-webkit-font-smoothing:antialiased;cursor:none;
+    display:flex;flex-direction:column;padding:2.2vh 2vw;gap:1.8vh;}
+
+  .top{display:flex;align-items:center;gap:1.4vw;flex:0 0 auto;transition:transform 2s ease;}
+  .top img{height:8vh;width:auto;}
+  .top h1{font-size:4.6vh;font-weight:800;letter-spacing:-.04em;line-height:1.05;}
+  .top .wk{font-size:2.5vh;color:var(--warm-gray);font-weight:650;}
+  .top .clock{margin-left:auto;font-size:4vh;font-weight:750;color:var(--green);font-variant-numeric:tabular-nums;}
+
+  /* The menu card. Text auto-shrinks so every section always fits on the screen. */
+  .card{flex:1 1 auto;min-height:0;background:#fff;border-radius:2.2vh;border-top:1.2vh solid #7A3E9D;
+    box-shadow:0 .5vh 2.4vh rgba(0,0,0,.07);padding:3vh 2.6vw;overflow:hidden;transition:transform 2s ease;}
+  .mb{height:100%;overflow:hidden;font-size:4vh;}
+  .mrows{display:grid;grid-template-columns:1fr;gap:.7em 2.4em;}
+  .two .mrows{grid-template-columns:1fr 1fr;}
+  .mrow{border-left:.4em solid var(--mc);padding:.1em 0 .15em .75em;break-inside:avoid;}
+  .mrow .cat{display:block;font-weight:800;color:var(--mc);text-transform:uppercase;letter-spacing:.05em;font-size:.68em;margin-bottom:.1em;}
+  .mrow .its{font-weight:650;line-height:1.28;}
+  .mrow .nt{display:inline-block;margin-left:.45em;font-size:.68em;font-weight:800;color:#fff;background:var(--mc);border-radius:99px;padding:.12em .65em;vertical-align:middle;}
+  .mkey{margin-top:1em;font-size:.6em;color:var(--warm-gray);font-weight:600;}
+  .empty{color:#B5B0A8;font-size:.8em;text-align:center;padding-top:20vh;}
+  .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:#FFF0E0;padding:.3vh .7vw;border-radius:100px;display:none;}
+</style>
+</head>
+<body>
+  <div class="top">
+    <img src="qfp_trans.png" alt="" onerror="this.style.display='none'">
+    <div>
+      <h1>This Week's Menu</h1>
+      <div class="wk" id="menuWhen"></div>
+    </div>
+    <div class="clock" id="clock"></div>
+  </div>
+  <div class="card" id="card"><div class="mb" id="menuBody"></div></div>
+  <div class="banner" id="banner">Showing sample menu</div>
+
+<script>
+(function(){
+  'use strict';
+  // ?rotate=right turns the page 90° clockwise, ?rotate=left turns it counter-clockwise
+  var ROT=(location.search.match(/[?&]rotate=(right|left)\b/i)||[])[1];
+  if(ROT) document.documentElement.className='rot rot-'+ROT.toLowerCase();
+  function screenW(){ return ROT?window.innerHeight:window.innerWidth; }
+  function screenH(){ return ROT?window.innerWidth:window.innerHeight; }
+  // Always use East Coast time, no matter what time zone the computer is set to
+  var TIME_ZONE='America/New_York';
+  function nowNY(){ var d=new Date(); try{ return new Date(d.toLocaleString('en-US',{timeZone:TIME_ZONE})); }catch(e){ return d; } }
+
+  /* ===== CONFIG (same menu sheet the smart board uses) ===== */
+  var MENU_SHEET_ID = '1T0adYkdD0HMZdbnfw8KX8JsAGS1cdcJq68BNXElczC0';
+  var MENU_GID      = '0';
+  var MENU_KEY      = '';    // optional line under the menu, e.g. 'D = donated · 1A = one per adult'
+  var MENU_COLORS   = ['#1F5FAE','#C0392B','#0E8A86','#B0247A','#6A3FA0','#D9661A','#3D3D3D','#2E7D32'];
+  var REFRESH_MIN     = 5;    // re-read the sheet every few minutes
+  var PAGE_RELOAD_MIN = 60;   // full page reload, so website updates show up on their own
+  var SHIFT_EVERY_MIN = 10, SHIFT_PX = 4;   // tiny nudge to protect the screen from burn-in
+
+  var menu=[];
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function keyOf(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function toLocalDate(v){ var s=String(v||'').trim(); var m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/); if(m) return new Date(+m[1],+m[2]-1,+m[3]); return new Date(s); }
+  function addDays(d,n){ var x=new Date(d); x.setDate(x.getDate()+n); x.setHours(0,0,0,0); return x; }
+  function parseCSV(text){
+    var rows=[], row=[], cur='', q=false;
+    for(var i=0;i<text.length;i++){ var c=text[i];
+      if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+      else { if(c==='"') q=true;
+        else if(c===','){ row.push(cur); cur=''; }
+        else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n')i++; row.push(cur); rows.push(row); row=[]; cur=''; }
+        else cur+=c; } }
+    if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(c){ return (c||'').trim(); }); });
+  }
+
+  // Reads Week Of | Category | Items | Notes by header name. Week Of is the Sunday the menu
+  // starts; only the first row of each week needs it. Shows the latest week that has started,
+  // so it switches over by itself every Sunday. (Same rules as the smart board.)
+  function renderMenu(){
+    var all=[], h=(menu[0]||[]).map(function(x){ return String(x||'').trim().toLowerCase(); });
+    function col(re,def){ for(var i=0;i<h.length;i++){ if(re.test(h[i])) return i; } return def; }
+    var cW=col(/week|start|date/,-1);
+    var cC=col(/categ|section|type/,cW===0?1:0), cI=col(/item|food|what/,cW===0?2:1), cN=col(/note|limit|extra/,-1);
+    var wk=null;
+    for(var i=1;i<menu.length;i++){ var r=menu[i], cat=String(r[cC]||'').trim(), its=String(r[cI]||'').trim();
+      if(cW>-1 && String(r[cW]||'').trim()){ var wd=toLocalDate(r[cW]); if(!isNaN(wd)){ wd.setHours(0,0,0,0); wk=wd; } }
+      if(!cat&&!its) continue;
+      all.push({ wk:wk, cat:cat, its:its, nt:cN>-1?String(r[cN]||'').trim():'' }); }
+    var t=addDays(nowNY(),0), start=null, rows=all;
+    if(cW>-1){
+      all.forEach(function(r){ if(r.wk && r.wk<=t && (!start||r.wk>start)) start=r.wk; });
+      if(!start) all.forEach(function(r){ if(r.wk && (!start||r.wk<start)) start=r.wk; });
+      rows=all.filter(function(r){ return start && r.wk && keyOf(r.wk)===keyOf(start); });
+    }
+    if(!start) start=addDays(t,-t.getDay());
+    document.getElementById('menuWhen').textContent='Week of '+start.toLocaleDateString('en-US',{month:'long',day:'numeric'});
+    var body=document.getElementById('menuBody');
+    if(!rows.length){ body.innerHTML='<div class="empty">This week\'s menu hasn\'t been posted yet.</div>'; return; }
+    var html='<div class="mrows">'+rows.map(function(r,i){
+      return '<div class="mrow" style="--mc:'+MENU_COLORS[i%MENU_COLORS.length]+'"><span class="cat">'+esc(r.cat)+'</span>'+
+             '<span class="its">'+(esc(r.its)||'&nbsp;')+'</span>'+(r.nt?'<span class="nt">'+esc(r.nt)+'</span>':'')+'</div>';
+    }).join('')+'</div>';
+    if(MENU_KEY) html+='<div class="mkey">'+esc(MENU_KEY)+'</div>';
+    body.innerHTML=html;
+    fit();
+  }
+
+  // Wide screens with lots of sections use two columns; then shrink text until it all fits.
+  function fit(){
+    var card=document.getElementById('card'), el=document.getElementById('menuBody');
+    var n=el.querySelectorAll('.mrow').length;
+    card.classList.toggle('two', screenW()>screenH()*1.2 && n>4);
+    var size=Math.min(screenH()*0.055, screenW()*0.045); el.style.fontSize=size+'px';
+    while(el.scrollHeight>el.clientHeight+1 && size>12){ size-=1; el.style.fontSize=size+'px'; }
+  }
+
+  function useSample(){
+    document.getElementById('banner').style.display='block';
+    menu=[['Category','Items','Notes'],
+      ['Frozen','Chicken (1A), Ground Meat, Frozen Lunch Item (#2, 3)',''],
+      ['Canned Protein','Ham (D), Canned Pasta (D)',''],
+      ['Veg','Peas, Mixed Veg, Canned Potatoes (D), Pasta Sauce (D)',''],
+      ['Dry Goods','Rice (D), Spaghetti (D), Box of Crackers, Misc Dry (D)',''],
+      ['Soup','S/F Vegetable, Chunky or Progresso (D)',''],
+      ['Fruit','Peaches, Mandarin Oranges (D)',''],
+      ['Extras','Bread & Dessert, Frozen Extras, Misc Items (1B), Snacks',''],
+      ['Milk & Eggs','','Ask']];
+  }
+
+  function load(){
+    fetch('https://docs.google.com/spreadsheets/d/'+MENU_SHEET_ID+'/export?format=csv&gid='+MENU_GID+'&t='+Date.now())
+      .then(function(r){ if(!r.ok) throw 0; return r.text(); })
+      .then(function(t){ if(/^\s*</.test(t)) throw 0; menu=parseCSV(t); document.getElementById('banner').style.display='none'; renderMenu(); })
+      .catch(function(){ if(!menu.length) useSample(); renderMenu(); });
+  }
+
+  function tick(){
+    document.getElementById('clock').textContent=nowNY().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  }
+
+  // Keep the screen from going to sleep while the menu is showing
+  var wakeLock=null;
+  function keepAwake(){
+    if(!('wakeLock' in navigator) || document.visibilityState!=='visible') return;
+    navigator.wakeLock.request('screen').then(function(l){ wakeLock=l; l.addEventListener('release',function(){ wakeLock=null; }); }).catch(function(){});
+  }
+  document.addEventListener('visibilitychange',function(){ if(!wakeLock) keepAwake(); });
+  keepAwake(); setInterval(function(){ if(!wakeLock) keepAwake(); },60000);
+
+  setInterval(function(){
+    var x=Math.round((Math.random()*2-1)*SHIFT_PX), y=Math.round((Math.random()*2-1)*SHIFT_PX);
+    ['.top','.card'].forEach(function(s){ document.querySelector(s).style.transform='translate('+x+'px,'+y+'px)'; });
+  },SHIFT_EVERY_MIN*60000);
+
+  tick(); setInterval(tick,1000);
+  load(); setInterval(load,REFRESH_MIN*60000);
+  window.addEventListener('resize',function(){ if(menu.length) renderMenu(); });
+
+  // Midnight and hourly reloads, only when the website is reachable
+  var startKey=keyOf(nowNY()), pageStart=Date.now();
+  setInterval(function(){
+    if(keyOf(nowNY())!==startKey || Date.now()-pageStart>=PAGE_RELOAD_MIN*60000) safeReload();
+  },60000);
+  function safeReload(){
+    fetch(location.href.split('#')[0]+(location.search?'&':'?')+'ping='+Date.now(),{cache:'no-store'})
+      .then(function(r){ if(r.ok) location.reload(); })
+      .catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
