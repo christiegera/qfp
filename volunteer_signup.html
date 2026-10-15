@@ -39,7 +39,7 @@
 
   /* View switcher */
   .switchwrap{display:flex;justify-content:center;margin-bottom:8px;}
-  .viewswitch{display:inline-flex;background:#fff;border:2px solid var(--line);border-radius:999px;padding:4px;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .viewswitch{display:inline-flex;flex-wrap:wrap;justify-content:center;background:#fff;border:2px solid var(--line);border-radius:999px;padding:4px;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
   .viewswitch button{appearance:none;border:0;background:transparent;color:var(--ink-soft);font:inherit;font-size:.88em;font-weight:700;padding:7px 18px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .15s;}
   .viewswitch button[aria-pressed="true"]{background:var(--orange);color:#fff;}
 
@@ -130,22 +130,17 @@
   .cell.past .daynum,.cell.past .celldate,.cell.past .time{color:#9ca3af;}
   .cell.past .slot.filled{color:#6b7280;font-weight:600;}
   .cell.past .pastlbl{font-size:.62em;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
-  /* Remove me */
-  .rmbtn{margin-top:4px;align-self:flex-start;font:inherit;font-size:.62em;font-weight:700;color:var(--red);background:#fff;border:1px solid #fecaca;border-radius:20px;padding:2px 8px;cursor:pointer;}
-  .rmbtn:hover{background:#fef2f2;}
-  .rmbox{background:#fff;border-radius:16px;max-width:460px;width:100%;padding:26px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
-  .rmbox h3{font-size:1.25em;margin-bottom:4px;}
-  .rmbox .muted{color:var(--ink-soft);font-size:.88em;line-height:1.5;margin-bottom:14px;}
-  .rmbox input,.rmbox select{width:100%;padding:12px;border:2px solid var(--line);border-radius:9px;font:inherit;font-size:1em;margin-bottom:10px;}
-  .rmbox input:focus,.rmbox select:focus{outline:none;border-color:var(--orange);}
-  .rmbox .row{display:flex;gap:10px;margin-top:4px;}
-  .rmbox .row button{flex:1;padding:12px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer;}
-  .rmgo{background:var(--red);color:#fff;border:none;}
-  .rmgo:disabled{opacity:.6;cursor:default;}
-  .rmno{background:#fff;color:var(--ink);border:2px solid var(--line);}
-  .rmerr{color:var(--red);font-size:.85em;margin:-2px 0 10px;display:none;}
-  .rmok{display:none;text-align:center;}
-  .rmok .big{font-size:2.2em;margin-bottom:6px;}
+  /* Cancel my shift (volunteer self-cancel) */
+  #mineView{display:none;justify-content:center;}
+  .minerow input{letter-spacing:normal;text-align:left;}
+  .mineerr{color:var(--red);font-size:.85em;margin-top:10px;display:none;line-height:1.45;}
+  .minelist{margin-top:16px;}
+  .minehi{font-weight:700;margin-bottom:4px;}
+  .minebtns{display:flex;gap:8px;margin-top:14px;}
+  .minesug{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+  .sugbtn{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;font-weight:700;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;}
+  .sugbtn:hover{border-color:var(--orange);background:#fff7f3;}
+  .sugbtn small{font-weight:600;color:var(--ink-soft);white-space:nowrap;}
 
   /* Coordinator cancel panel */
   #cancelView{display:none;justify-content:center;}
@@ -217,6 +212,7 @@
     <div class="switchwrap">
       <div class="viewswitch" role="group" aria-label="Choose view">
         <button id="swSignup" aria-pressed="true">Volunteer sign up</button>
+        <button id="swMine" aria-pressed="false">Cancel my shift</button>
         <button id="swCancel" aria-pressed="false">Cancel for a volunteer</button>
       </div>
     </div>
@@ -240,6 +236,37 @@
         <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
       </div>
       <div id="grid" class="grid"><div class="loading" style="grid-column:1/-1;">Loading volunteer shifts&#8230;</div></div>
+    </div>
+
+    <!-- CANCEL MY SHIFT VIEW (volunteers) -->
+    <div id="mineView">
+      <div class="cancelbox">
+        <h3>Cancel my shift</h3>
+        <p class="muted">Can't make it? Start typing your name, tap it, and you'll see your upcoming shifts. Cancelling frees your spot and lets the shift supervisor know.</p>
+        <!-- Step 1: find your name -->
+        <div id="mineFind">
+          <input class="csearch" id="mineName" type="text" autocomplete="off" placeholder="Start typing your name&#8230;" aria-label="Your name">
+          <div class="minesug" id="mineSug"></div>
+        </div>
+        <!-- Step 2: quick check that it's really you -->
+        <div id="mineVerify" style="display:none;">
+          <div class="minehi" id="mineVHi"></div>
+          <p class="muted" style="margin-bottom:10px;">To keep anyone else from cancelling your shifts, enter the <b>last 4 digits of your phone</b> or your <b>email</b>.</p>
+          <div class="gaterow minerow">
+            <input id="mineWho" type="text" autocomplete="off" placeholder="Last 4 of phone, or email" aria-label="Last 4 digits of phone, or email">
+            <button class="gatebtn" id="mineBtn">Show my shifts</button>
+          </div>
+          <div class="mineerr" id="mineErr"></div>
+          <div class="minebtns"><button class="cbtn ghost" id="mineBack">&#8249; Not me</button></div>
+        </div>
+        <!-- Step 3: your shifts -->
+        <div id="mineResults" style="display:none;">
+          <div class="ctoast" id="minetoast"></div>
+          <div class="minehi" id="mineHi"></div>
+          <div class="minelist" id="mineList"></div>
+          <div class="minebtns"><button class="cbtn ghost" id="mineDone">Done</button></div>
+        </div>
+      </div>
     </div>
 
     <!-- CANCEL VIEW -->
@@ -292,28 +319,6 @@
       <h3>Thank you for giving your time to the Quakertown Food Pantry!</h3>
       <p id="successMsg"></p>
       <button id="successClose">Done</button>
-    </div>
-  </div>
-
-  <!-- Remove-me pop-up -->
-  <div class="overlay" id="rmOverlay">
-    <div class="rmbox">
-      <div id="rmForm">
-        <h3>Remove me from <span id="rmDay"></span></h3>
-        <p class="muted">Enter the email or phone number you used to sign up. We'll take you off this shift and let the supervisor know.</p>
-        <input id="rmWho" type="text" inputmode="email" autocomplete="off" placeholder="Email or phone">
-        <select id="rmReason" aria-label="Reason">
-          <option>Scheduling conflict</option><option>Illness</option><option>Transportation</option><option>Other</option>
-        </select>
-        <div class="rmerr" id="rmErr"></div>
-        <div class="row"><button class="rmno" id="rmCancel">Never mind</button><button class="rmgo" id="rmGo">Remove me</button></div>
-      </div>
-      <div class="rmok" id="rmOk">
-        <div class="big">&#128075;</div>
-        <h3 id="rmOkTitle">You're off the shift</h3>
-        <p class="muted" id="rmOkMsg"></p>
-        <div class="row"><button class="rmno" id="rmDone">Done</button></div>
-      </div>
     </div>
   </div>
 
@@ -476,13 +481,9 @@
         else html+='<div class="avail '+(openN<=2?'low':'ok')+'">'+openN+' spot'+(openN===1?'':'s')+' open</div>';
       }
       if(shift.supervisor&&shift.supervisor.name&&shift.supervisor.name!=='TBD') html+='<div class="sup">Sup: '+esc(shift.supervisor.name)+'</div>';
-      if(shift.volunteers.length) html+='<button class="rmbtn" data-rm="'+k+'">&#10005; Remove me</button>';
       html+='</div>';
     }
     grid.innerHTML=html;
-    Array.prototype.forEach.call(grid.querySelectorAll('.rmbtn'),function(b){
-      b.addEventListener('click',function(e){ e.stopPropagation(); openRemove(b.getAttribute('data-rm')); });
-    });
     Array.prototype.forEach.call(grid.querySelectorAll('.cell.shift:not(.full):not(.group)'),function(el){
       el.addEventListener('click',function(){ toggle(el.getAttribute('data-key')); });
     });
@@ -572,11 +573,15 @@
   /* ===================== VIEW SWITCHER ===================== */
   function setView(v){
     document.getElementById('swSignup').setAttribute('aria-pressed', v==='signup');
+    document.getElementById('swMine').setAttribute('aria-pressed', v==='mine');
     document.getElementById('swCancel').setAttribute('aria-pressed', v==='cancel');
     document.getElementById('signupView').style.display = v==='signup' ? '' : 'none';
+    document.getElementById('mineView').style.display = v==='mine' ? 'flex' : 'none';
     document.getElementById('cancelView').style.display = v==='cancel' ? 'flex' : 'none';
     if(v==='signup'){
       render(); updateTray();
+    } else if(v==='mine'){
+      tray.classList.remove('open'); resetMine();
     } else {
       tray.classList.remove('open');
       document.getElementById('gatePane').style.display = staffUnlocked ? 'none' : 'block';
@@ -586,6 +591,7 @@
     }
   }
   document.getElementById('swSignup').addEventListener('click',function(){ setView('signup'); });
+  document.getElementById('swMine').addEventListener('click',function(){ setView('mine'); });
   document.getElementById('swCancel').addEventListener('click',function(){ setView('cancel'); });
 
   /* ===================== COORDINATOR CANCEL ===================== */
@@ -681,52 +687,117 @@
     return fetch(CANCEL_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd});
   }
 
-  /* ===================== REMOVE ME (volunteer self-cancel) ===================== */
-  // Volunteers prove it's them with the email or phone they signed up with, then it goes
-  // through the same cancellation form as staff cancels (so the supervisor gets emailed).
-  var rmKey=null, rmOverlay=document.getElementById('rmOverlay');
-  function digits(s){ return String(s||'').replace(/\D/g,'').slice(-10); }
-  function openRemove(k){
-    rmKey=k; var s=shiftsByKey[k];
-    document.getElementById('rmDay').textContent=s.date.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
-    document.getElementById('rmWho').value='';
-    document.getElementById('rmErr').style.display='none';
-    document.getElementById('rmForm').style.display='block';
-    document.getElementById('rmOk').style.display='none';
-    var go=document.getElementById('rmGo'); go.disabled=false; go.textContent='Remove me';
-    rmOverlay.classList.add('open');
-    setTimeout(function(){ document.getElementById('rmWho').focus(); },50);
+  /* ===================== CANCEL MY SHIFT (volunteers) ===================== */
+  // 1) Type a name and pick yourself. 2) Confirm with the last 4 of your phone or your email.
+  // 3) See all your upcoming shifts and cancel any of them. Cancels use the same form as the
+  // staff cancel, so the slot frees up and the supervisor gets emailed.
+  // People are grouped by email (or phone), so two "Carol"s stay separate.
+  var minePerson=null;
+  function digits(s){ return String(s||'').replace(/\D/g,''); }
+  function personKey(it){ return (it.email||'').toLowerCase() || digits(it.phone) || (it.first+' '+it.last).toLowerCase(); }
+  function people(){
+    var map={}, out=[];
+    cancelCandidates().forEach(function(it){ var k=personKey(it);
+      if(!map[k]){ map[k]={ key:k, first:it.first, last:it.last, email:it.email, phone:it.phone, n:0 }; out.push(map[k]); }
+      map[k].n++; });
+    out.sort(function(a,b){ return (a.first+a.last).localeCompare(b.first+b.last); });
+    return out;
   }
-  function closeRemove(){ rmOverlay.classList.remove('open'); rmKey=null; }
-  function rmError(msg){ var e=document.getElementById('rmErr'); e.textContent=msg; e.style.display='block'; }
-  document.getElementById('rmCancel').addEventListener('click',closeRemove);
-  document.getElementById('rmDone').addEventListener('click',closeRemove);
-  rmOverlay.addEventListener('click',function(e){ if(e.target===rmOverlay) closeRemove(); });
-  document.getElementById('rmWho').addEventListener('keyup',function(e){ if(e.key==='Enter') document.getElementById('rmGo').click(); });
-  document.getElementById('rmGo').addEventListener('click',function(){
-    var s=shiftsByKey[rmKey]; if(!s) return;
-    var typed=document.getElementById('rmWho').value.trim(), em=typed.toLowerCase(), ph=digits(typed);
-    if(!typed){ rmError('Please enter your email or phone number.'); return; }
-    var hits=s.rows.filter(function(i){ var r=signupsData[i];
-      return (em.indexOf('@')>-1 && (r[3]||'').trim().toLowerCase()===em) || (ph.length>=7 && digits(r[4])===ph); });
-    if(!hits.length){ rmError("We couldn't find a sign-up for this day with that email or phone. Check the spelling, or ask a shift supervisor to cancel it for you."); return; }
-    var go=this; go.disabled=true; go.textContent='Removing…';
-    var reason=document.getElementById('rmReason').value, chain=Promise.resolve();
-    hits.forEach(function(i){ var r=signupsData[i];
-      chain=chain.then(function(){ return postCancel({ first:(r[1]||'').trim(), last:(r[2]||'').trim(), email:(r[3]||'').trim(), phone:(r[4]||'').trim(), date:s.date }, reason); }); });
-    chain.then(function(){
-      var r=signupsData[hits[0]];
-      hits.forEach(function(i){ signupsData[i][7]='Cancelled'; });
-      buildShifts(); render();
-      document.getElementById('rmOkTitle').textContent='Thanks, '+((r[1]||'').trim()||'friend')+'. You\'re off the shift.';
-      document.getElementById('rmOkMsg').textContent='You\'ve been removed from '+document.getElementById('rmDay').textContent+'. The shift supervisor will get an email, and you\'ll get a confirmation too.';
-      document.getElementById('rmForm').style.display='none';
-      document.getElementById('rmOk').style.display='block';
-    }).catch(function(){
-      go.disabled=false; go.textContent='Remove me';
-      rmError('Something went wrong. Please try again, or ask a shift supervisor.');
+  function shortName(p){ return p.first+' '+(p.last?p.last.charAt(0)+'.':''); }
+  function mineShow(step){
+    ['mineFind','mineVerify','mineResults'].forEach(function(id){ document.getElementById(id).style.display = id===step?'block':'none'; });
+  }
+  function resetMine(){
+    minePerson=null;
+    document.getElementById('mineName').value='';
+    document.getElementById('mineSug').innerHTML='';
+    mineShow('mineFind');
+    setTimeout(function(){ document.getElementById('mineName').focus(); },50);
+  }
+  function suggest(){
+    var q=document.getElementById('mineName').value.trim().toLowerCase(), box=document.getElementById('mineSug');
+    box.innerHTML='';
+    if(q.length<2) return;
+    var hits=people().filter(function(p){ var full=(p.first+' '+p.last).toLowerCase();
+      return full.indexOf(q)===0 || p.first.toLowerCase().indexOf(q)===0 || p.last.toLowerCase().indexOf(q)===0; }).slice(0,8);
+    if(!hits.length){ box.innerHTML='<div class="cempty" style="padding:16px">No upcoming shifts found under that name. Try your last name, or ask a shift supervisor.</div>'; return; }
+    hits.forEach(function(p){
+      var b=document.createElement('button'); b.className='sugbtn';
+      b.innerHTML='<span>'+esc(shortName(p))+'</span><small>'+p.n+' upcoming shift'+(p.n===1?'':'s')+' &rsaquo;</small>';
+      b.addEventListener('click',function(){ pickPerson(p); });
+      box.appendChild(b);
     });
-  });
+  }
+  function pickPerson(p){
+    minePerson=p;
+    document.getElementById('mineVHi').textContent='Hi '+(p.first||'there')+'!';
+    document.getElementById('mineWho').value='';
+    document.getElementById('mineErr').style.display='none';
+    mineShow('mineVerify');
+    setTimeout(function(){ document.getElementById('mineWho').focus(); },50);
+  }
+  function mineError(msg){ var e=document.getElementById('mineErr'); e.textContent=msg; e.style.display='block'; }
+  function verifyMine(){
+    var p=minePerson; if(!p) return;
+    var typed=document.getElementById('mineWho').value.trim();
+    if(!typed){ mineError('Please enter the last 4 digits of your phone, or your email.'); return; }
+    var ok = typed.indexOf('@')>-1 ? typed.toLowerCase()===(p.email||'').toLowerCase()
+                                   : (digits(typed).length===4 && digits(p.phone).slice(-4)===digits(typed));
+    if(!ok){ mineError("That doesn't match what you signed up with. Try the other one, or ask a shift supervisor to cancel it for you."); return; }
+    document.getElementById('minetoast').style.display='none';
+    document.getElementById('mineHi').textContent=p.first+', here '+(p.n===1?'is your upcoming shift':'are your upcoming shifts')+':';
+    mineShow('mineResults');
+    renderMine();
+  }
+  function mineToast(msg,isErr){
+    var t=document.getElementById('minetoast'); t.textContent=msg; t.style.display='block';
+    t.style.background=isErr?'#fef2f2':'#ecfdf5'; t.style.borderColor=isErr?'#fecaca':'#a7f3d0'; t.style.color=isErr?'#991b1b':'#065f46';
+  }
+  function renderMine(){
+    var list=document.getElementById('mineList'); list.innerHTML='';
+    var items=minePerson?cancelCandidates().filter(function(it){ return personKey(it)===minePerson.key; }):[];
+    if(!items.length){ list.innerHTML='<div class="cempty">You have no more upcoming shifts.</div>'; return; }
+    items.forEach(function(it){
+      var dk=it.date.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+      var sh=shiftsByKey[keyOf(it.date)];
+      var row=document.createElement('div'); row.className='crow';
+      var top=document.createElement('div'); top.className='top';
+      top.innerHTML='<div><div class="who">'+esc(dk)+'</div><div class="contact">'+esc(sh?sh.time:'')+(sh&&sh.supervisor&&sh.supervisor.name&&sh.supervisor.name!=='TBD'?' · Sup: '+esc(sh.supervisor.name):'')+'</div></div>';
+      var btn=document.createElement('button'); btn.className='cbtn'; btn.textContent='Cancel this shift';
+      top.appendChild(btn); row.appendChild(top);
+      btn.addEventListener('click',function(){
+        if(row.querySelector('.reasonrow')) return;
+        var rr=document.createElement('div'); rr.className='reasonrow';
+        var sel=document.createElement('select');
+        ['Scheduling conflict','Illness','Transportation','Other'].forEach(function(o){ var op=document.createElement('option'); op.textContent=o; sel.appendChild(op); });
+        var conf=document.createElement('button'); conf.className='cbtn'; conf.textContent='Yes, cancel it';
+        var back=document.createElement('button'); back.className='cbtn ghost'; back.textContent='Keep it';
+        rr.appendChild(sel); rr.appendChild(conf); rr.appendChild(back);
+        row.appendChild(rr); btn.style.display='none';
+        back.addEventListener('click',function(){ rr.remove(); btn.style.display=''; });
+        conf.addEventListener('click',function(){
+          conf.disabled=true; conf.textContent='Cancelling…';
+          postCancel(it,sel.value).then(function(){
+            signupsData[it.row][7]='Cancelled';
+            buildShifts();
+            mineToast('Done. You\'re off the '+dk+' shift. The supervisor has been emailed, and you\'ll get a confirmation too.');
+            renderMine();
+          }).catch(function(){
+            conf.disabled=false; conf.textContent='Yes, cancel it';
+            mineToast('Something went wrong. Please try again, or ask a shift supervisor.',true);
+          });
+        });
+      });
+      list.appendChild(row);
+    });
+  }
+  document.getElementById('mineName').addEventListener('input',suggest);
+  document.getElementById('mineBtn').addEventListener('click',verifyMine);
+  document.getElementById('mineWho').addEventListener('keyup',function(e){ if(e.key==='Enter') verifyMine(); });
+  document.getElementById('mineBack').addEventListener('click',resetMine);
+  document.getElementById('mineDone').addEventListener('click',function(){ resetMine(); setView('signup'); });
+
+
 
   var toastTimer;
   function showToast(msg,isErr){
@@ -752,14 +823,14 @@
     for(var pi=-10;pi<0;pi++){
       var pd=new Date(t); pd.setDate(t.getDate()+pi); if(pd.getDay()===0||pd.getDay()===6) continue;
       var piso=(pd.getMonth()+1)+'/'+pd.getDate()+'/'+pd.getFullYear();
-      for(var pj=0;pj<1+(-pi%3);pj++){ var pn=sampleNames[(-pi+pj)%sampleNames.length]; signupsData.push(['',pn[0],pn[1],'sample@example.org','215-555-0000',piso,'','']); }
+      for(var pj=0;pj<1+(-pi%3);pj++){ var pn=sampleNames[(-pi+pj)%sampleNames.length]; signupsData.push(['',pn[0],pn[1],pn[0].toLowerCase()+'@example.org','215-555-0'+(100+pn[0].length),piso,'','']); }
     }
     for(var i=1;i<=16 && cnt<5;i++){
       var dd=new Date(t); dd.setDate(t.getDate()+i);
       if(dd.getDay()===0||dd.getDay()===6) continue;
       var iso=(dd.getMonth()+1)+'/'+dd.getDate()+'/'+dd.getFullYear();
       var fillN=(cnt===0?5:(cnt%3)+1);
-      for(var j=0;j<fillN;j++){ var nm=sampleNames[(cnt+j)%sampleNames.length]; signupsData.push(['',nm[0],nm[1],'sample@example.org','215-555-0000',iso,'','']); }
+      for(var j=0;j<fillN;j++){ var nm=sampleNames[(cnt+j)%sampleNames.length]; signupsData.push(['',nm[0],nm[1],nm[0].toLowerCase()+'@example.org','215-555-0'+(100+nm[0].length),iso,'','']); }
       cnt++;
     }
   }
