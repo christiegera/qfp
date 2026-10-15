@@ -20,7 +20,17 @@
   body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;
     background:linear-gradient(170deg,#FFF5EB 0%,var(--cream) 45%,var(--green-pale) 100%);
     min-height:100vh;color:var(--ink);-webkit-font-smoothing:antialiased;}
-  .kiosk{max-width:860px;margin:0 auto;padding:34px 22px 80px;}
+  .kiosk{max-width:860px;margin:0 auto;padding:22px 22px 80px;}
+
+  /* Site menu bar (same on every volunteer page) */
+  .sitenav{display:flex;align-items:center;gap:10px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+  .sitenav .brand{font-weight:800;color:var(--ink);text-decoration:none;font-size:17px;margin-right:auto;white-space:nowrap;}
+  .sitenav .links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+  .sitenav .links a{color:var(--warm-gray);text-decoration:none;font-weight:600;font-size:14px;padding:7px 12px;border-radius:999px;}
+  .sitenav .links a:hover{background:#f1f2f4;color:var(--ink);}
+  .sitenav .links a.on{background:var(--green-pale);color:#0f5e1b;}
+  .sitenav .links a.sos{background:var(--red);color:#fff;}
+  @media(max-width:560px){ .sitenav .links a{padding:6px 8px;font-size:13px;} }
 
   .khead{text-align:center;margin-bottom:22px;}
   .kback{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--warm-gray);text-decoration:none;margin-bottom:14px;}
@@ -132,12 +142,19 @@
 </style>
 </head>
 <body>
+<nav class="sitenav">
+  <a class="brand" href="portal.html">&#x1F955; Volunteer Portal</a>
+  <div class="links">
+    <a href="portal.html">Portal</a>
+    <a href="volunteer_signup.html">Sign Up</a>
+    <a href="checkin.html" class="on">Sign In</a>
+    <a href="apply.html">Apply</a>
+    <a href="volunteer_handbook.html">Handbook</a>
+    <a href="emergency.html" class="sos">&#9888;&#65039; Emergency</a>
+  </div>
+</nav>
 <div class="kiosk">
   <div class="khead">
-    <a href="portal.html" class="kback">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-      Back to portal
-    </a>
     <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="klogo" onerror="this.style.display='none'">
     <h1>Volunteer Sign-In</h1>
     <p>Welcome! Tap your name to sign in — and tap it again when you leave to sign out.</p>
