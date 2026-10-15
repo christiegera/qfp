@@ -93,6 +93,21 @@
   .sch .open{color:var(--light-gray);}
   .sch small{color:var(--warm-gray);font-weight:600;}
   .tag{display:inline-block;font-size:.7em;font-weight:750;padding:.15em .6em;border-radius:100px;background:var(--c);color:#fff;margin-left:.5em;vertical-align:middle;}
+  /* Calendar view in the pop-up */
+  .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.4em;font-size:.78em;}
+  .cal .dh{text-align:center;font-weight:750;color:var(--warm-gray);font-size:.85em;text-transform:uppercase;letter-spacing:.04em;padding-bottom:.2em;position:sticky;top:-1.5vh;background:#fff;z-index:1;}
+  .cd{border:1px solid var(--border);border-radius:.6em;padding:.4em .5em;min-height:5.2em;line-height:1.25;overflow:hidden;}
+  .cd .dn{font-weight:750;font-size:.95em;margin-bottom:.2em;white-space:nowrap;}
+  .cd .dn .tag{font-size:.65em;margin-left:.3em;}
+  .cd .tm{font-size:.75em;font-weight:700;color:var(--c);margin-bottom:.15em;}
+  .cd .ln{font-size:.85em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cd .ln small{color:var(--warm-gray);font-weight:600;}
+  .cd .grpd{font-weight:750;color:var(--c);}
+  .cd .open{color:var(--light-gray);}
+  .cd.none{background:#FAF9F6;border-color:#F0EEE8;}
+  .cd.none .dn{color:var(--light-gray);}
+  .cd.past{opacity:.55;}
+  .cd.today{border:2px solid var(--c);background:var(--p);opacity:1;}
 
   /* Night mode + pixel shift */
   .top,.quad,.foot{transition:transform 2s ease;}
@@ -113,7 +128,7 @@
   .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
 
   /* Layout: menu tall on the left; right side = announcements, pantry shift (biggest), and a short GAH + bag packers strip */
-  .quad{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:minmax(0,.85fr) minmax(0,1.25fr) minmax(0,.6fr);}
+  .quad{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:minmax(0,1.15fr) minmax(0,.95fr) minmax(0,.6fr);}
   .q.menu{grid-column:1;grid-row:1 / span 3;}
   .q.ann{grid-column:2;grid-row:1;}
   .q.shift{grid-column:2;grid-row:2;}
@@ -397,16 +412,28 @@
   }
 
   /* ===== weekly menu ===== */
-  // Reads Category | Items | Notes by header name; blank rows are skipped.
+  // Reads Week Of | Category | Items | Notes by header name; blank rows are skipped.
+  // Week Of is the Sunday the menu starts. Only the first row of each week needs the date;
+  // the rows under it belong to the same week. The board shows the latest week that has
+  // started, so it switches over by itself every Sunday. No Week Of column = show every row.
   function renderMenu(){
-    var rows=[], h=(menu[0]||[]).map(function(x){ return String(x||'').trim().toLowerCase(); });
+    var all=[], h=(menu[0]||[]).map(function(x){ return String(x||'').trim().toLowerCase(); });
     function col(re,def){ for(var i=0;i<h.length;i++){ if(re.test(h[i])) return i; } return def; }
-    var cC=col(/categ|section|type/,0), cI=col(/item|food|what/,1), cN=col(/note|limit|extra/,-1);
+    var cW=col(/week|start|date/,-1);
+    var cC=col(/categ|section|type/,cW===0?1:0), cI=col(/item|food|what/,cW===0?2:1), cN=col(/note|limit|extra/,-1);
+    var wk=null;
     for(var i=1;i<menu.length;i++){ var r=menu[i], cat=String(r[cC]||'').trim(), its=String(r[cI]||'').trim();
+      if(cW>-1 && String(r[cW]||'').trim()){ var wd=toLocalDate(r[cW]); if(!isNaN(wd)){ wd.setHours(0,0,0,0); wk=wd; } }
       if(!cat&&!its) continue;
-      rows.push({ cat:cat, its:its, nt:cN>-1?String(r[cN]||'').trim():'' }); }
-    var monday=addDays(nowNY(),-((nowNY().getDay()+6)%7));
-    document.getElementById('menuWhen').textContent='Week of '+monday.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      all.push({ wk:wk, cat:cat, its:its, nt:cN>-1?String(r[cN]||'').trim():'' }); }
+    var t=addDays(nowNY(),0), start=null, rows=all;
+    if(cW>-1){
+      all.forEach(function(r){ if(r.wk && r.wk<=t && (!start||r.wk>start)) start=r.wk; });
+      if(!start) all.forEach(function(r){ if(r.wk && (!start||r.wk<start)) start=r.wk; });   // nothing started yet: show the first week
+      rows=all.filter(function(r){ return start && r.wk && keyOf(r.wk)===keyOf(start); });
+    }
+    if(!start) start=addDays(t,-t.getDay());
+    document.getElementById('menuWhen').textContent='Week of '+start.toLocaleDateString('en-US',{month:'short',day:'numeric'});
     if(!rows.length){ document.getElementById('menuBody').innerHTML='<div class="empty">This week\'s menu hasn\'t been posted yet.</div>'; return; }
     var html='<div class="mrows">'+rows.map(function(r,i){
       return '<div class="mrow" style="--mc:'+MENU_COLORS[i%MENU_COLORS.length]+'"><span class="cat">'+esc(r.cat)+'</span>'+
@@ -488,48 +515,46 @@
   function tagHtml(t){ return t?'<span class="tag">'+t+'</span>':''; }
   function who(s){ return s?esc(s):'<span class="open">Open</span>'; }
 
-  function fullBag(){
-    var rows=[];
-    for(var n=-14;n<=28;n++){ var d=addDays(nowNY(),n), w=d.getDay(); if(w===0||w===1||w===4) rows.push({ d:d, p:packersOn(d)||{} }); }
-    var tags=tagsFor(rows);
-    var h='<p class="pnote">Last 2 weeks and the next 4 weeks. Gray rows have already happened.</p>'+
-          '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Packer</th><th>Backup</th></tr></thead><tbody>';
-    rows.forEach(function(r,i){
-      var lbl=r.p.label&&r.p.label.indexOf(' ')>-1?r.p.label.split(' ').slice(1).join(' '):'';
-      h+='<tr class="'+rowCls(r.d)+'"><td>'+fmtD(r.d)+tagHtml(tags[i])+'</td><td>'+esc(lbl)+'</td><td>'+who(r.p.packer)+'</td><td>'+esc(r.p.backup||'')+'</td></tr>';
+  // Calendar view: last week, this week, and the next 3 weeks (Sunday to Saturday).
+  // cellFn(d) returns the inside of a day, or '' when nothing happens that day.
+  function calendar(cellFn, note){
+    var t=addDays(nowNY(),0), start=addDays(t,-t.getDay()-7), days=[];
+    for(var n=0;n<35;n++){ var d=addDays(start,n); days.push({ d:d, body:cellFn(d) }); }
+    var tags=tagsFor(days.filter(function(x){ return x.body; }));
+    var ti=0, h='<p class="pnote">'+note+'</p><div class="cal">';
+    DAYS.forEach(function(dn){ h+='<div class="dh">'+dn.slice(0,3)+'</div>'; });
+    days.forEach(function(x,i){
+      var tag=x.body?tags[ti++]:'', d=x.d;
+      var lbl=(i===0||d.getDate()===1)?d.toLocaleDateString('en-US',{month:'short',day:'numeric'}):d.getDate();
+      h+='<div class="cd '+rowCls(d)+(x.body?'':' none')+'"><div class="dn">'+lbl+tagHtml(tag==='Today'?'':tag)+'</div>'+(x.body||'')+'</div>';
     });
-    return h+'</tbody></table>';
+    return h+'</div>';
+  }
+
+  function fullBag(){
+    return calendar(function(d){
+      var w=d.getDay(); if(!(w===0||w===1||w===4)) return '';
+      var p=packersOn(d)||{}, lbl=p.label&&p.label.indexOf(' ')>-1?p.label.split(' ').slice(1).join(' '):'';
+      return (lbl?'<div class="tm">'+esc(lbl)+'</div>':'')+'<div class="ln"><b>'+who(p.packer)+'</b></div>'+
+             (p.backup?'<div class="ln"><small>Backup: '+esc(p.backup)+'</small></div>':'');
+    }, 'Last week, this week, and the next 3 weeks. Today is highlighted; grayed days have already happened.');
   }
   function fullShift(){
-    var rows=[];
-    for(var n=-7;n<=21;n++){ var d=addDays(nowNY(),n), w=d.getDay(); if(w>=1&&w<=5) rows.push({ d:d }); }
-    var tags=tagsFor(rows);
-    var h='<p class="pnote">Last week and the next 3 weeks. Gray rows have already happened.</p>'+
-          '<table class="sch"><thead><tr><th>Date</th><th>Time</th><th>Supervisor</th><th>Signed up online</th></tr></thead><tbody>';
-    rows.forEach(function(r,i){
-      var s=findSup(r.d), name=s?(s[2]||'').trim():'', grp=s?(s[1]||'').trim():'', names=signupsOn(r.d);
-      h+='<tr class="'+rowCls(r.d)+'"><td>'+fmtD(r.d)+tagHtml(tags[i])+'</td><td>'+shiftTime(DAYS[r.d.getDay()])+'</td>'+
-         '<td>'+who(name&&name!=='TBD'?name:'')+(grp&&grp!=='NA'?'<br><small>'+esc(grp)+' group</small>':'')+'</td>'+
-         '<td>'+(names.length?esc(names.join(', ')):'<span class="open">—</span>')+'</td></tr>';
-    });
-    return h+'</tbody></table>';
+    return calendar(function(d){
+      var w=d.getDay(); if(w<1||w>5) return '';
+      var s=findSup(d), name=s?(s[2]||'').trim():'', grp=s?(s[1]||'').trim():'', names=signupsOn(d);
+      return '<div class="tm">'+shiftTime(DAYS[w])+'</div>'+
+             '<div class="ln"><small>Sup:</small> <b>'+who(name&&name!=='TBD'?name:'')+'</b></div>'+
+             (grp&&grp!=='NA'?'<div class="ln grpd">'+esc(grp)+'</div>':'')+
+             names.map(function(n){ return '<div class="ln">'+esc(n)+'</div>'; }).join('');
+    }, 'Last week, this week, and the next 3 weeks. Today is highlighted; grayed days have already happened.');
   }
   function fullGah(){
-    var rows=[], started=false, tc=nowNY().getDay();
-    for(var i=0;i<gah.length;i++){ var r=gah[i];
-      if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
-      if(!(r[0]||'').trim()) break;
-      rows.push(r); }
-    if(!rows.length) return '<p class="pnote">No GAH schedule found.</p>';
-    var h='<p class="pnote">Weekly pickup schedule. Today\'s column is highlighted.</p><table class="sch"><thead><tr><th>Store</th>';
-    for(var c=1;c<=5;c++) h+='<th'+(c===tc?' class="tc"':'')+'>'+DAYS[c]+'</th>';
-    h+='</tr></thead><tbody>';
-    rows.forEach(function(r){
-      h+='<tr><td><b>'+esc(r[0])+'</b></td>';
-      for(var c=1;c<=5;c++) h+='<td'+(c===tc?' class="tc"':'')+'>'+(r[c]&&r[c].trim()?esc(r[c].trim()):'<span class="open">—</span>')+'</td>';
-      h+='</tr>';
-    });
-    return h+'</tbody></table>';
+    return calendar(function(d){
+      var rows=gahOn(d).filter(function(r){ return r.driver; });
+      if(!rows.length) return '';
+      return rows.map(function(r){ return '<div class="ln"><small>'+esc(r.store)+':</small> <b>'+esc(r.driver)+'</b></div>'; }).join('');
+    }, 'Weekly pickup schedule, shown for last week, this week, and the next 3 weeks. Today is highlighted.');
   }
 
   var FULL={ shift:['c-shift','🥕 Pantry Shift Schedule',fullShift],
