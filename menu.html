@@ -68,6 +68,10 @@
   var MENU_SHEET_ID = '1T0adYkdD0HMZdbnfw8KX8JsAGS1cdcJq68BNXElczC0';
   var MENU_GID      = '0';
   var MENU_KEY      = '';    // optional line under the menu, e.g. 'D = donated · 1A = one per adult'
+  // Week Of stays the Sunday date in the sheet, but the board flips to that week early:
+  // 1 day early at 9 AM = Saturday 9:00 AM Eastern, when the pantry changes the menu.
+  var MENU_SWITCH_DAYS_EARLY = 1;
+  var MENU_SWITCH_HOUR       = 9;
   var MENU_COLORS   = ['#1F5FAE','#C0392B','#0E8A86','#B0247A','#6A3FA0','#D9661A','#3D3D3D','#2E7D32'];
   var REFRESH_MIN     = 5;    // re-read the sheet every few minutes
   var PAGE_RELOAD_MIN = 60;   // full page reload, so website updates show up on their own
@@ -105,9 +109,10 @@
       if(cW>-1 && String(r[cW]||'').trim()){ var wd=toLocalDate(r[cW]); if(!isNaN(wd)){ wd.setHours(0,0,0,0); wk=wd; } }
       if(!cat&&!its) continue;
       all.push({ wk:wk, cat:cat, its:its, nt:cN>-1?String(r[cN]||'').trim():'' }); }
-    var t=addDays(nowNY(),0), start=null, rows=all;
+    var t=addDays(nowNY(),0), now=nowNY(), start=null, rows=all;
+    function switchAt(wk){ var s=addDays(wk,-MENU_SWITCH_DAYS_EARLY); s.setHours(MENU_SWITCH_HOUR,0,0,0); return s; }
     if(cW>-1){
-      all.forEach(function(r){ if(r.wk && r.wk<=t && (!start||r.wk>start)) start=r.wk; });
+      all.forEach(function(r){ if(r.wk && switchAt(r.wk)<=now && (!start||r.wk>start)) start=r.wk; });
       if(!start) all.forEach(function(r){ if(r.wk && (!start||r.wk<start)) start=r.wk; });
       rows=all.filter(function(r){ return start && r.wk && keyOf(r.wk)===keyOf(start); });
     }
