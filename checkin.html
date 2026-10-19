@@ -446,8 +446,7 @@
       if((r[1]||'').trim().toLowerCase()!==wk) continue;
       if((r[2]||'').trim()) out.push(fillPerson({ id:'p'+i, scheduled:true, role:'Bag packer', rc:'packer', how:'bag-packer' }, r[2], r[4], r[3]));
       if((r[5]||'').trim()) out.push(fillPerson({ id:'p'+i+'b', scheduled:true, role:'Bag packer (backup)', rc:'packer', how:'bag-packer' }, r[5], r[7], r[6]));
-      break;
-    }
+    }                                        // keep going: a slot can have more than one line (Kate + Dean)
     return out;
   }
   function buildDirectory(){
