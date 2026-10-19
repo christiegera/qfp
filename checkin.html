@@ -335,6 +335,23 @@
     return out;
   }
 
+  // The GAH and Bag Packers tabs only have a full name in one cell (and sometimes no email).
+  // Fill in first/last/email/phone from the Volunteers directory so the sign-in form gets a
+  // complete row; otherwise split "Mary Hill" into first + last.
+  function fillPerson(o, name, email, phone){
+    name=(name||'').trim(); email=(email||'').trim(); phone=(phone||'').trim();
+    var hit=null, low=name.toLowerCase();
+    for(var i=0;i<directory.length&&!hit;i++){ var d=directory[i];
+      if(email && d.email && d.email.toLowerCase()===email.toLowerCase()) hit=d; }
+    for(var j=0;j<directory.length&&!hit;j++){ var e=directory[j];
+      if((e.first+' '+e.last).trim().toLowerCase()===low) hit=e; }
+    if(hit){ o.first=hit.first; o.last=hit.last; o.email=email||hit.email; o.phone=phone||hit.phone; }
+    else if(/&|\/|\band\b|\+/i.test(name)){ o.first=name; o.last=''; o.email=email; o.phone=phone; }   // "Ed & Suzi": keep together
+    else { var parts=name.split(/\s+/); o.first=parts.length>1?parts.slice(0,-1).join(' '):name; o.last=parts.length>1?parts[parts.length-1]:''; o.email=email; o.phone=phone; }
+    o.full=name;
+    return o;
+  }
+
   // GAH Driver Schedule tab: a title row, then a header row (Store | Monday..Friday),
   // then one row per store. We read the column for today's weekday.
   function gahToday(){
@@ -349,7 +366,7 @@
       var name=(r[col]||'').trim(); if(!name) continue;
       var key=name.toLowerCase();
       if(seen[key]){ seen[key].store+=', '+store; continue; }
-      var o={ id:'g'+i, first:name, last:'', email:'', phone:'', scheduled:true, role:'GAH driver', rc:'gah', store:store, how:'gah-driver' };
+      var o=fillPerson({ id:'g'+i, scheduled:true, role:'GAH driver', rc:'gah', store:store, how:'gah-driver' }, name, '', '');
       seen[key]=o; out.push(o);
     }
     return out;
@@ -366,8 +383,8 @@
       var r=bagPackersData[i];
       if((r[0]||'').trim().toLowerCase().indexOf(word)!==0) continue;
       if((r[1]||'').trim().toLowerCase()!==wk) continue;
-      if((r[2]||'').trim()) out.push({ id:'p'+i, first:(r[2]||'').trim(), last:'', email:(r[4]||'').trim(), phone:(r[3]||'').trim(), scheduled:true, role:'Bag packer', rc:'packer', how:'bag-packer' });
-      if((r[5]||'').trim()) out.push({ id:'p'+i+'b', first:(r[5]||'').trim(), last:'', email:(r[7]||'').trim(), phone:(r[6]||'').trim(), scheduled:true, role:'Bag packer (backup)', rc:'packer', how:'bag-packer' });
+      if((r[2]||'').trim()) out.push(fillPerson({ id:'p'+i, scheduled:true, role:'Bag packer', rc:'packer', how:'bag-packer' }, r[2], r[4], r[3]));
+      if((r[5]||'').trim()) out.push(fillPerson({ id:'p'+i+'b', scheduled:true, role:'Bag packer (backup)', rc:'packer', how:'bag-packer' }, r[5], r[7], r[6]));
       break;
     }
     return out;
@@ -391,7 +408,10 @@
     for(var i=1;i<signupsData.length;i++){ var r=signupsData[i]; add(r[1],r[2],r[3],r[4],'s'+i); }
   }
 
-  function uid(p){ return (p.email||(p.first+p.last)).toLowerCase(); }
+  // One key per person: email + first name, so two people who share an email
+  // (like a couple) are still tracked separately.
+  function uid(p){ var f=String(p.first||'').trim().split(/\s+/)[0];
+    return ((p.email||'')+'|'+(p.email?f:(p.first+' '+(p.last||'')))).toLowerCase(); }
   function dispName(p){ return p.last ? (p.first+' '+p.last.charAt(0)+'.') : p.first; }
   function roleTag(p){ return p.role ? '<span class="rtag '+(p.rc||'')+'">'+esc(p.role+(p.store?' · '+p.store:''))+'</span>' : 'Tap to sign in'; }
 
@@ -667,7 +687,7 @@
   /* ===== load ===== */
   function init(){
     if(!PREVIEW) loadLocal();
-    renderHeader(); renderSched(); renderHere(); buildDirectory(); tickClock(); setInterval(tickClock,1000);
+    renderHeader(); buildDirectory(); renderSched(); renderHere(); tickClock(); setInterval(tickClock,1000);
     syncCheckins(); setInterval(syncCheckins,60000);
     // Kiosk stays on all day: start fresh when the date rolls over.
     setInterval(function(){ if(keyOf(new Date())!==keyOf(now0)) location.reload(); },60000);
