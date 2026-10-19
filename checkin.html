@@ -368,11 +368,16 @@
   // complete row; otherwise split "Mary Hill" into first + last.
   function fillPerson(o, name, email, phone){
     name=(name||'').trim(); email=(email||'').trim(); phone=(phone||'').trim();
-    var hit=null, low=name.toLowerCase();
-    for(var i=0;i<directory.length&&!hit;i++){ var d=directory[i];
-      if(email && d.email && d.email.toLowerCase()===email.toLowerCase()) hit=d; }
+    var hit=null, low=name.toLowerCase(), lowFirst=low.split(/\s+/)[0];
+    // 1) Exact full name always wins (couples like Dean & Kate share one email)
     for(var j=0;j<directory.length&&!hit;j++){ var e=directory[j];
       if((e.first+' '+e.last).trim().toLowerCase()===low) hit=e; }
+    // 2) Same email: if several people share it, pick the one whose first name matches
+    if(!hit && email){
+      var same=directory.filter(function(d){ return d.email && d.email.toLowerCase()===email.toLowerCase(); });
+      hit = same.filter(function(d){ return String(d.first||'').toLowerCase().split(/\s+/)[0]===lowFirst; })[0]
+            || (same.length===1 ? same[0] : null);
+    }
     if(hit){ o.first=hit.first; o.last=hit.last; o.email=email||hit.email; o.phone=phone||hit.phone; }
     else if(/&|\/|\band\b|\+/i.test(name)){ o.first=name; o.last=''; o.email=email; o.phone=phone; }   // "Ed & Suzi": keep together
     else { var parts=name.split(/\s+/); o.first=parts.length>1?parts.slice(0,-1).join(' '):name; o.last=parts.length>1?parts[parts.length-1]:''; o.email=email; o.phone=phone; }
