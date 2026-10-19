@@ -331,10 +331,14 @@
     var wd=d.getDay(), word=wd===0?'sunday':(wd===1?'monday':(wd===4?'thursday':''));
     if(!word) return null;
     var wk=weekNum(d).toLowerCase();
-    for(var i=1;i<bag.length;i++){ var r=bag[i];
+    var hit=null, packers=[], backups=[];
+    for(var i=1;i<bag.length;i++){ var r=bag[i];     // a slot can have more than one line (Kate + Dean)
       if((r[0]||'').trim().toLowerCase().indexOf(word)!==0) continue;
       if((r[1]||'').trim().toLowerCase()!==wk) continue;
-      return { label:(r[0]||'').trim(), packer:(r[2]||'').trim(), backup:(r[5]||'').trim() }; }
+      if(!hit) hit={ label:(r[0]||'').trim() };
+      if((r[2]||'').trim()) packers.push((r[2]||'').trim());
+      if((r[5]||'').trim()) backups.push((r[5]||'').trim()); }
+    if(hit){ hit.packer=packers.join(' & '); hit.backup=backups.join(' & '); return hit; }
     return { label:DAYS[wd], packer:'', backup:'' };
   }
   // First day from today (up to 7 days out) that passes the test.
