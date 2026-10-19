@@ -67,6 +67,7 @@
   .rtag.pantry{background:var(--green-pale);color:#0f5e1b;}
   .rtag.gah{background:var(--blue-pale);color:#14517a;}
   .rtag.packer{background:var(--orange-pale);color:#8a4a12;}
+  .rtag.freezer{background:#e3eefc;color:#1d4e89;}
   /* signed-in (still here) — amber, still tappable to sign out */
   .namebtn.in{background:#FFF8E8;border-color:#E8A96A;}
   .namebtn.in .nm{color:#8a4a12;}
@@ -332,6 +333,33 @@
     out = out.concat(gahToday());
     // 3) Bag packers scheduled for today (weekday + which week of the month)
     out = out.concat(packersToday());
+    // 4) Freezer crew (and any other standing role) from the Volunteers tab
+    out = out.concat(freezerToday());
+    // Same person listed twice (e.g. a leftover shift sign-up + Freezer): keep one button, using the later role
+    var seen={};
+    for(var j=out.length-1;j>=0;j--){ var u=uid(out[j]); if(seen[u]) out.splice(j,1); else seen[u]=1; }
+    return out;
+  }
+
+  // Volunteers tab: add a column headed "Freezer" and put the days that person comes in,
+  // e.g. "Sun, Mon". They show up on the kiosk those days tagged Freezer, without
+  // being on the pantry shift schedule.
+  function freezerToday(){
+    var out=[], col=-1, start=0;
+    for(var h=0;h<Math.min(3,volunteersData.length)&&col<0;h++){
+      col=volunteersData[h].map(function(c){ return String(c||'').trim().toLowerCase(); }).indexOf('freezer');
+      start=h+1;
+    }
+    if(col<0) return out;
+    var today=dayName(now0).toLowerCase().slice(0,3);
+    for(var i=start;i<volunteersData.length;i++){ var m=volunteersData[i];
+      var days=String(m[col]||'').toLowerCase();
+      if(!days.trim()) continue;
+      var match=/every|daily|all/.test(days) || days.split(/[^a-z]+/).some(function(w){ return w && w.slice(0,3)===today; });
+      if(!match) continue;
+      out.push({ id:'f'+i, first:(m[0]||'').trim(), last:(m[1]||'').trim(), email:(m[4]||'').trim(),
+                 phone:((m[3]||'').trim()||(m[2]||'').trim()), scheduled:true, role:'Freezer', rc:'freezer', how:'freezer' });
+    }
     return out;
   }
 
@@ -354,20 +382,48 @@
 
   // GAH Driver Schedule tab: a title row, then a header row (Store | Monday..Friday),
   // then one row per store. We read the column for today's weekday.
+  // The GAH tab also has a driver list below the grid (Volunteer | Phone | Notes | Email).
+  // The grid uses short names ("Butch", "Alicia D.", "Donna & Claude"), so look each one up
+  // there first to get the full name and email, then match that to the Volunteers tab.
+  function gahRoster(){
+    var list=[], on=false;
+    for(var i=0;i<gahData.length;i++){ var nm=String(gahData[i][2]||'').trim();
+      if(!on){ if(nm.toLowerCase()==='volunteer') on=true; continue; }
+      if(!nm) break;
+      list.push({ name:nm, phone:String(gahData[i][3]||'').trim(), email:String(gahData[i][5]||'').trim() }); }
+    return list;
+  }
+  function gahPerson(short, roster, base){
+    var clean=short.replace(/\(.*?\)/g,'').replace(/\s+/g,' ').trim(), first=clean.split(' ')[0].toLowerCase(), hit=null;
+    roster.forEach(function(r){ if(!hit && r.name.toLowerCase()===clean.toLowerCase()) hit=r; });
+    roster.forEach(function(r){ if(!hit && r.name.toLowerCase().indexOf(first)===0) hit=r; });
+    roster.forEach(function(r){ if(!hit && (' '+r.name.toLowerCase().replace(/[^a-z ]/g,' ')+' ').indexOf(' '+first+' ')>-1) hit=r; });
+    // A shared email (a couple) can match two volunteers: pick the one with this first name.
+    if(hit && hit.email){
+      var byEmail=directory.filter(function(d){ return d.email && d.email.toLowerCase()===hit.email.toLowerCase(); });
+      var pick=byEmail.filter(function(d){ return d.first.toLowerCase().split(' ')[0]===first; })[0] || (byEmail.length===1?byEmail[0]:null);
+      if(pick){ base.first=pick.first; base.last=pick.last; base.email=pick.email; base.phone=pick.phone||hit.phone; base.full=clean; return base; }
+    }
+    var full = hit ? (/&| and /i.test(hit.name) ? clean+' '+hit.name.split(/\s+/).pop() : hit.name) : clean;
+    return fillPerson(base, full, hit?hit.email:'', hit?hit.phone:'');
+  }
   function gahToday(){
     var out=[], seen={}, wd=now0.getDay();
     var col = (wd>=1&&wd<=5)?wd:0;          // Mon=1 … Fri=5 line up with the day columns
     if(!col) return out;                     // weekend — no pickups
-    var started=false;
+    var started=false, roster=gahRoster();
     for(var i=0;i<gahData.length;i++){
       var r=gahData[i];
       if(!started){ if((r[0]||'').trim().toLowerCase()==='store') started=true; continue; }
       var store=(r[0]||'').trim(); if(!store) break;   // end of the store block
-      var name=(r[col]||'').trim(); if(!name) continue;
-      var key=name.toLowerCase();
-      if(seen[key]){ seen[key].store+=', '+store; continue; }
-      var o=fillPerson({ id:'g'+i, scheduled:true, role:'GAH driver', rc:'gah', store:store, how:'gah-driver' }, name, '', '');
-      seen[key]=o; out.push(o);
+      // One cell can hold two drivers ("Ed Angelo" + "Suzi Janssens", or "Donna & Claude"): give each their own button.
+      String(r[col]||'').split(/\n|&|\band\b|\//).forEach(function(part, n){
+        var name=part.trim(); if(!name) return;
+        var key=name.replace(/\(.*?\)/g,'').trim().toLowerCase();
+        if(seen[key]){ if(seen[key].store.indexOf(store)<0) seen[key].store+=', '+store; return; }
+        var o=gahPerson(name, roster, { id:'g'+i+'_'+n, scheduled:true, role:'GAH driver', rc:'gah', store:store, how:'gah-driver' });
+        seen[key]=o; out.push(o);
+      });
     }
     return out;
   }
