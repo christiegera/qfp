@@ -113,6 +113,11 @@
   .field label{font-size:13px;font-weight:700;}
   .field input{font:inherit;font-size:17px;padding:12px 14px;border:2px solid var(--border);border-radius:10px;}
   .field input:focus{outline:none;border-color:var(--green);}
+  .field input.bad{border-color:#C0392B;}
+  .ferr{font-size:13px;color:#C0392B;font-weight:600;min-height:0;}
+  .ferr button{font:inherit;font-weight:700;color:var(--green);background:none;border:0;text-decoration:underline;cursor:pointer;padding:0;}
+  .noemail{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--warm-gray);margin:-6px 0 13px;}
+  .noemail input{width:20px;height:20px;}
   .mactions{display:flex;gap:10px;justify-content:flex-end;margin-top:4px;}
   .btn{border:none;border-radius:10px;font:inherit;font-weight:700;cursor:pointer;padding:12px 20px;font-size:16px;}
   .btn.green{background:var(--green);color:#fff;}
@@ -210,11 +215,27 @@
     <p class="sub">Welcome! Add your details once and you'll be signed in.</p>
     <div class="field"><label for="nFirst">First name</label><input id="nFirst" autocomplete="given-name"></div>
     <div class="field"><label for="nLast">Last name</label><input id="nLast" autocomplete="family-name"></div>
-    <div class="field"><label for="nEmail">Email</label><input id="nEmail" type="email" autocomplete="email"></div>
-    <div class="field"><label for="nPhone">Phone (optional)</label><input id="nPhone" type="tel" autocomplete="tel"></div>
+    <div class="field"><label for="nEmail">Email</label><input id="nEmail" type="email" autocomplete="email" inputmode="email"><div class="ferr" id="nEmailErr"></div></div>
+    <label class="noemail"><input type="checkbox" id="nNoEmail"> I don't have an email</label>
+    <div class="field"><label for="nPhone">Cell phone</label><input id="nPhone" type="tel" autocomplete="tel" inputmode="tel"><div class="ferr" id="nPhoneErr"></div></div>
     <div class="mactions">
       <button class="btn ghost" id="newCancel">Cancel</button>
       <button class="btn green" id="newSubmit">Sign me in</button>
+    </div>
+  </div>
+</div>
+
+<!-- Missing / bad contact info, asked once at sign-in -->
+<div class="overlay" id="iOverlay">
+  <div class="modal">
+    <h3 id="iTitle">Help us keep in touch</h3>
+    <p class="sub" id="iSub">We're missing some of your contact info. It's how we send shift reminders.</p>
+    <div class="field" id="iEmailWrap"><label for="iEmail">Email</label><input id="iEmail" type="email" autocomplete="email" inputmode="email"><div class="ferr" id="iEmailErr"></div></div>
+    <label class="noemail" id="iNoEmailWrap"><input type="checkbox" id="iNoEmail"> I don't have an email</label>
+    <div class="field" id="iPhoneWrap"><label for="iPhone">Cell phone</label><input id="iPhone" type="tel" autocomplete="tel" inputmode="tel"><div class="ferr" id="iPhoneErr"></div></div>
+    <div class="mactions">
+      <button class="btn ghost" id="iSkip">Skip for today</button>
+      <button class="btn green" id="iSave">Save &amp; sign in</button>
     </div>
   </div>
 </div>
@@ -572,6 +593,11 @@
   }
   function signIn(p){
     var id=uid(p); if(checkedIn[id] && !checkedIn[id].outTime) return;   // already signed in
+    if(p.how!=='new' && needsInfo(p) && !skippedToday(p)){ askInfo(p); return; }
+    doSignIn(p);
+  }
+  function doSignIn(p){
+    var id=uid(p);
     checkedIn[id]={ name:dispName(p), inTime:new Date(), outTime:null, p:p };
     saveLocal();
     postSignIO(p,'In');
@@ -653,28 +679,105 @@
     if(CHECKIN_FORM_ACTION.indexOf('PASTE')>-1) return; // not configured yet
     var fd=new FormData();
     fd.append(CK.first,p.first); fd.append(CK.last,p.last||'');
-    fd.append(CK.email,p.email||''); fd.append(CK.phone,p.phone||'');
+    fd.append(CK.email,isNone(p.email)?'':(p.email||'')); fd.append(CK.phone,p.phone||'');
     var d=m?m.date:now0;
     fd.append(CK.date+'_year',d.getFullYear()); fd.append(CK.date+'_month',d.getMonth()+1); fd.append(CK.date+'_day',d.getDate());
     fd.append(CK.date,keyOf(d));
     // Manual entries also carry the time in "Sign-in method", so it's never lost even before the
     // Manual time question exists, e.g. "manual · GAH driver · 7:45 AM".
     var how=m ? ('manual · '+(p.role||'')+' · '+m.time) : (p.how||'scheduled');
+    if(!m && action==='In' && p.upd)      // the sheet script copies this to the person's Volunteers row
+      how+=' · updated info'+(p.upd.email?' · email='+p.upd.email:'')+(p.upd.phone?' · phone='+p.upd.phone:'');
     if(CK.how && CK.how.indexOf('PASTE')===-1) fd.append(CK.how, how);
     if(CK.action && CK.action.indexOf('PASTE')===-1) fd.append(CK.action, action);
     if(m && CK.mtime && CK.mtime.indexOf('PASTE')===-1) fd.append(CK.mtime, m.time);
     fetch(CHECKIN_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd}).catch(function(){});
   }
 
+  /* ===== contact info checks ===== */
+  // Type "none" in someone's Email (or Phone) cell on Volunteers if they really don't have one
+  // (e.g. Dean). They won't be asked again.
+  function isNone(s){ return /^\s*(none|no email|n\/a|na)\s*$/i.test(String(s||'')); }
+  var DOMAIN_FIX={ 'gmal.com':'gmail.com','gmial.com':'gmail.com','gamail.com':'gmail.com','gmai.com':'gmail.com','gmail.co':'gmail.com',
+    'gnail.com':'gmail.com','gmail.cm':'gmail.com','yaho.com':'yahoo.com','yahooo.com':'yahoo.com','yahoo.co':'yahoo.com','yhoo.com':'yahoo.com',
+    'hotmial.com':'hotmail.com','hotmal.com':'hotmail.com','hotmail.co':'hotmail.com','outlok.com':'outlook.com',
+    'comcast.com':'comcast.net','comcast.ent':'comcast.net','verizon.com':'verizon.net','verison.net':'verizon.net',
+    'aol.co':'aol.com','icloud.co':'icloud.com','iclod.com':'icloud.com' };
+  function emailProblem(e){
+    e=String(e||'').trim(); if(!e) return 'Please enter your email.';
+    if(!/^[^\s@,;]+@[^\s@,;]+\.[a-z]{2,}$/i.test(e)) return 'That doesn\'t look like a full email (like name@gmail.com).';
+    var dom=e.split('@')[1].toLowerCase(); if(DOMAIN_FIX[dom]) return { fix:e.split('@')[0]+'@'+DOMAIN_FIX[dom] };
+    return '';
+  }
+  function phoneDigits(s){ var d=String(s||'').replace(/\D/g,''); if(d.length===11&&d[0]==='1') d=d.slice(1); return d; }
+  function phoneOk(s){ return phoneDigits(s).length===10; }
+  function fmtPhone(s){ var d=phoneDigits(s); return d.length===10 ? d.slice(0,3)+'-'+d.slice(3,6)+'-'+d.slice(6) : String(s||'').trim(); }
+  function needEmail(p){ return !isNone(p.email) && !!emailProblem(p.email); }
+  function needPhone(p){ return !isNone(p.phone) && !phoneOk(p.phone); }
+  function needsInfo(p){ return needEmail(p) || needPhone(p); }
+  var SKIP_KEY='qfp_infoskip_'+keyOf(now0);
+  function skippedToday(p){ try{ return !!JSON.parse(localStorage.getItem(SKIP_KEY)||'{}')[uid(p)]; }catch(e){ return false; } }
+  function markSkipped(p){ try{ var o=JSON.parse(localStorage.getItem(SKIP_KEY)||'{}'); o[uid(p)]=1; localStorage.setItem(SKIP_KEY,JSON.stringify(o)); }catch(e){} }
+
+  // Shows the problem under a field; a typo'd domain gets a one-tap "Use ...?" fix.
+  function showEmailErr(inp, errEl, prob){
+    errEl.innerHTML=''; inp.classList.toggle('bad', !!prob);
+    if(!prob) return;
+    if(typeof prob==='string'){ errEl.textContent=prob; return; }
+    errEl.innerHTML='Did you mean <button type="button">'+esc(prob.fix)+'</button>?';
+    errEl.querySelector('button').onclick=function(){ inp.value=prob.fix; showEmailErr(inp, errEl, ''); };
+  }
+  function showPhoneErr(inp, errEl, bad){ inp.classList.toggle('bad', bad); errEl.textContent = bad ? 'Please enter a 10-digit phone number.' : ''; }
+
+  var infoFor=null;
+  function askInfo(p){
+    infoFor=p;
+    var ne=needEmail(p), np=needPhone(p), $=function(id){ return document.getElementById(id); };
+    $('iTitle').textContent='Hi '+p.first+'! Help us keep in touch';
+    $('iSub').textContent = (ne&&np ? 'We don\'t have a working email or phone for you.' : ne ? 'We don\'t have a working email for you.' : 'We don\'t have a phone number for you.') +
+      ' It\'s how we send shift reminders. Takes 10 seconds.';
+    $('iEmailWrap').style.display = ne ? '' : 'none'; $('iNoEmailWrap').style.display = ne ? '' : 'none';
+    $('iPhoneWrap').style.display = np ? '' : 'none';
+    $('iEmail').value = p.email && !isNone(p.email) ? p.email : ''; $('iPhone').value = p.phone || '';
+    $('iNoEmail').checked=false; $('iEmail').disabled=false;
+    showEmailErr($('iEmail'), $('iEmailErr'), ''); showPhoneErr($('iPhone'), $('iPhoneErr'), false);
+    $('iOverlay').classList.add('show');
+    setTimeout(function(){ (ne ? $('iEmail') : $('iPhone')).focus(); }, 50);
+  }
+  document.getElementById('iNoEmail').onchange=function(){ var i=document.getElementById('iEmail'); i.disabled=this.checked; if(this.checked){ i.value=''; showEmailErr(i, document.getElementById('iEmailErr'), ''); } };
+  document.getElementById('iSkip').onclick=function(){ var p=infoFor; document.getElementById('iOverlay').classList.remove('show'); if(!p) return; markSkipped(p); doSignIn(p); };
+  document.getElementById('iSave').onclick=function(){
+    var p=infoFor; if(!p) return;
+    var $=function(id){ return document.getElementById(id); }, ok=true, ne=needEmail(p), np=needPhone(p);
+    var e=$('iEmail').value.trim(), ph=$('iPhone').value.trim(), noE=$('iNoEmail').checked;
+    if(ne && !noE){ var pr=emailProblem(e); showEmailErr($('iEmail'), $('iEmailErr'), pr); if(pr) ok=false; }
+    if(np){ var bad=!phoneOk(ph); showPhoneErr($('iPhone'), $('iPhoneErr'), bad); if(bad) ok=false; }
+    if(!ok) return;
+    // Don't change p.email/p.phone: they're how this kiosk recognizes the person all day.
+    // The new info rides along in "Sign-in method" and the sheet script copies it to Volunteers.
+    p.upd={ email: ne ? (noE ? 'none' : e) : '', phone: np ? fmtPhone(ph) : '' };
+    markSkipped(p);                      // don't ask again today on this kiosk
+    $('iOverlay').classList.remove('show');
+    doSignIn(p);
+  };
+
   /* ===== new volunteer ===== */
-  document.getElementById('newBtn').onclick=function(){ ['nFirst','nLast','nEmail','nPhone'].forEach(function(id){document.getElementById(id).value='';}); document.getElementById('overlay').classList.add('show'); };
+  document.getElementById('newBtn').onclick=function(){
+    ['nFirst','nLast','nEmail','nPhone'].forEach(function(id){ var i=document.getElementById(id); i.value=''; i.classList.remove('bad'); i.disabled=false; });
+    ['nEmailErr','nPhoneErr'].forEach(function(id){ document.getElementById(id).textContent=''; });
+    document.getElementById('nNoEmail').checked=false;
+    document.getElementById('overlay').classList.add('show'); };
+  document.getElementById('nNoEmail').onchange=function(){ var i=document.getElementById('nEmail'); i.disabled=this.checked; if(this.checked){ i.value=''; showEmailErr(i, document.getElementById('nEmailErr'), ''); } };
   document.getElementById('newCancel').onclick=function(){ document.getElementById('overlay').classList.remove('show'); };
   document.getElementById('newSubmit').onclick=function(){
-    var f=document.getElementById('nFirst').value.trim(), l=document.getElementById('nLast').value.trim(),
-        e=document.getElementById('nEmail').value.trim(), ph=document.getElementById('nPhone').value.trim();
+    var $=function(id){ return document.getElementById(id); };
+    var f=$('nFirst').value.trim(), l=$('nLast').value.trim(), e=$('nEmail').value.trim(), ph=$('nPhone').value.trim(), noE=$('nNoEmail').checked, ok=true;
     if(!f||!l){ alert('Please enter a first and last name.'); return; }
-    document.getElementById('overlay').classList.remove('show');
-    signIn({first:f,last:l,email:e,phone:ph,how:'new'});
+    if(!noE){ var pr=emailProblem(e); showEmailErr($('nEmail'), $('nEmailErr'), pr); if(pr) ok=false; }
+    var bad=!phoneOk(ph); showPhoneErr($('nPhone'), $('nPhoneErr'), bad); if(bad) ok=false;
+    if(!ok) return;
+    $('overlay').classList.remove('show');
+    signIn({first:f,last:l,email:noE?'':e,phone:fmtPhone(ph),how:'new'});
   };
   document.getElementById('search').addEventListener('input',renderSearch);
 
