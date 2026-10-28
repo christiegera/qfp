@@ -80,9 +80,33 @@
   .divider{display:flex;align-items:center;gap:12px;color:var(--warm-gray);font-size:14px;margin:28px 0 14px;}
   .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border);}
 
-  .search{width:100%;padding:16px 18px;border:2px solid var(--border);border-radius:14px;font:inherit;font-size:18px;background:#fff;}
-  .search:focus{outline:none;border-color:var(--green);}
-  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px;}
+  .search{width:100%;padding:20px 56px 20px 58px;border:3px solid var(--green);border-radius:16px;font:inherit;font-size:24px;font-weight:600;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+  .search:focus{outline:none;box-shadow:0 0 0 5px rgba(42,140,59,.18);}
+  .search::placeholder{color:#9aa39b;font-weight:500;}
+  .findwrap{margin-top:30px;background:#fff;border:2px solid var(--border);border-radius:18px;padding:18px 18px 16px;}
+  .findtitle{font-size:20px;font-weight:750;margin:0 0 12px;}
+  .findwrap .results{margin:14px 0 0;}
+  .findbox{position:relative;margin:0;}
+  .findicon{position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:24px;pointer-events:none;}
+  .clearq{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:#eef1ee;font-size:24px;line-height:1;color:#555;cursor:pointer;}
+  .findhint{font-size:14px;color:var(--warm-gray);margin:0 0 18px 4px;}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+  .results:empty{display:none;}
+  .results .rhead{grid-column:1/-1;font-size:14px;font-weight:700;color:var(--warm-gray);margin:4px 0 -2px;}
+  .sectitle.arrive h2{color:var(--green);}
+  .sectitle.leave{margin-top:30px;}
+  .sectitle.leave h2{color:#8a4a12;}
+  .sectitle h2{font-size:20px;}
+  .namegrid:empty{display:none;}
+  .emptynote{grid-column:1/-1;font-size:15px;color:var(--warm-gray);background:#fff;border:2px dashed var(--border);border-radius:14px;padding:14px 18px;}
+  .morebtns{margin-top:22px;}
+  .morebtns .newbtn{margin-top:0;}
+  details.herebar summary{font-size:15px;font-weight:750;cursor:pointer;color:var(--warm-gray);list-style:none;}
+  details.herebar summary::-webkit-details-marker{display:none;}
+  details.herebar summary::before{content:"\25B8  ";}
+  details.herebar[open] summary::before{content:"\25BE  ";}
+  details.herebar[open] summary{margin-bottom:10px;}
+  .nomatch{grid-column:1/-1;font-size:16px;color:#555;background:#fff;border:2px solid var(--border);border-radius:14px;padding:16px 18px;}
 
   .newbtn{width:100%;margin-top:24px;background:var(--orange-pale);border:2px dashed #E8A96A;color:#8a4a12;
     border-radius:14px;padding:20px;font:inherit;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
@@ -177,23 +201,37 @@
   </div>
 
   <div id="main">
-    <div class="sectitle">
-      <h2 id="schedTitle">Scheduled today</h2>
-      <span class="hint">Tap to sign in &middot; tap again to sign out</span>
+    <div class="sectitle arrive">
+      <h2 id="schedTitle">&#128075; Arriving? Tap your name</h2>
+      <span class="hint" id="schedCount"></span>
     </div>
     <div class="namegrid" id="schedGrid"></div>
 
-    <div class="divider">don't see your name?</div>
-    <input class="search" id="search" placeholder="Search your name&hellip;" aria-label="Search your name">
-    <div class="results" id="results"></div>
-
-    <button class="newbtn" id="newBtn">&#10133; New volunteer? Sign in here</button>
-    <button class="manbtn" id="manBtn">&#9201;&#65039; Forgot to sign in? GAH driver? Enter your time</button>
-
-    <div class="herebar">
-      <h3>Here so far today</h3>
-      <div class="herechips" id="hereChips"><span class="none">No one signed in yet.</span></div>
+    <div class="sectitle leave" id="hereHead">
+      <h2 id="hereTitle">&#128682; Leaving? Tap your name to sign out</h2>
+      <span class="hint" id="hereCount"></span>
     </div>
+    <div class="namegrid" id="hereGrid"></div>
+
+    <div class="findwrap">
+      <h2 class="findtitle">Don't see your name? Type it here</h2>
+      <div class="findbox">
+        <span class="findicon">&#128269;</span>
+        <input class="search" id="search" placeholder="Type your first or last name" aria-label="Type your name" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="clearq" id="clearQ" aria-label="Clear" style="display:none">&times;</button>
+      </div>
+      <div class="results" id="results"></div>
+    </div>
+
+    <div class="morebtns">
+      <button class="newbtn" id="newBtn">&#10133; New volunteer? Sign in here</button>
+      <button class="manbtn" id="manBtn">&#9201;&#65039; Forgot to sign in? GAH driver? Enter your time</button>
+    </div>
+
+    <details class="herebar" id="doneBar">
+      <summary id="doneTitle">Done for today</summary>
+      <div class="herechips" id="hereChips"></div>
+    </details>
   </div>
 
   <div class="foot">Quakertown Food Pantry &middot; 101 N. Third Street</div>
@@ -221,6 +259,18 @@
     <div class="mactions">
       <button class="btn ghost" id="newCancel">Cancel</button>
       <button class="btn green" id="newSubmit">Sign me in</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sign-out tapped right after signing in -->
+<div class="overlay" id="soOverlay">
+  <div class="modal">
+    <h3 id="soTitle">Sign out already?</h3>
+    <p class="sub" id="soSub"></p>
+    <div class="mactions">
+      <button class="btn green" id="soStay">I'm staying</button>
+      <button class="btn ghost" id="soGo">Yes, sign me out</button>
     </div>
   </div>
 </div>
@@ -313,6 +363,14 @@
 
   var supervisorsData=[], signupsData=[], volunteersData=[], bagPackersData=[], gahData=[], checkedIn={}, newCounter=0, directory=[];
   var now0=new Date();
+  // Testing: add ?testdate=2026-11-16 to the address to see that day's schedule.
+  // A red banner shows while it's on; sign-ins are recorded with that date so they're easy to find and delete.
+  var TEST_DATE=(location.search.match(/[?&]testdate=(\d{4})-(\d{1,2})-(\d{1,2})/)||null);
+  if(TEST_DATE){ now0=new Date(+TEST_DATE[1], +TEST_DATE[2]-1, +TEST_DATE[3], 18, 0, 0);
+    document.addEventListener('DOMContentLoaded', function(){ var b=document.createElement('div');
+      b.textContent='TEST MODE: showing '+now0.toDateString()+'. Remove ?testdate from the address when done.';
+      b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:999;background:#C0392B;color:#fff;font-weight:700;text-align:center;padding:8px;font-size:15px';
+      document.body.appendChild(b); }); }
 
   function csvUrl(gid){ return 'https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/export?format=csv&gid='+gid; }
   function pad(n){ return String(n).padStart(2,'0'); }
@@ -512,76 +570,77 @@
   }
   function tickClock(){ document.getElementById('clock').textContent=fmtT(new Date()); }
 
-  function renderSched(){
-    var sched=todayScheduled(), g=document.getElementById('schedGrid');
-    document.getElementById('schedTitle').textContent='Scheduled today ('+sched.length+')';
-    g.innerHTML='';
-    if(!sched.length){ g.innerHTML='<p class="hint" style="grid-column:1/-1">No one is on the schedule for today — use search or the New volunteer button.</p>'; return; }
-    sched.forEach(function(p){
-      var rec=checkedIn[uid(p)];
-      var b=document.createElement('button');
-      if(!rec){
-        b.className='namebtn';
-        b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="sub">'+roleTag(p)+'</div>';
-        b.onclick=function(){ signIn(p); };
-      } else if(!rec.outTime){
-        b.className='namebtn in';
-        b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="tick">&#10003; Signed in '+fmtT(rec.inTime)+' &middot; tap to sign out</div>';
-        b.onclick=function(){ signOut(p); };
-      } else {
-        b.className='namebtn out';
-        b.innerHTML='<div class="nm">'+esc(dispName(p))+'</div><div class="tick">Signed out &middot; '+durr(rec.inTime,rec.outTime)+'</div>';
-      }
-      g.appendChild(b);
-    });
+  // Name box (below the name cards): matches first or last name as people type.
+  function query(){ return document.getElementById('search').value.trim().toLowerCase(); }
+  function nameMatches(p, q){
+    if(!q) return true;
+    var full=((p.first||'')+' '+(p.last||'')).toLowerCase();
+    return full.indexOf(q)>-1 || full.split(/[^a-z]+/).some(function(w){ return w && w.indexOf(q)===0; });
   }
-  function renderSearch(){
-    var q=document.getElementById('search').value.trim().toLowerCase(), r=document.getElementById('results'); r.innerHTML='';
-    if(!q) return;
-    var m=directory.filter(function(p){ return (p.first+' '+p.last).toLowerCase().indexOf(q)>-1; }).slice(0,12);
-    if(!m.length){ r.innerHTML='<p class="hint" style="grid-column:1/-1">No match — if you\'re new, tap “New volunteer” below.</p>'; return; }
-    m.forEach(function(p){
-      var rec=checkedIn[uid(p)];
-      var b=document.createElement('button');
-      if(!rec){
-        b.className='namebtn';
-        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="sub">Tap to sign in</div>';
-        b.onclick=function(){ p.how='search'; signIn(p); };
-      } else if(!rec.outTime){
-        b.className='namebtn in';
-        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">&#10003; Signed in '+fmtT(rec.inTime)+' &middot; tap to sign out</div>';
-        b.onclick=function(){ signOut(p); };
-      } else {
-        b.className='namebtn out';
-        b.innerHTML='<div class="nm">'+esc(p.first+' '+p.last)+'</div><div class="tick">Signed out &middot; '+durr(rec.inTime,rec.outTime)+'</div>';
-      }
-      r.appendChild(b);
-    });
-  }
-  function renderHere(){
-    var ids=Object.keys(checkedIn), c=document.getElementById('hereChips');
-    if(!ids.length){ c.innerHTML='<span class="none">No one signed in yet.</span>'; return; }
-    c.innerHTML='';
-    var recs=ids.map(function(k){return checkedIn[k];}).sort(function(a,b){return a.inTime-b.inTime;});
-    var inNow=recs.filter(function(e){ return !e.outTime; }), done=recs.filter(function(e){ return e.outTime; });
-    if(inNow.length){
-      var h=document.createElement('p'); h.className='hint'; h.style.margin='4px 0 8px'; h.textContent='Leaving? Tap your name to sign out.';
-      c.appendChild(h);
-      var g=document.createElement('div'); g.className='namegrid'; g.style.marginBottom='12px';
-      inNow.forEach(function(e){
-        var b=document.createElement('button'); b.className='namebtn in';
-        b.innerHTML='<div class="nm">'+esc(e.name)+'</div><div class="tick">&#10003; In since '+fmtT(e.inTime)+' &middot; tap to sign out</div>';
-        b.onclick=function(){ signOut(e.p); };
-        g.appendChild(b);
-      });
-      c.appendChild(g);
+  function card(p, rec, how){
+    var b=document.createElement('button'), nm=esc(how==='dir' ? (p.first+' '+p.last) : dispName(p));
+    if(!rec){
+      b.className='namebtn';
+      b.innerHTML='<div class="nm">'+nm+'</div><div class="sub">'+(how==='dir' ? 'Tap to sign in' : roleTag(p))+'</div>';
+      b.onclick=function(){ if(how==='dir') p.how='search'; signIn(p); };
+    } else if(!rec.outTime){
+      b.className='namebtn in';
+      b.innerHTML='<div class="nm">'+nm+'</div><div class="tick">In since '+fmtT(rec.inTime)+' &middot; tap to sign out</div>';
+      b.onclick=function(){ signOut(rec.p||p); };
+    } else {
+      b.className='namebtn out';
+      b.innerHTML='<div class="nm">'+nm+'</div><div class="tick">Signed out &middot; '+durr(rec.inTime,rec.outTime)+'</div>';
     }
+    return b;
+  }
+  function byName(a,b){ return dispName(a).localeCompare(dispName(b)); }
+
+  // Arriving: scheduled today and not signed in yet (always shown in full; the name box doesn't filter it)
+  function renderSched(){
+    var all=todayScheduled(), g=document.getElementById('schedGrid'); g.innerHTML='';
+    var waiting=all.filter(function(p){ return !checkedIn[uid(p)]; }).sort(byName);
+    document.getElementById('schedCount').textContent = waiting.length ? waiting.length+' still to arrive' : '';
+    if(!all.length){ g.innerHTML='<p class="emptynote">No one is on the schedule today. Type your name below, or tap New volunteer.</p>'; return; }
+    if(!waiting.length){ g.innerHTML='<p class="emptynote">Everyone on today\'s schedule is signed in. Not on the schedule? Type your name below.</p>'; return; }
+    waiting.forEach(function(p){ g.appendChild(card(p, null, 'sched')); });
+  }
+
+  // Leaving: everyone signed in right now (scheduled or not)
+  function renderHere(){
+    var g=document.getElementById('hereGrid'); g.innerHTML='';
+    var recs=Object.keys(checkedIn).map(function(k){ return checkedIn[k]; });
+    var inNow=recs.filter(function(e){ return !e.outTime; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+    var done=recs.filter(function(e){ return e.outTime; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+    document.getElementById('hereCount').textContent = inNow.length ? inNow.length+' here now' : '';
+    document.getElementById('hereHead').style.display = inNow.length ? '' : 'none';
+    inNow.forEach(function(e){ g.appendChild(card(e.p, e, 'here')); });
+    var bar=document.getElementById('doneBar'), c=document.getElementById('hereChips');
+    bar.style.display = done.length ? '' : 'none';
+    document.getElementById('doneTitle').textContent='Done for today ('+done.length+')';
+    c.innerHTML='';
     done.forEach(function(e){
       var s=document.createElement('span'); s.className='herechip';
-      s.textContent=e.name+' · in '+fmtT(e.inTime)+' · out '+fmtT(e.outTime);
+      s.textContent=e.name+' · '+fmtT(e.inTime)+'–'+fmtT(e.outTime);
       c.appendChild(s);
     });
   }
+
+  // Name box: results appear right under it. Finds anyone: on today's schedule, here now, or on the volunteer list.
+  function renderSearch(){
+    var q=query(), r=document.getElementById('results'); r.innerHTML='';
+    document.getElementById('clearQ').style.display = q ? '' : 'none';
+    if(!q) return;
+    var list=[], seen={};
+    function add(p, rec, how){ var k=uid(p); if(seen[k]) return; seen[k]=1; list.push([p, rec, how]); }
+    Object.keys(checkedIn).forEach(function(k){ var e=checkedIn[k]; if(!e.outTime && nameMatches(e.p||{first:e.name,last:''}, q)) add(e.p, e, 'here'); });
+    todayScheduled().forEach(function(p){ if(nameMatches(p,q)) add(p, checkedIn[uid(p)], 'sched'); });
+    directory.forEach(function(p){ if(nameMatches(p,q)) add(p, checkedIn[uid(p)], 'dir'); });
+    list=list.slice(0,12);
+    if(!list.length){ r.innerHTML='<p class="nomatch">No one named &ldquo;'+esc(q)+'&rdquo;. Check the spelling, or if you\'re new, tap <b>New volunteer</b> below.</p>'; return; }
+    list.forEach(function(x){ r.appendChild(card(x[0], x[1], x[2])); });
+  }
+  function renderAll(){ renderSearch(); renderSched(); renderHere(); }
+  function clearSearch(){ var s=document.getElementById('search'); if(s.value){ s.value=''; renderAll(); } }
 
   /* ===== sign in / sign out ===== */
   function durr(a,b){ var m=Math.max(0,Math.round((b-a)/60000)); return Math.floor(m/60)+'h '+(m%60)+'m'; }
@@ -602,15 +661,17 @@
     saveLocal();
     postSignIO(p,'In');
     showWelcome('Welcome, '+p.first+'!', 'Signed in at '+fmtT(checkedIn[id].inTime)+((p.how==='new')?' · thanks for joining us!':''));
-    renderSched(); renderHere(); renderSearch();
+    document.getElementById('search').value=''; renderAll();
   }
-  function signOut(p){
+  function signOut(p, sure){
     var id=uid(p), rec=checkedIn[id]; if(!rec || rec.outTime) return;
+    // A second tap right after signing in is almost always a double tap, not a real sign-out
+    if(!sure && (new Date()-rec.inTime) < SIGNOUT_GUARD_MIN*60000){ askSignOut(p, rec); return; }
     rec.outTime=new Date();
     saveLocal();
     postSignIO(p,'Out');
     showWelcome('Thanks, '+p.first+'!', 'Signed out at '+fmtT(rec.outTime)+' · '+durr(rec.inTime,rec.outTime)+' today');
-    renderSched(); renderHere(); renderSearch();
+    document.getElementById('search').value=''; renderAll();
   }
 
   /* ===== remember today's sign-ins across refreshes and devices ===== */
@@ -670,7 +731,7 @@
   function syncCheckins(){
     if(PREVIEW || !CHECKINS_GID || CHECKINS_GID.indexOf('PASTE')>-1) return;
     fetch(csvUrl(CHECKINS_GID)+'&t='+Date.now()).then(function(r){ return r.ok?r.text():''; })
-      .then(function(t){ if(!t) return; applySheetCheckins(parseCSV(t)); renderSched(); renderHere(); renderSearch(); })
+      .then(function(t){ if(!t) return; applySheetCheckins(parseCSV(t)); renderAll(); })
       .catch(function(){});
   }
   // m (optional) = manual entry: { date:Date, time:'7:45 AM' } — the shift date and the real time,
@@ -693,6 +754,18 @@
     if(m && CK.mtime && CK.mtime.indexOf('PASTE')===-1) fd.append(CK.mtime, m.time);
     fetch(CHECKIN_FORM_ACTION,{method:'POST',mode:'no-cors',body:fd}).catch(function(){});
   }
+
+  /* ===== "Sign out already?" ===== */
+  var SIGNOUT_GUARD_MIN = 10;   // a sign-out tap within this many minutes of signing in asks first
+  var soFor=null;
+  function askSignOut(p, rec){
+    soFor=p;
+    document.getElementById('soTitle').textContent='Sign out already, '+p.first+'?';
+    document.getElementById('soSub').textContent='You signed in at '+fmtT(rec.inTime)+'. If you just tapped twice by accident, tap "I\'m staying."';
+    document.getElementById('soOverlay').classList.add('show');
+  }
+  document.getElementById('soStay').onclick=function(){ soFor=null; document.getElementById('soOverlay').classList.remove('show'); };
+  document.getElementById('soGo').onclick=function(){ var p=soFor; soFor=null; document.getElementById('soOverlay').classList.remove('show'); if(p) signOut(p, true); };
 
   /* ===== contact info checks ===== */
   // Type "none" in someone's Email (or Phone) cell on Volunteers if they really don't have one
@@ -779,7 +852,10 @@
     $('overlay').classList.remove('show');
     signIn({first:f,last:l,email:noE?'':e,phone:fmtPhone(ph),how:'new'});
   };
-  document.getElementById('search').addEventListener('input',renderSearch);
+  document.getElementById('search').addEventListener('input',renderAll);
+  document.getElementById('clearQ').onclick=function(){ clearSearch(); document.getElementById('search').focus(); };
+  // Clear a half-typed name if the kiosk sits idle for a minute
+  var idleT; document.addEventListener('input',function(){ clearTimeout(idleT); idleT=setTimeout(clearSearch,60000); });
 
   /* ===== manual time entry ===== */
   var mPick=null, mRole='GAH driver';
@@ -841,7 +917,7 @@
     if(keyOf(day)===keyOf(now0)){
       var st=new Date(day); st.setHours(+a[0],+a[1],0,0);
       checkedIn[uid(p)]={ name:dispName(p), inTime:st, outTime:dt, p:p };
-      saveLocal(); renderSched(); renderHere(); renderSearch();
+      saveLocal(); renderAll();
     }
     $('mOverlay').classList.remove('show');
     showWelcome('Thanks, '+p.first+'!', 'Saved '+fmt12(tin)+' – '+fmt12(tout)+' · '+Math.floor(mins/60)+'h '+(mins%60)+'m');
@@ -850,7 +926,7 @@
   /* ===== load ===== */
   function init(){
     if(!PREVIEW) loadLocal();
-    renderHeader(); buildDirectory(); renderSched(); renderHere(); tickClock(); setInterval(tickClock,1000);
+    renderHeader(); buildDirectory(); renderAll(); tickClock(); setInterval(tickClock,1000);
     syncCheckins(); setInterval(syncCheckins,60000);
     // Kiosk stays on all day: start fresh when the date rolls over.
     setInterval(function(){ if(keyOf(new Date())!==keyOf(now0)) location.reload(); },60000);
