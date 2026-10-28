@@ -157,6 +157,7 @@
   .mrow .nt{display:inline-block;margin-left:.5em;font-size:.7em;font-weight:800;color:#fff;background:var(--mc);border-radius:99px;padding:.1em .6em;vertical-align:middle;}
   .mkey{margin-top:.8em;font-size:.66em;color:var(--warm-gray);}
   .foot b{color:var(--green);}
+  .annnone{color:var(--warm-gray);font-style:italic;}
   .banner{position:fixed;bottom:.6vh;right:1vw;font-size:1.4vh;color:#8a4a12;background:var(--orange-pale);padding:.3vh .7vw;border-radius:100px;display:none;}
 </style>
 </head>
@@ -230,14 +231,12 @@
   var SIGNUPS_GID = '1435555973';
   var BAGPACKERS_GID = '1531693386';
   var GAH_GID = '1136888994';
-  // Announcements tab: A = Announcement, B = Show from (optional date), C = Show until (optional date).
-  // Paste the tab's gid from the sheet URL. Until then, the list below is shown.
-  var ANNOUNCEMENTS_GID = 'PASTE_ANNOUNCEMENTS_GID';
-  // Until the tab is connected, these show. Plain text = always on.
-  // { text:'...', until:'YYYY-MM-DD' } = comes down by itself after that date.
-  var DEFAULT_ANNOUNCEMENTS = [
-    { text:'Shift Supervisor Training: Wednesday, Dec 2, 6–8 PM at John’s Plain & Fancy. Check your email for a quick survey to help us pick the topics!', until:'2026-12-02' },
-  ];
+  // Announcements live in their own sheet so others can post without touching the main sheet.
+  // Columns: Message | Show from (optional date) | Show until (optional date). Blank dates = always on.
+  var ANNOUNCEMENTS_SHEET_ID = '1y_BFxh5Om4NNDE9GC_Cbeq2ahZHQajprFm24qXoV6Z0';
+  var ANNOUNCEMENTS_GID = '0';
+  // The board shows only what is in the announcements sheet. Nothing built in.
+  var DEFAULT_ANNOUNCEMENTS = [];
   var ANN_ROTATE_SEC = 10;   // how long each announcement shows along the bottom
 
   // Weekly menu: its own Google Sheet, so the management team can edit it without touching
@@ -366,11 +365,8 @@
         if(until&&!isNaN(until)&&t>until) continue;
         list.push(msg); }
     }
-    if(!list.length) list=DEFAULT_ANNOUNCEMENTS.filter(function(a){
-        if(typeof a==='string') return true;
-        var u=toLocalDate(a.until); return !u || isNaN(u) || t<=u;   // stays up through the whole "until" day
-      }).map(function(a){ return typeof a==='string' ? a : a.text; });
-    var html='<ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul>';
+    var html = list.length ? '<ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul>'
+                           : '<p class="annnone">No announcements right now.</p>';
     var b=document.getElementById('annBody');
     if(b.getAttribute('data-src')===html) return;   // unchanged: don't restart the scroll
     b.setAttribute('data-src',html); b.innerHTML=html;
@@ -498,7 +494,10 @@
     var menuReq = (!MENU_SHEET_ID||MENU_SHEET_ID.indexOf('PASTE')>-1) ? Promise.resolve('')
       : fetch('https://docs.google.com/spreadsheets/d/'+MENU_SHEET_ID+'/export?format=csv&gid='+MENU_GID+'&t='+Date.now())
           .then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; });
-    Promise.all([get(SUPERVISORS_GID),get(SIGNUPS_GID),opt(BAGPACKERS_GID),opt(GAH_GID),opt(ANNOUNCEMENTS_GID),menuReq])
+    var annReq = (!ANNOUNCEMENTS_SHEET_ID||ANNOUNCEMENTS_SHEET_ID.indexOf('PASTE')>-1) ? opt(ANNOUNCEMENTS_GID)
+      : fetch('https://docs.google.com/spreadsheets/d/'+ANNOUNCEMENTS_SHEET_ID+'/export?format=csv&gid='+ANNOUNCEMENTS_GID+'&t='+Date.now())
+          .then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; });
+    Promise.all([get(SUPERVISORS_GID),get(SIGNUPS_GID),opt(BAGPACKERS_GID),opt(GAH_GID),annReq,menuReq])
       .then(function(res){
         sup=parseCSV(res[0]); sign=parseCSV(res[1]); bag=parseCSV(res[2]); gah=parseCSV(res[3]); ann=parseCSV(res[4]);
         if(res[5]) menu=parseCSV(res[5]);
