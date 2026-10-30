@@ -384,23 +384,37 @@
     track.style.setProperty('--dist',dist+'px');
     track.style.animationDuration=Math.max(10,dist/ANN_SCROLL_SPEED)+'s';
   }
-  // Main board shows "First L." for privacy (full names stay in the full-schedule pop-ups).
+  // Everywhere on the board, names show as "First L." for privacy.
   // "Kate Capanear & Dean Capanear" -> "Kate C. & Dean C."; "Robert (Bob) Christian" -> "Bob C.";
-  // "St. Paul's — Thelma Webb / Maggie Shaw" -> "St. Paul's — Thelma W. / Maggie S."; one word stays as is.
-  function short1(n){
-    n=String(n||'').trim(); if(!n) return '';
-    var nick=(n.match(/\(([^)]+)\)/)||[])[1]; n=n.replace(/\([^)]*\)/g,' ').replace(/\s+/g,' ').trim();
+  // "Alicia Garner (& son Carson)" -> "Alicia G. & Carson"; "Ed Angelo (line break) Suzi Janssens" -> "Ed A. & Suzi J.";
+  // "St. Paul's Church — Thelma Webb / Maggie Shaw" -> "St. Paul's Church — Thelma W. / Maggie S."; one word stays as is.
+  function short1(n, nick){
+    n=String(n||'').replace(/\s+/g,' ').trim(); if(!n) return '';
     var w=n.split(' '); if(w.length<2) return nick||n;
     var last=w.pop(), first=nick||w.join(' ');
     return first+' '+last.charAt(0).toUpperCase()+'.';
   }
   function shortName(s){
-    s=String(s||'').trim(); if(!s) return '';
+    s=String(s||'').replace(/ /g,' ').trim(); if(!s) return '';
+    // Parentheses: one word = nickname "(Bob)"; "(& son Carson)" = extra people; anything else ("as avail") is dropped
+    var nick='', extra=[];
+    s=s.replace(/\(([^)]*)\)/g, function(_, inner){
+      inner=inner.trim();
+      if(/^(&|\+|and\b|with\b)/i.test(inner)) extra.push(inner.replace(/^(&|\+|and|with)\s*/i,'').replace(/^(son|daughter|kids?|children|husband|wife|family)\s+/i,''));
+      else if(/^[A-Za-z]+$/.test(inner)) nick=inner;
+      return '';
+    }).trim();
     var lead='', m=s.match(/^(.*?\s(?:—|–|-)\s)(.+)$/);       // keep a group name in front
     if(m){ lead=m[1]; s=m[2]; }
-    return lead + s.split(/(\s*(?:&|\/|\+|\band\b|\n)\s*)/i).map(function(part, i){
-      return i%2 ? part.replace(/\n/,' & ') : short1(part);
+    // Split on &, /, +, "and", line breaks, or a wide gap of spaces ("Todd Benner      Bob Christian")
+    var parts=s.split(/(\s*(?:&|\/|\+|\band\b|\n|\s{3,})\s*)/i);
+    var out=parts.map(function(part, i){
+      if(i%2) return /\//.test(part) ? ' / ' : ' & ';
+      return short1(part, parts.length===1 ? nick : '');
     }).join('');
+    if(nick && parts.length>1) out=out.replace(/^\S+/, nick);
+    extra.filter(String).forEach(function(x){ out+=' & '+(x.split(' ').length>1 ? short1(x) : x); });
+    return lead+out;
   }
   function renderShift(){
     var d=nextDay(function(x){ var w=x.getDay(); return w>=1&&w<=5; });
@@ -543,7 +557,7 @@
     return tags;
   }
   function tagHtml(t){ return t?'<span class="tag">'+t+'</span>':''; }
-  function who(s){ return s?esc(s):'<span class="open">Open</span>'; }
+  function who(s){ return s?esc(shortName(s)):'<span class="open">Open</span>'; }
 
   // Calendar view: last week, this week, and the next 3 weeks (Sunday to Saturday).
   // cellFn(d) returns the inside of a day, or '' when nothing happens that day.
@@ -566,7 +580,7 @@
       var w=d.getDay(); if(!(w===0||w===1||w===4)) return '';
       var p=packersOn(d)||{}, lbl=p.label&&p.label.indexOf(' ')>-1?p.label.split(' ').slice(1).join(' '):'';
       return (lbl?'<div class="tm">'+esc(lbl)+'</div>':'')+'<div class="ln"><b>'+who(p.packer)+'</b></div>'+
-             (p.backup?'<div class="ln"><small>Backup: '+esc(p.backup)+'</small></div>':'');
+             (p.backup?'<div class="ln"><small>Backup: '+esc(shortName(p.backup))+'</small></div>':'');
     }, 'Last week, this week, and the next 3 weeks. Today is highlighted; grayed days have already happened.');
   }
   function fullShift(){
@@ -576,14 +590,14 @@
       return '<div class="tm">'+shiftTime(DAYS[w])+'</div>'+
              '<div class="ln"><small>Sup:</small> <b>'+who(name&&name!=='TBD'?name:'')+'</b></div>'+
              (grp&&grp!=='NA'?'<div class="ln grpd">'+esc(grp)+'</div>':'')+
-             names.map(function(n){ return '<div class="ln">'+esc(n)+'</div>'; }).join('');
+             names.map(function(n){ return '<div class="ln">'+esc(shortName(n))+'</div>'; }).join('');
     }, 'Last week, this week, and the next 3 weeks. Today is highlighted; grayed days have already happened.');
   }
   function fullGah(){
     return calendar(function(d){
       var rows=gahOn(d).filter(function(r){ return r.driver; });
       if(!rows.length) return '';
-      return rows.map(function(r){ return '<div class="ln"><small>'+esc(r.store)+':</small> <b>'+esc(r.driver)+'</b></div>'; }).join('');
+      return rows.map(function(r){ return '<div class="ln"><small>'+esc(r.store)+':</small> <b>'+esc(shortName(r.driver))+'</b></div>'; }).join('');
     }, 'Weekly pickup schedule, shown for last week, this week, and the next 3 weeks. Today is highlighted.');
   }
 
