@@ -53,8 +53,16 @@
   .anntrack ul{padding-bottom:.6em;}
   .anntrack{animation:annscroll linear infinite;will-change:transform;}
   @keyframes annscroll{from{transform:translateY(0);}to{transform:translateY(calc(-1 * var(--dist)));}}
-  .q.ann .qb.scrolling{-webkit-mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent);}
+  .q.ann .annlist.scrolling{-webkit-mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent);}
   .ann li{background:var(--p);border-radius:.6em;padding:.55em .8em;font-weight:600;line-height:1.3;}
+  /* Announcements with a QR code: pinned at the top (a moving code is hard to scan), the rest scroll below */
+  #annBody{display:flex;flex-direction:column;gap:.6em;}
+  .annlist{flex:1 1 auto;min-height:0;overflow:hidden;}
+  .annfeat{flex:0 0 auto;display:flex;align-items:center;gap:.9em;background:var(--p);border-radius:.6em;padding:.6em .8em;font-weight:600;line-height:1.3;}
+  .annfeat .annmsg{flex:1 1 auto;min-width:0;}
+  .annfeat figure{flex:0 0 auto;margin:0;text-align:center;}
+  .annfeat img{display:block;height:20vh;width:20vh;background:#fff;border-radius:.4em;padding:.6vh;}
+  .annfeat figcaption{font-size:.62em;margin-top:.3em;color:var(--warm-gray);}
 
   /* GAH table */
   .stores{display:flex;flex-direction:column;gap:.35em;}
@@ -128,11 +136,15 @@
   .foot{flex:0 0 auto;text-align:center;font-size:2.1vh;color:var(--warm-gray);font-weight:600;}
 
   /* Layout: menu tall on the left; right side = announcements, pantry shift (biggest), and a short GAH + bag packers strip */
-  .quad{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:minmax(0,1.15fr) minmax(0,.95fr) minmax(0,.6fr);}
+  .quad{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:minmax(0,1.4fr) minmax(0,.75fr) minmax(0,.55fr);}   /* announcements taller for QR codes */
   .q.menu{grid-column:1;grid-row:1 / span 3;}
   .q.ann{grid-column:2;grid-row:1;}
   .q.shift{grid-column:2;grid-row:2;}
-  .q.shift .qh{flex-wrap:wrap;row-gap:.8vh;}
+  .q.shift{padding-top:1.4vh;padding-bottom:1.4vh;}
+  .q.shift .qh{flex-wrap:nowrap;margin-bottom:.8vh;}
+  .q.shift .qh h2{font-size:2.6vh;white-space:nowrap;}
+  .q.shift .qh .when{font-size:1.7vh;padding:.4vh .8vw;}
+  .q.shift .qh .full{white-space:nowrap;}
   .q.crew{grid-column:2;grid-row:3;--c:#9AA3AD;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.4vw;padding:1.4vh 1.2vw;}
   .half{min-width:0;min-height:0;display:flex;flex-direction:column;cursor:pointer;}
   .half + .half{border-left:2px solid var(--border);padding-left:1.4vw;}
@@ -246,9 +258,9 @@
   var MENU_GID      = '0';
   var MENU_KEY      = '';    // optional line under the menu, e.g. 'D = donated · 1A = one per adult'
   // Week Of stays the Sunday date in the sheet, but the board flips to that week early:
-  // 1 day early at 9 AM = Saturday 9:00 AM Eastern, when the pantry changes the menu.
+  // 1 day early at 2 AM = Saturday 2:00 AM Eastern, so the new week is up before anyone arrives.
   var MENU_SWITCH_DAYS_EARLY = 1;
-  var MENU_SWITCH_HOUR       = 2;
+  var MENU_SWITCH_HOUR       = 2;   // 2 AM Saturday (overnight Friday)
   var MENU_COLORS   = ['#1F5FAE','#C0392B','#0E8A86','#B0247A','#6A3FA0','#D9661A','#3D3D3D','#2E7D32'];
   var REFRESH_MIN = 5;   // reload data from the sheet every few minutes
   var MINI_TEXT = 0.017; // text size in the compact GAH / Bag Packers strip (share of screen height; main sections use 0.028)
@@ -349,37 +361,55 @@
   // Columns are found by header, so it works with or without a Timestamp column:
   //   Announcement | Show from (optional) | Show until (optional) | Approved (optional)
   // If there's an "Approved" column, only rows marked yes / x / ✓ are shown.
+  // Optional "QR" column: an image file name uploaded next to board.html (roast-toast-qr.png) or a full image address.
+  // Rows with a QR code are pinned at the top with the code beside the message.
   function renderAnn(){
-    var t=addDays(nowNY(),0), list=[];
+    var t=addDays(nowNY(),0), list=[], feat=[];
     if(ann.length){
       var h=ann[0].map(function(x){ return String(x||'').trim().toLowerCase(); });
       function col(re,skip){ for(var i=0;i<h.length;i++){ if(i!==skip && re.test(h[i])) return i; } return -1; }
       var cTs=col(/timestamp/), cMsg=col(/announce|message/);
       if(cMsg<0) cMsg=(cTs===0?1:0);
-      var cFrom=col(/from|start/,cMsg), cTo=col(/until|end|expir/,cMsg), cOk=col(/approv/,cMsg);
+      var cFrom=col(/from|start/,cMsg), cTo=col(/until|end|expir/,cMsg), cOk=col(/approv/,cMsg), cQr=col(/qr|image|picture/,cMsg);
       for(var i=1;i<ann.length;i++){ var r=ann[i], msg=String(r[cMsg]||'').trim(); if(!msg) continue;
         if(cOk>-1 && !/^(y|yes|true|x|✓|✔)/i.test(String(r[cOk]||'').trim())) continue;
         var from=cFrom>-1&&r[cFrom]?toLocalDate(r[cFrom]):null, until=cTo>-1&&r[cTo]?toLocalDate(r[cTo]):null;
         if((!until||isNaN(until)) && cTs>-1 && r[cTs]){ var ts=new Date(r[cTs]); if(!isNaN(ts)) until=addDays(ts,ANN_DEFAULT_DAYS); }
         if(from&&!isNaN(from)&&t<from) continue;
         if(until&&!isNaN(until)&&t>until) continue;
-        list.push(msg); }
+        var qr=cQr>-1?String(r[cQr]||'').trim():'';
+        if(qr) feat.push({msg:msg, qr:qr}); else list.push(msg); }
     }
-    var html = list.length ? '<ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul>'
-                           : '<p class="annnone">No announcements right now.</p>';
+    var html = feat.map(function(f){
+        return '<div class="annfeat"><div class="annmsg">'+esc(f.msg)+'</div>'+
+          '<figure><img src="'+esc(f.qr).replace(/"/g,'&quot;')+'" alt="QR code" onload="window.qfpAnnFit&&qfpAnnFit()" onerror="this.parentNode.style.display=\'none\'">'+
+          '<figcaption>&#128247; Scan with your phone</figcaption></figure></div>';
+      }).join('') +
+      (list.length ? '<div class="annlist"><ul>'+list.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('')+'</ul></div>'
+                   : (feat.length ? '' : '<p class="annnone">No announcements right now.</p>'));
     var b=document.getElementById('annBody');
     if(b.getAttribute('data-src')===html) return;   // unchanged: don't restart the scroll
     b.setAttribute('data-src',html); b.innerHTML=html;
     setupAnnScroll();
   }
   // If the announcements don't all fit, scroll them slowly upward in a continuous loop.
+  // A pinned QR announcement that's too long shrinks its text to fit instead.
+  window.qfpAnnFit=function(){ setupAnnScroll(); };   // called when a QR image finishes loading
   function setupAnnScroll(){
-    var b=document.getElementById('annBody'), ul=b.querySelector('ul');
-    b.style.fontSize=(window.innerHeight*0.028)+'px'; b.classList.remove('scrolling');
-    if(!ul || ul.offsetHeight<=b.clientHeight) return;
+    var b=document.getElementById('annBody'), box=b.querySelector('.annlist'), ul=box&&box.querySelector('ul');
+    var fs=window.innerHeight*0.028; b.style.fontSize=fs+'px';
+    var feats=b.querySelectorAll('.annfeat');
+    for(var k=0;k<feats.length;k++) feats[k].style.fontSize='';
+    var room=function(){ var used=0; for(var j=0;j<feats.length;j++) used+=feats[j].offsetHeight; return b.clientHeight-used-(ul?fs*2.2:0); };
+    for(var s=1; feats.length && room()<0 && s>0.6; s-=0.05)
+      for(var k2=0;k2<feats.length;k2++) feats[k2].style.fontSize=s+'em';
+    if(!ul) return;
+    var old=box.querySelector('.anntrack'); if(old){ box.innerHTML=''; box.appendChild(ul); }
+    box.classList.remove('scrolling');
+    if(ul.offsetHeight<=box.clientHeight) return;
     var track=document.createElement('div'); track.className='anntrack';
     track.appendChild(ul); track.appendChild(ul.cloneNode(true));
-    b.innerHTML=''; b.appendChild(track); b.classList.add('scrolling');
+    box.innerHTML=''; box.appendChild(track); box.classList.add('scrolling');
     var dist=ul.offsetHeight;
     track.style.setProperty('--dist',dist+'px');
     track.style.animationDuration=Math.max(10,dist/ANN_SCROLL_SPEED)+'s';
@@ -395,7 +425,7 @@
     return first+' '+last.charAt(0).toUpperCase()+'.';
   }
   function shortName(s){
-    s=String(s||'').replace(/ /g,' ').trim(); if(!s) return '';
+    s=String(s||'').replace(/ /g,' ').trim(); if(!s) return '';
     // Parentheses: one word = nickname "(Bob)"; "(& son Carson)" = extra people; anything else ("as avail") is dropped
     var nick='', extra=[];
     s=s.replace(/\(([^)]*)\)/g, function(_, inner){
@@ -532,7 +562,7 @@
     bag=[['Day','Week','Packer','Phone','Email','Backup'],
       ['Sunday','2nd','Bill Hahn','','',''],['Monday Evening','2nd','Jennie Becker','','',''],['Thursday Afternoon','3rd',"St. Paul's Church + Michelle",'','',''],
       ['Sunday','3rd','Mary Hill','','',''],['Monday Evening','3rd','Kate Caponear','','','']];
-    ann=[];
+    ann=[['Message','Show from','Show until','QR'],['Sign up with this QR code to attend the Upper Bucks Chamber of Commerce Roast & Toast on Thursday at The Trolley Barn in Quakertown from 4:30 - 6:30 PM! All Quakertown Food Pantry volunteers are welcome at no cost! We\'ll be receiving the Champions of Service Award!','','','f7561f5e.png'],['Shift Supervisor Training: Wed Dec 2, 6-8 PM at John\'s Plain & Fancy','','','']];   // preview only
     menu=[['Category','Items','Notes'],
       ['Frozen','Chicken (1A), Ground meat, Frozen lunch item (#2, 3)',''],
       ['Canned Protein','Ham (D), Canned pasta (D)',''],
