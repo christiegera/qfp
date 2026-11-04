@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z6B6D1YEX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2Z6B6D1YEX');
+    gtag('config', 'AW-18452193951');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2026 Holiday Table Fund · Quakertown Food Pantry</title>
@@ -78,6 +87,15 @@
       if (n > 0) document.getElementById('total').innerHTML = '<b>$' + Math.round(n).toLocaleString('en-US') + '</b> raised so far. Thank you, neighbors!';
     })
     .catch(function(){});
+</script>
+<script>
+  // Counts clicks on the Donate buttons as "donate_click" in Google Analytics (amount clicked included).
+  document.querySelectorAll('a[href*="paypal.com/donate"]').forEach(function(a){
+    a.addEventListener('click', function(){
+      var amt = (a.querySelector('b') || a).textContent.trim();
+      if (window.gtag) gtag('event', 'donate_click', { amount_choice: amt, campaign: 'holiday_table_fund_2026' });
+    });
+  });
 </script>
 </body>
 </html>
