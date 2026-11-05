@@ -77,88 +77,91 @@ gtag('config', 'AW-18452193951');
       overflow-y: auto;
       background: white;
       border-right: 1px solid var(--border);
-      padding: 28px 0;
+      padding: 22px 14px 28px;
     }
     .sidebar-head {
-      padding: 0 24px 16px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 16px;
-    }
-    .sidebar-brand {
-      display: flex;
-      flex-direction: column;   /* logo on top, title underneath */
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .sidebar-brand-logo { height: 48px; width: auto; }
-    .sidebar-brand-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--moss);
-      line-height: 1.2;
-    }
-     .sidebar-portal {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 11px 14px;
-      background: var(--moss);
-      color: #fff;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
+      gap: 10px;
+      padding: 0 8px 16px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border);
     }
-    .sidebar-portal:hover { background: var(--moss-light); }
-    .sidebar-label {
-      padding: 14px 24px 6px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-top: 4px;
-      border-left: 3px solid transparent;
+    .sidebar-brand-logo { height: 40px; width: auto; flex-shrink: 0; }
+    .sidebar-brand-title {
+      font-size: 15px;
+      font-weight: 750;
+      color: var(--ink);
+      line-height: 1.15;
+      letter-spacing: -0.2px;
     }
-    .sidebar a {
+    .sidebar-brand-title small {
       display: block;
-      padding: 8px 24px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--light-gray);
+      letter-spacing: 0;
+      margin-top: 2px;
+    }
+    .sidebar .sidebar-portal {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 6px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--warm-gray);
+      background: none;
+      text-decoration: none;
+    }
+    .sidebar .sidebar-portal:hover { color: var(--moss); background: var(--moss-pale); }
+    .sidebar-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 10px 6px;
+      font-size: 10.5px;
+      font-weight: 750;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--light-gray);
+    }
+    .sidebar-label::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--dot, var(--border));
+      flex-shrink: 0;
+    }
+    .sidebar a.nav-link {
+      display: block;
+      padding: 7px 10px 7px 25px;
+      margin: 1px 0;
+      border-radius: 8px;
       font-size: 14px;
       font-weight: 500;
       color: var(--warm-gray);
       text-decoration: none;
-      transition: all 0.1s;
-      border-left: 3px solid transparent;
+      transition: background 0.1s, color 0.1s;
     }
-    .sidebar a:hover {
-      color: var(--ink);
-      background: var(--cream);
-    }
-    .sidebar a.active {
-      color: var(--moss);
-      background: var(--moss-pale);
-      border-left-color: var(--moss);
-      font-weight: 600;
-    }
-    .sidebar a:hover {
-      color: var(--ink);
-      background: var(--cream);
-      border-left-color: var(--border);
-    }
+    .sidebar a.nav-link:hover { color: var(--ink); background: var(--cream); }
+    .sidebar a.nav-link.active { color: var(--moss); background: var(--moss-pale); font-weight: 650; }
     .sidebar-actions {
-      padding: 16px 24px;
+      padding: 16px 0 0;
       border-top: 1px solid var(--border);
       margin-top: 16px;
     }
     .print-btn {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       width: 100%;
-      padding: 10px 16px;
-      background: var(--cream);
+      padding: 9px 14px;
+      background: white;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 13px;
@@ -168,6 +171,7 @@ gtag('config', 'AW-18452193951');
       transition: all 0.15s;
     }
     .print-btn:hover { background: var(--moss-pale); color: var(--moss); border-color: var(--moss); }
+    .sidebar-backdrop { display: none; }
 
     /* MOBILE NAV */
     .mobile-header {
@@ -552,6 +556,40 @@ gtag('config', 'AW-18452193951');
     hr.terra { background: linear-gradient(90deg, var(--terracotta), var(--terracotta-light)); }
 
     /* RESPONSIVE */
+    /* TIGHTER SPACING (Nov 2026) — same text size, less air */
+    .handbook-wrap { grid-template-columns: 240px 1fr; }
+    .sidebar { padding: 16px 12px 22px; }
+    .sidebar-head { padding: 0 8px 12px; }
+    .sidebar a.nav-link { padding: 6px 10px 6px 25px; }
+    .sidebar .sidebar-label { padding-top: 12px; }
+    .main { padding: 28px 40px 80px; max-width: 880px; }
+    .section { margin-bottom: 32px; }
+    .section h2 { font-size: 28px; margin-bottom: 10px; }
+    .section h3 { margin: 20px 0 8px; }
+    .section h3:first-of-type { margin-top: 14px; }
+    .section h4 { margin: 14px 0 4px; }
+    .section p { margin-bottom: 10px; }
+    .section ul, .section ol { margin: 6px 0 12px 20px; }
+    .section li { margin-bottom: 4px; }
+    .card { padding: 18px 20px; margin-bottom: 12px; }
+    .policy { padding: 14px 18px; margin-bottom: 10px; }
+    .callout { padding: 12px 16px; margin: 12px 0; }
+    .data-table { margin: 10px 0 14px; }
+    .data-table th, .data-table td { padding: 8px 10px; }
+    .welcome { padding: 28px 28px 24px; margin-bottom: 24px; }
+    .welcome-logo { margin-bottom: 14px; }
+    .quick-ref { margin-bottom: 28px; }
+    .qr-card { padding: 16px; }
+    .cleaning-area { padding: 14px 18px; margin-bottom: 10px; }
+    .pw-gate { padding: 24px; }
+    hr { margin: 24px 0; }
+    /* Back to Portal: plain gray link, never a green button */
+    .sidebar a.sidebar-portal, .sidebar a.sidebar-portal:visited {
+      background: none !important; color: var(--warm-gray) !important;
+      border: 0 !important; box-shadow: none !important; justify-content: flex-start;
+    }
+    .sidebar a.sidebar-portal:hover { background: var(--moss-pale) !important; color: var(--moss) !important; }
+
     @media (max-width: 900px) {
       .handbook-wrap { grid-template-columns: 1fr; }
       .sidebar { display: none; }
@@ -563,6 +601,7 @@ gtag('config', 'AW-18452193951');
         z-index: 100;
         box-shadow: 4px 0 24px rgba(0,0,0,0.15);
       }
+      .sidebar.mobile-open + .sidebar-backdrop { display: block; position: fixed; inset: 0; z-index: 99; background: rgba(26,26,26,0.35); }
       .mobile-header { display: flex; }
       .main { padding: 24px 20px 100px; }
       .section h2 { font-size: 26px; }
@@ -702,41 +741,39 @@ gtag('config', 'AW-18452193951');
 <div class="handbook-wrap">
 
 <!-- SIDEBAR -->
-<nav class="sidebar">
+<nav class="sidebar" aria-label="Handbook sections">
+  <a href="portal.html" class="sidebar-portal">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back to Portal
+  </a>
   <div class="sidebar-head">
-    <div class="sidebar-brand">
-      <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="sidebar-brand-logo">
-      <span class="sidebar-brand-title">Volunteer Handbook</span>
-    </div>
-    <a href="portal.html" class="sidebar-portal">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      Back to Portal
-    </a>
+    <img src="qfp_trans.png" alt="Quakertown Food Pantry" class="sidebar-brand-logo">
+    <span class="sidebar-brand-title">Volunteer Handbook<small>Quakertown Food Pantry</small></span>
   </div>
 
-  <div class="sidebar-label" style="color: var(--terracotta); border-left-color: var(--terracotta);">Getting Started</div>
-  <a href="#welcome" onclick="closeMobile()">Welcome</a>
-  <a href="#quick-ref" onclick="closeMobile()">Quick Reference</a>
-  <a href="#mission" onclick="closeMobile()">Mission &amp; Overview</a>
-  <a href="#history" onclick="closeMobile()">Our History</a>
-  <a href="#requirements" onclick="closeMobile()">Requirements</a>
-  <a href="#civil-rights" onclick="closeMobile()">Civil Rights</a>
+  <div class="sidebar-label" style="--dot: var(--terracotta);">Getting Started</div>
+  <a class="nav-link" href="#welcome" onclick="closeMobile()">Welcome</a>
+  <a class="nav-link" href="#quick-ref" onclick="closeMobile()">Quick Reference</a>
+  <a class="nav-link" href="#mission" onclick="closeMobile()">Mission &amp; Overview</a>
+  <a class="nav-link" href="#history" onclick="closeMobile()">Our History</a>
+  <a class="nav-link" href="#requirements" onclick="closeMobile()">Requirements</a>
+  <a class="nav-link" href="#civil-rights" onclick="closeMobile()">Civil Rights</a>
 
-  <div class="sidebar-label" style="color: var(--moss); border-left-color: var(--moss);">Operations</div>
-  <a href="#duties" onclick="closeMobile()">Duties &amp; Roles</a>
-  <a href="#cleaning" onclick="closeMobile()">Cleaning Duties</a>
-  <a href="#calling-out" onclick="closeMobile()">Calling Out</a>
-  <a href="#incidents" onclick="closeMobile()">Incidents &amp; Emergencies</a>
-  <a href="#holidays" onclick="closeMobile()">Holidays &amp; Weather</a>
+  <div class="sidebar-label" style="--dot: var(--moss);">Operations</div>
+  <a class="nav-link" href="#duties" onclick="closeMobile()">Duties &amp; Roles</a>
+  <a class="nav-link" href="#cleaning" onclick="closeMobile()">Cleaning Duties</a>
+  <a class="nav-link" href="#calling-out" onclick="closeMobile()">Calling Out</a>
+  <a class="nav-link" href="#incidents" onclick="closeMobile()">Incidents &amp; Emergencies</a>
+  <a class="nav-link" href="#holidays" onclick="closeMobile()">Holidays &amp; Weather</a>
 
-  <div class="sidebar-label" style="color: var(--amber); border-left-color: var(--amber);">Policies</div>
-  <a href="#policies" onclick="closeMobile()">Policy Statements</a>
+  <div class="sidebar-label" style="--dot: var(--amber);">Policies</div>
+  <a class="nav-link" href="#policies" onclick="closeMobile()">Policy Statements</a>
 
-  <div class="sidebar-label" style="color: var(--slate); border-left-color: var(--slate);">Reference</div>
-  <a href="#contacts" onclick="closeMobile()">Contact Lists</a>
-  <a href="#shifts" onclick="closeMobile()">Shift Schedule</a>
-  <a href="#gah" onclick="closeMobile()">GAH &amp; Freezer</a>
-  <a href="#freshconnect" onclick="closeMobile()">Fresh Connect</a>
+  <div class="sidebar-label" style="--dot: var(--slate);">Reference</div>
+  <a class="nav-link" href="#contacts" onclick="closeMobile()">Contact Lists</a>
+  <a class="nav-link" href="#shifts" onclick="closeMobile()">Shift Schedule</a>
+  <a class="nav-link" href="#gah" onclick="closeMobile()">GAH &amp; Freezer</a>
+  <a class="nav-link" href="#freshconnect" onclick="closeMobile()">Fresh Connect</a>
 
   <div class="sidebar-actions">
     <button class="print-btn" onclick="window.print()">
@@ -745,6 +782,7 @@ gtag('config', 'AW-18452193951');
     </button>
   </div>
 </nav>
+<div class="sidebar-backdrop" onclick="closeMobile()"></div>
 
 <!-- MAIN CONTENT -->
 <div class="main">
@@ -1179,17 +1217,18 @@ gtag('config', 'AW-18452193951');
     <div class="section-badge ops">Schedule</div>
     <h2>Holidays &amp; weather</h2>
 
-    <h3>2026 holiday closures</h3>
+    <h3>Holiday closures</h3>
     <div class="card">
       <table class="data-table">
-        <tr><td><strong>New Year's Day</strong></td><td>January 1</td></tr>
-        <tr><td><strong>Good Friday</strong></td><td>April 3</td></tr>
-        <tr><td><strong>Memorial Day</strong></td><td>May 25</td></tr>
-        <tr><td><strong>Independence Day (observed)</strong></td><td>July 3</td></tr>
-        <tr><td><strong>Labor Day</strong></td><td>September 7</td></tr>
-        <tr><td><strong>Thanksgiving</strong></td><td>November 26–27</td></tr>
-        <tr><td><strong>Christmas</strong></td><td>December 24–25</td></tr>
-        <tr><td><strong>New Year's Eve</strong></td><td>December 31</td></tr>
+        <tr><th>Holiday</th><th>2026</th><th>2027</th></tr>
+        <tr><td><strong>New Year's Day</strong></td><td>January 1</td><td>Friday, January 1</td></tr>
+        <tr><td><strong>Good Friday</strong></td><td>April 3</td><td>Friday, March 26</td></tr>
+        <tr><td><strong>Memorial Day</strong></td><td>May 25</td><td>Monday, May 31</td></tr>
+        <tr><td><strong>Independence Day (observed)</strong></td><td>July 3</td><td>Monday, July 5</td></tr>
+        <tr><td><strong>Labor Day</strong></td><td>September 7</td><td>Monday, September 6</td></tr>
+        <tr><td><strong>Thanksgiving</strong></td><td>November 26–27</td><td>November 25–26 (Thursday–Friday)</td></tr>
+        <tr><td><strong>Christmas</strong></td><td>December 24–25</td><td>Christmas Eve, Friday, December 24</td></tr>
+        <tr><td><strong>New Year's Eve</strong></td><td>December 31</td><td>Friday, December 31</td></tr>
       </table>
     </div>
 
@@ -1784,7 +1823,7 @@ var observer = new IntersectionObserver(function(entries) {
   entries.forEach(function(entry) {
     if (entry.isIntersecting) {
       var id = entry.target.id;
-      document.querySelectorAll('.sidebar a').forEach(function(a) {
+      document.querySelectorAll('.sidebar a.nav-link').forEach(function(a) {
         a.classList.toggle('active', a.getAttribute('href') === '#' + id);
       });
     }
