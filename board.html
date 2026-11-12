@@ -143,10 +143,10 @@
   .leftcol .q.drives{flex:1 1 0;}
   /* Upcoming food drives: a short strip under the menu, one card per drop-off */
   .q.drives{--c:#0E8A86;--p:#E1F3F2;padding:1.4vh 1.2vw;}
-  .q.drives .qh{margin-bottom:.8vh;}
+  .q.drives .qh{margin-bottom:1.2vh;}
   .q.drives .qh h2{font-size:2.2vh;color:var(--c);}
-  .drv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:.6em;height:100%;align-items:stretch;}   /* 3 across x 2 rows, every box the same size; text sits at the top */
-  .dc{flex:1 1 0;min-width:0;background:var(--p);border-radius:.6em;padding:.45em .7em;display:flex;flex-direction:column;justify-content:flex-start;gap:.15em;line-height:1.2;}
+  .drv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:.8em 1em;height:100%;align-items:stretch;}   /* 3 across x 2 rows, every box the same size; text sits at the top */
+  .dc{flex:1 1 0;min-width:0;background:var(--p);border-radius:.6em;padding:.7em .9em;display:flex;flex-direction:column;justify-content:flex-start;gap:.3em;line-height:1.25;}
   .dc .dd{font-size:.72em;font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
   .dc .dg{font-weight:750;overflow-wrap:break-word;}   /* full name, wraps to a second line if needed */
   .dc .dt{font-size:.75em;font-weight:650;color:var(--warm-gray);white-space:nowrap;}
@@ -178,7 +178,7 @@
 
   /* Menu */
   .q.menu{--c:#7A3E9D;--p:#F3E8F8;}
-  .mrows{display:flex;flex-direction:column;gap:.55em;}
+  .mrows{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.7em 1.6em;align-items:start;}   /* menu in 2 columns, read left to right */
   .mrow{border-left:.35em solid var(--mc);padding:.1em 0 .1em .65em;}
   .mrow .cat{display:block;font-weight:800;color:var(--mc);text-transform:uppercase;letter-spacing:.04em;font-size:.72em;}
   .mrow .its{font-weight:650;line-height:1.3;}
@@ -570,7 +570,7 @@
              '<span class="dt">'+esc(x.tm||'Time TBD')+(x.nt?' · '+esc(x.nt):'')+'</span></div>'; }
     var on=ongoing.length?'<div class="dc on"><span class="dd">Ongoing</span><span class="dg">'+ongoing.map(esc).join(' · ')+'</span></div>':'';
     if(!up.length&&!on){ el.innerHTML='<div class="empty">No food drives on the calendar.</div>'; return; }
-    var size=window.innerHeight*0.02; el.style.fontSize=size+'px';
+    var size=window.innerHeight*0.024; el.style.fontSize=size+'px';
     // Never cut off a name: show the soonest drives that fit in full (the Ongoing card stays at the end).
     // A card is too tight if a word spills past its edge, or the cards get taller than the strip.
     function fits(){ var row=el.firstChild; if(el.scrollHeight>el.clientHeight+1) return false;
