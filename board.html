@@ -137,12 +137,15 @@
 
   /* Layout: menu tall on the left; right side = announcements, pantry shift (biggest), and a short GAH + bag packers strip */
   .quad{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:minmax(0,1.4fr) minmax(0,.75fr) minmax(0,.65fr);}   /* announcements taller for QR codes */
-  .q.menu{grid-column:1;grid-row:1 / span 2;}
+  /* Left column: menu on top, food drives (2 rows of cards) underneath. Change the 1.5 / 1 to give one more room. */
+  .leftcol{grid-column:1;grid-row:1 / span 3;display:flex;flex-direction:column;gap:1.6vh;min-height:0;}
+  .leftcol .q.menu{flex:1.5 1 0;}
+  .leftcol .q.drives{flex:1 1 0;}
   /* Upcoming food drives: a short strip under the menu, one card per drop-off */
-  .q.drives{grid-column:1;grid-row:3;--c:#0E8A86;--p:#E1F3F2;padding:1.4vh 1.2vw;}
+  .q.drives{--c:#0E8A86;--p:#E1F3F2;padding:1.4vh 1.2vw;}
   .q.drives .qh{margin-bottom:.8vh;}
   .q.drives .qh h2{font-size:2.2vh;color:var(--c);}
-  .drv{display:flex;gap:.6em;height:100%;align-items:flex-start;}   /* cards line up along the top */
+  .drv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:.6em;height:100%;align-items:stretch;}   /* 3 across x 2 rows, every box the same size; text sits at the top */
   .dc{flex:1 1 0;min-width:0;background:var(--p);border-radius:.6em;padding:.45em .7em;display:flex;flex-direction:column;justify-content:flex-start;gap:.15em;line-height:1.2;}
   .dc .dd{font-size:.72em;font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
   .dc .dg{font-weight:750;overflow-wrap:break-word;}   /* full name, wraps to a second line if needed */
@@ -197,6 +200,7 @@
   </div>
 
   <div class="quad">
+    <div class="leftcol">
     <section class="q menu">
       <div class="qh"><h2>&#127869;&#65039; This Week's Menu</h2><span class="when" id="menuWhen"></span></div>
       <div class="qb" id="menuBody"></div>
@@ -205,6 +209,7 @@
       <div class="qh"><h2>&#129387; Food Drives Coming In</h2></div>
       <div class="qb" id="drivesBody"></div>
     </section>
+    </div>
     <section class="q ann">
       <div class="qh"><h2>&#128227; Announcements</h2></div>
       <div class="qb" id="annBody"></div>
@@ -453,7 +458,7 @@
     return first+' '+last.charAt(0).toUpperCase()+'.';
   }
   function shortName(s){
-    s=String(s||'').replace(/ /g,' ').trim(); if(!s) return '';
+    s=String(s||'').replace(/ /g,' ').trim(); if(!s) return '';
     // Parentheses: one word = nickname "(Bob)"; "(& son Carson)" = extra people; anything else ("as avail") is dropped
     var nick='', extra=[];
     s=s.replace(/\(([^)]*)\)/g, function(_, inner){
