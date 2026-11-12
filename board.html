@@ -84,6 +84,7 @@
   .c-shift{--c:var(--green);--p:var(--green-pale);}
   .c-gah{--c:var(--blue);--p:var(--blue-pale);}
   .c-bag{--c:var(--orange);--p:var(--orange-pale);}
+  .c-drives{--c:#0E8A86;--p:#E1F3F2;}
   .sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:3vh 3vw;}
   .sheet.show{display:flex;}
   .panel{background:#fff;border-radius:2vh;width:100%;max-width:1500px;max-height:100%;display:flex;flex-direction:column;overflow:hidden;border-top:1.1vh solid var(--c);}
@@ -145,6 +146,8 @@
   .q.drives{--c:#0E8A86;--p:#E1F3F2;padding:1.4vh 1.2vw;}
   .q.drives .qh{margin-bottom:1.2vh;}
   .q.drives .qh h2{font-size:2.2vh;color:var(--c);}
+  .q.drives{cursor:pointer;}
+  .q.drives .full{margin-left:auto;font-size:1.6vh;padding:.3vh .8vw;}
   .drv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:.8em 1em;height:100%;align-items:stretch;}   /* 3 across x 2 rows, every box the same size; text sits at the top */
   .dc{flex:1 1 0;min-width:0;background:var(--p);border-radius:.6em;padding:.7em .9em;display:flex;flex-direction:column;justify-content:flex-start;gap:.3em;line-height:1.25;}
   .dc .dd{font-size:.72em;font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
@@ -205,8 +208,8 @@
       <div class="qh"><h2>&#127869;&#65039; This Week's Menu</h2><span class="when" id="menuWhen"></span></div>
       <div class="qb" id="menuBody"></div>
     </section>
-    <section class="q drives">
-      <div class="qh"><h2>&#129387; Food Drives Coming In</h2></div>
+    <section class="q drives" data-full="drives">
+      <div class="qh"><h2>&#129387; Food Drives Coming In</h2><button class="full">All &rsaquo;</button></div>
       <div class="qb" id="drivesBody"></div>
     </section>
     </div>
@@ -551,19 +554,25 @@
   // "1:00 PM" stays as is; a 24-hour "13:00:00" from the sheet becomes "1:00 PM".
   function fmtTime(v){ var s=String(v||'').trim(), m=s.match(/^(\d{1,2}):(\d{2})(:\d{2})?$/);
     if(!m) return s; var hr=+m[1]; return ((hr%12)||12)+':'+m[2]+(hr<12?' AM':' PM'); }
-  function renderDrives(){
-    var el=document.getElementById('drivesBody'), h=(drives[0]||[]).map(function(x){ return String(x||'').trim().toLowerCase(); });
+  // Every row of the Drives tab: dated drives (soonest first, past ones included) and the undated "ongoing" ones.
+  function driveData(){
+    var h=(drives[0]||[]).map(function(x){ return String(x||'').trim().toLowerCase(); });
     function col(re,def){ for(var i=0;i<h.length;i++){ if(re.test(h[i])) return i; } return def; }
     var cD=col(/date|day|when/,0), cG=col(/group|who|name|drive|org/,1), cT=col(/time/,2), cN=col(/note/,-1);
-    var t=addDays(nowNY(),0), up=[], ongoing=[];
+    var t=addDays(nowNY(),0), all=[], ongoing=[];
     for(var i=1;i<drives.length;i++){ var r=drives[i], g=String(r[cG]||'').trim(), ds=String(r[cD]||'').trim();
       if(!g) continue;
       var d=ds?toLocalDate(ds):null;
       if(!d||isNaN(d)){ ongoing.push(g); continue; }
       if(d.getFullYear()<t.getFullYear()-1){ d.setFullYear(t.getFullYear()); if(d<addDays(t,-60)) d.setFullYear(t.getFullYear()+1); }   // "11/14" with no year
-      d.setHours(0,0,0,0); if(d<t) continue;    // already happened
-      up.push({ d:d, g:g, tm:fmtTime(r[cT]), nt:cN>-1?String(r[cN]||'').trim():'' }); }
-    up.sort(function(a,b){ return a.d-b.d; });
+      d.setHours(0,0,0,0);
+      all.push({ d:d, g:g, tm:fmtTime(r[cT]), nt:cN>-1?String(r[cN]||'').trim():'' }); }
+    all.sort(function(a,b){ return a.d-b.d; });
+    return { all:all, ongoing:ongoing };
+  }
+  function renderDrives(){
+    var el=document.getElementById('drivesBody'), t=addDays(nowNY(),0), dd=driveData(), ongoing=dd.ongoing;
+    var up=dd.all.filter(function(x){ return x.d>=t; });    // already happened = off the strip
     function card(x){ var diff=Math.round((x.d-t)/864e5);
       var lbl=diff===0?'Today':(diff===1?'Tomorrow':DAYS[x.d.getDay()].slice(0,3)+' '+x.d.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
       return '<div class="dc'+(diff===0?' today':'')+'"><span class="dd">'+esc(lbl)+'</span><span class="dg">'+esc(x.g)+'</span>'+
@@ -715,7 +724,22 @@
     }, 'Weekly pickup schedule, shown for last week, this week, and the next 3 weeks. Today is highlighted.');
   }
 
+  function fullDrives(){
+    var dd=driveData(), t=addDays(nowNY(),0);
+    // Past drives from the last 2 weeks stay listed (grayed) so you can see what just came in.
+    var rows=dd.all.filter(function(x){ return x.d>=addDays(t,-14); }), tags=tagsFor(rows);
+    var h='<p class="pnote">Every drive on the list, soonest first. Today is highlighted; grayed ones already happened and drop off after 2 weeks.</p>';
+    h+= rows.length
+      ? '<table class="sch"><tr><th>Date</th><th>Group</th><th>Time</th><th>Notes</th></tr>'+rows.map(function(x,i){
+          return '<tr class="'+rowCls(x.d)+'"><td class="tc">'+esc(fmtD(x.d))+tagHtml(tags[i])+'</td><td><b>'+esc(x.g)+'</b></td><td>'+
+                 esc(x.tm||'Time TBD')+'</td><td>'+(x.nt?esc(x.nt):'')+'</td></tr>'; }).join('')+'</table>'
+      : '<p class="empty">No dated food drives on the list.</p>';
+    if(dd.ongoing.length) h+='<p class="pnote" style="margin-top:1.4em"><b>Ongoing:</b> '+dd.ongoing.map(esc).join(' · ')+'</p>';
+    return h;
+  }
+
   var FULL={ shift:['c-shift','🥕 Pantry Shift Schedule',fullShift],
+             drives:['c-drives','🥫 Food Drives',fullDrives],
              gah:['c-gah','🚚 GAH Driver Schedule',fullGah],
              bag:['c-bag','🛍️ Bag Packer Schedule',fullBag] };
   function bump(){ clearTimeout(closeTimer); closeTimer=setTimeout(closeFull,90000); }   // auto-close after 90s idle
@@ -727,7 +751,7 @@
     var b=document.getElementById('sheetBody'); b.innerHTML=f[2](); b.scrollTop=0;
     sheet.classList.add('show'); bump();
   }
-  ['shift','gah','bag'].forEach(function(k){
+  ['shift','gah','bag','drives'].forEach(function(k){
     document.querySelector('[data-full="'+k+'"]').addEventListener('click',function(){ openFull(k); });
   });
   document.getElementById('sheetClose').addEventListener('click',function(e){ e.stopPropagation(); closeFull(); });
