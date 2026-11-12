@@ -576,13 +576,14 @@
     function fits(){ var row=el.firstChild; if(el.scrollHeight>el.clientHeight+1) return false;
       var cs=row.children; for(var j=0;j<cs.length;j++){ if(cs[j].scrollWidth>cs[j].clientWidth+1||cs[j].scrollHeight>cs[j].clientHeight+1) return false; }
       return true; }
-    var MAX_DRIVES=5, n=Math.min(up.length,MAX_DRIVES);
+    // The strip is a fixed 3 x 2 grid, so fill every box (5 drives + Ongoing, or 6 drives if there's no Ongoing).
+    // Removing a card doesn't make the others bigger, so shrink the text to fit first; drop a card only as a last resort.
+    var n=Math.min(up.length, on?5:6);
     for(;;){
       el.innerHTML='<div class="drv">'+up.slice(0,n).map(card).join('')+on+'</div>';
       if(fits()) break;
-      if(n>3) { n--; continue; }                       // fewer cards first, down to 3...
-      if(size>13){ size-=1; el.style.fontSize=size+'px'; continue; }   // ...then a little smaller text...
-      if(n>1) { n--; continue; }                       // ...then fewer still
+      if(size>12){ size-=1; el.style.fontSize=size+'px'; continue; }
+      if(n>1) { n--; continue; }
       break; }
   }
 
