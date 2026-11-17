@@ -68,6 +68,7 @@
   .rtag.gah{background:var(--blue-pale);color:#14517a;}
   .rtag.packer{background:var(--orange-pale);color:#8a4a12;}
   .rtag.freezer{background:#e3eefc;color:#1d4e89;}
+  .rtag.holiday{background:#FCE8EB;color:#9b2f43;}
   /* signed-in (still here) — amber, still tappable to sign out */
   .namebtn.in{background:#FFF8E8;border-color:#E8A96A;}
   .namebtn.in .nm{color:#8a4a12;}
@@ -346,6 +347,12 @@
   // GAH Driver Schedule tab. Paste each tab's gid; leave as-is to skip.
   var BAGPACKERS_GID = '1531693386';
   var GAH_GID = '1136888994';
+  // Weekly helper schedules (tabs in the master sheet, found by name). Columns:
+  // Shift Day | Shift Date | Volunteer Name | Email | Phone | Status
+  // Shift Date blank = every week on that day; filled in = that date only. Status "Cancelled" = skip.
+  // [tab name, label on the kiosk button, color]
+  var HELPER_TABS = [ ['Holiday Donation Station','Holiday Station','holiday'],
+                      ['GAH Helper Schedule','GAH helper','gah'] ];
 
   // Check-In Google Form — responses land in the Check-Ins tab of your sheet.
   var CHECKIN_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfMDFZU7ksSAXJ3LWV93qRVRfxXLEPBOURHxCuVVXofjVkyCg/formResponse';
@@ -361,7 +368,7 @@
 
   var PREVIEW = false;  // live: loads your real schedule from the sheet. Set true to demo with dummy data.
 
-  var supervisorsData=[], signupsData=[], volunteersData=[], bagPackersData=[], gahData=[], checkedIn={}, newCounter=0, directory=[];
+  var supervisorsData=[], signupsData=[], volunteersData=[], bagPackersData=[], gahData=[], helperData=[], checkedIn={}, newCounter=0, directory=[];
   var now0=new Date();
   // Testing: add ?testdate=2026-11-16 to the address to see that day's schedule.
   // A red banner shows while it's on; sign-ins are recorded with that date so they're easy to find and delete.
@@ -414,6 +421,8 @@
     out = out.concat(packersToday());
     // 4) Freezer crew (and any other standing role) from the Volunteers tab
     out = out.concat(freezerToday());
+    // 5) Weekly helpers (Holiday Donation Station, GAH helpers)
+    out = out.concat(helpersToday());
     // Same person listed twice (e.g. a leftover shift sign-up + Freezer): keep one button, using the later role
     var seen={};
     for(var j=out.length-1;j>=0;j--){ var u=uid(out[j]); if(seen[u]) out.splice(j,1); else seen[u]=1; }
@@ -462,6 +471,24 @@
     else { var parts=name.split(/\s+/); o.first=parts.length>1?parts.slice(0,-1).join(' '):name; o.last=parts.length>1?parts[parts.length-1]:''; o.email=email; o.phone=phone; }
     o.full=name;
     return o;
+  }
+
+  // Weekly helper tabs: anyone whose Shift Day is today (or whose Shift Date is today).
+  function helpersToday(){
+    var out=[], today=dayName(now0).toLowerCase(), k=keyOf(now0);
+    helperData.forEach(function(t, n){
+      var rows=t.rows, h=(rows[0]||[]).map(function(x){ return String(x||'').trim().toLowerCase(); });
+      function col(re,def){ for(var i=0;i<h.length;i++){ if(re.test(h[i])) return i; } return def; }
+      var cDay=col(/day/,0), cDate=col(/date/,1), cName=col(/name|volunteer/,2), cEm=col(/mail/,3), cPh=col(/phone/,4), cSt=col(/status/,5);
+      for(var i=1;i<rows.length;i++){ var r=rows[i], name=String(r[cName]||'').trim(); if(!name) continue;
+        if(/cancel/i.test(String(r[cSt]||''))) continue;
+        var ds=String(r[cDate]||'').trim();
+        if(ds){ var d=toLocalDate(ds); if(isNaN(d)||keyOf(d)!==k) continue; }
+        else if(String(r[cDay]||'').trim().toLowerCase().slice(0,3)!==today.slice(0,3)) continue;
+        out.push(fillPerson({ id:'h'+n+'_'+i, scheduled:true, role:t.label, rc:t.rc, how:t.rc==='gah'?'gah-helper':'holiday-station' }, name, r[cEm], r[cPh]));
+      }
+    });
+    return out;
   }
 
   // GAH Driver Schedule tab: a title row, then a header row (Store | Monday..Friday),
@@ -565,7 +592,10 @@
     } else {
       var sup=findSupervisor(dn,wk);
       document.getElementById('shiftDay').textContent=dn+', '+now0.toLocaleDateString('en-US',{month:'long',day:'numeric'});
-      document.getElementById('shiftMeta').textContent=shiftTime(dn)+(sup.name&&sup.name!=='TBD'?'  ·  Supervisor: '+sup.name:'')+(sup.group&&sup.group!=='NA'?'  ·  '+sup.group+' group day':'');
+      // First name + last initial, like the board ("Joanne Cramer" -> "Joanne C."). Group name doesn't repeat "group".
+      var supShort=String(sup.name||'').trim().split(/\s+/); supShort=supShort.length>1?supShort[0]+' '+supShort[supShort.length-1].charAt(0)+'.':supShort[0];
+      var grp=String(sup.group||'').trim(); grp=grp&&grp!=='NA'?(/group$/i.test(grp)?grp:grp+' group')+' day':'';
+      document.getElementById('shiftMeta').textContent=shiftTime(dn)+(sup.name&&sup.name!=='TBD'?'  ·  Supervisor: '+supShort:'')+(grp?'  ·  '+grp:'');
     }
   }
   function tickClock(){ document.getElementById('clock').textContent=fmtT(new Date()); }
@@ -943,6 +973,15 @@
       fetch(csvUrl(SIGNUPS_GID)).then(function(r){ if(!r.ok)throw 0; return r.text(); })
     ];
     opt.forEach(function(o){ tasks.push(fetch(csvUrl(o[1])).then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; })); });
+    // Helper tabs are read by name. If a tab doesn't exist, Google returns a different tab, so only keep it if it has a "Shift Day" header.
+    var helperReqs=HELPER_TABS.map(function(t){
+      return fetch('https://docs.google.com/spreadsheets/d/'+SPREADSHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(t[0])+'&t='+Date.now())
+        .then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; })
+        .then(function(txt){ var rows=parseCSV(txt);
+          if(!(rows[0]||[]).some(function(x){ return /shift day/i.test(String(x)); })) rows=[];
+          return { label:t[1], rc:t[2], rows:rows }; });
+    });
+    Promise.all(helperReqs).then(function(h){ helperData=h; if(directory.length) renderAll(); });
     Promise.all(tasks).then(function(res){
       supervisorsData=parseCSV(res[0]); signupsData=parseCSV(res[1]);
       opt.forEach(function(o,idx){
