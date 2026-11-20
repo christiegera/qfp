@@ -65,6 +65,7 @@
   .namebtn .tick{font-size:13px;font-weight:700;color:var(--green);}
   .rtag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:100px;}
   .rtag.pantry{background:var(--green-pale);color:#0f5e1b;}
+  .rtag.sup{background:#EDE4F7;color:#5b2d8a;}
   .rtag.gah{background:var(--blue-pale);color:#14517a;}
   .rtag.packer{background:var(--orange-pale);color:#8a4a12;}
   .rtag.freezer{background:#e3eefc;color:#1d4e89;}
@@ -423,6 +424,16 @@
     out = out.concat(freezerToday());
     // 5) Weekly helpers (Holiday Donation Station, GAH helpers)
     out = out.concat(helpersToday());
+    // 6) Today's shift supervisor (Supervisors tab). Added last so that if they also signed up, the Supervisor tag wins.
+    var wd=now0.getDay();
+    if(wd!==0&&wd!==6){
+      var dn=dayName(now0), wk=weekNum(now0);
+      for(var s=1;s<supervisorsData.length;s++){ var sr=supervisorsData[s];
+        if(sr[0]!==dn && sr[0]!==wk+' '+dn) continue;
+        var sn=String(sr[2]||'').trim(); if(!sn||/^(tbd|na|n\/a)$/i.test(sn)) break;
+        out.push(fillPerson({ id:'sup'+s, scheduled:true, role:'Supervisor', rc:'sup', how:'scheduled' }, sn, sr[4], sr[3]));
+        break; }
+    }
     // Same person listed twice (e.g. a leftover shift sign-up + Freezer): keep one button, using the later role
     var seen={};
     for(var j=out.length-1;j>=0;j--){ var u=uid(out[j]); if(seen[u]) out.splice(j,1); else seen[u]=1; }
